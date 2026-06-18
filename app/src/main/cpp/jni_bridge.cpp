@@ -260,4 +260,124 @@ Java_org_dasherproject_android_NativeBridge_nativeSetSpeedPercent(JNIEnv*, jclas
     if (s && s->ctx) dasher_set_speed_percent(s->ctx, percent);
 }
 
+// ── Generic parameter surface (mirrors Dasher-Windows NativeBridge.cs) ──────
+
+JNIEXPORT jint JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeFindParameterKey(JNIEnv* env, jclass,
+                                                                   jstring jName) {
+    if (!jName) return -1;
+    const char* name = env->GetStringUTFChars(jName, nullptr);
+    if (!name) return -1;
+    int key = dasher_find_parameter_key(name);
+    env->ReleaseStringUTFChars(jName, name);
+    return key;
+}
+
+JNIEXPORT jint JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetBoolParameter(JNIEnv*, jclass,
+                                                                   jlong handle, jint key) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_bool_parameter(s->ctx, key) : 0;
+}
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetBoolParameter(JNIEnv*, jclass,
+                                                                   jlong handle, jint key, jint value) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_bool_parameter(s->ctx, key, value);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetLongParameter(JNIEnv*, jclass,
+                                                                   jlong handle, jint key) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? static_cast<jlong>(dasher_get_long_parameter(s->ctx, key)) : 0L;
+}
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetLongParameter(JNIEnv*, jclass,
+                                                                   jlong handle, jint key, jlong value) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_long_parameter(s->ctx, key, static_cast<long>(value));
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetStringParameter(JNIEnv* env, jclass,
+                                                                     jlong handle, jint key) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_get_string_parameter(s->ctx, key));
+}
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetStringParameter(JNIEnv* env, jclass,
+                                                                     jlong handle, jint key, jstring jValue) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jValue) return;
+    const char* v = env->GetStringUTFChars(jValue, nullptr);
+    if (v) {
+        dasher_set_string_parameter(s->ctx, key, v);
+        env->ReleaseStringUTFChars(jValue, v);
+    }
+}
+
+// ── Alphabets ───────────────────────────────────────────────────────────────
+
+JNIEXPORT jint JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetAlphabetCount(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_alphabet_count(s->ctx) : 0;
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetAlphabetName(JNIEnv* env, jclass,
+                                                                  jlong handle, jint index) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_get_alphabet_name(s->ctx, index));
+}
+
+// ── Colour palettes ─────────────────────────────────────────────────────────
+
+JNIEXPORT jint JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetPaletteCount(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_palette_count(s->ctx) : 0;
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetPaletteName(JNIEnv* env, jclass,
+                                                                 jlong handle, jint index) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_get_palette_name(s->ctx, index));
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeGetCurrentPalette(JNIEnv* env, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_get_current_palette(s->ctx));
+}
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetPalette(JNIEnv* env, jclass,
+                                                             jlong handle, jstring jName) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jName) return;
+    const char* n = env->GetStringUTFChars(jName, nullptr);
+    if (n) {
+        dasher_set_palette(s->ctx, n);
+        env->ReleaseStringUTFChars(jName, n);
+    }
+}
+
+// ── Persistence ─────────────────────────────────────────────────────────────
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSaveSettings(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_save_settings(s->ctx);
+}
+
 }  // extern "C"

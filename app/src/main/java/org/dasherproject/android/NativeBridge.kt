@@ -98,4 +98,34 @@ object NativeBridge {
 
     /** Sets the movement-speed percentage. */
     @JvmStatic external fun nativeSetSpeedPercent(handle: Long, percent: Int)
+
+    // ── Generic parameter surface (mirror of Dasher-Windows NativeBridge.cs) ──
+    // Use [nativeFindParameterKey] to resolve a "BP_*"/"LP_*"/"SP_*" enum name to a key,
+    // then get/set by key. See DasherCore/.../Parameters.h for the enum values.
+
+    /** Resolve a parameter enum name (e.g. "SP_INPUT_FILTER") to its numeric key, or -1. */
+    @JvmStatic external fun nativeFindParameterKey(enumName: String): Int
+
+    @JvmStatic external fun nativeGetBoolParameter(handle: Long, key: Int): Int
+    @JvmStatic external fun nativeSetBoolParameter(handle: Long, key: Int, value: Int)
+    @JvmStatic external fun nativeGetLongParameter(handle: Long, key: Int): Long
+    @JvmStatic external fun nativeSetLongParameter(handle: Long, key: Int, value: Long)
+    @JvmStatic external fun nativeGetStringParameter(handle: Long, key: Int): String
+    @JvmStatic external fun nativeSetStringParameter(handle: Long, key: Int, value: String)
+
+    // ── Alphabets ──
+    /** Number of available alphabets (WorldAlphabets, 622 in v6). */
+    @JvmStatic external fun nativeGetAlphabetCount(handle: Long): Int
+    /** Alphabet display name at [index] (0..count-1). */
+    @JvmStatic external fun nativeGetAlphabetName(handle: Long, index: Int): String
+
+    // ── Colour palettes ──
+    @JvmStatic external fun nativeGetPaletteCount(handle: Long): Int
+    @JvmStatic external fun nativeGetPaletteName(handle: Long, index: Int): String
+    @JvmStatic external fun nativeGetCurrentPalette(handle: Long): String
+    @JvmStatic external fun nativeSetPalette(handle: Long, name: String)
+
+    // ── Persistence ──
+    /** Flush current settings to dasher_settings.xml in the user dir. */
+    @JvmStatic external fun nativeSaveSettings(handle: Long)
 }
