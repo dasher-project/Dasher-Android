@@ -53,22 +53,59 @@ ports across with no logic changes.
 **Goal:** a project that opens in Android Studio, compiles, launches, loads
 DasherCore, and renders the zooming canvas with touch input.
 
+**STATUS: COMPLETE** — `./gradlew :app:assembleDebug` builds a 53 MB APK
+(`libdasher.so` + `libdasher_jni.so` for arm64-v8a + x86_64, bundled alphabet/
+colour assets). Required two DasherCore Android portability fixes
+([dasher-project/DasherCore#21](https://github.com/dasher-project/DasherCore/pull/21),
+pending CI): `I18n.h` (Android joins the no-op `_()` branch) and
+`UserLocation.cpp` (dropped unused `<sys/timeb.h>`).
+
 | Item | Status |
 |---|---|
-| Gradle/KTS project, NDK 27, SDK 35, minSdk 24 | scaffold |
-| DasherCore git submodule (`dasher-project/DasherCore`) | scaffold |
-| CMake: builds DasherCore with `BUILD_CAPI ON` → `libdasher.so` | scaffold |
-| `jni_bridge.cpp` — thin JNI shim over `dasher.h` | scaffold |
-| `NativeBridge.kt` — Kotlin `external` decls (1:1 with `dasher_*`) | scaffold |
-| `DasherEngine.kt` — Choreographer loop, touch → `dasher_mouse_*` | scaffold |
-| `DasherCanvasView.kt` — command-buffer renderer (ported) | scaffold |
-| `MainActivity.kt` — Compose shell, canvas + output text | scaffold |
-| Asset copier: copies `Data/` to filesDir on first run | scaffold |
-| Local git repo, initial commit | scaffold |
+| Gradle/KTS project, NDK 27, SDK 35, minSdk 24 | ✅ done |
+| DasherCore git submodule (`dasher-project/DasherCore`) | ✅ done (feat branch, PR #21) |
+| CMake: builds DasherCore with `BUILD_CAPI ON` → `libdasher.so` | ✅ done |
+| `jni_bridge.cpp` — thin JNI shim over `dasher.h` | ✅ done |
+| `NativeBridge.kt` — Kotlin `external` decls (1:1 with `dasher_*`) | ✅ done |
+| `DasherEngine.kt` — Choreographer loop, touch → `dasher_mouse_*` | ✅ done |
+| `DasherCanvasView.kt` — command-buffer renderer (ported) | ✅ done |
+| `MainActivity.kt` — Compose shell, canvas + output text | ✅ done |
+| Asset copier: copies `Data/` to filesDir on first run | ✅ done |
+| Local git repo, initial commit | ✅ done |
 
-**Build verification:** blocked on this machine — no JDK / Android SDK / NDK /
-Gradle installed (only CMake 4.3.1). Open in Android Studio to let it install
-the toolchain + generate the Gradle wrapper jar, then `./gradlew :app:assembleDebug`.
+---
+
+## Phase 1 — Core parity baseline *(in progress)*
+
+Status after the initial push:
+
+| Feature (matrix id) | Android | How |
+|---|---|---|
+| `canvas-rendering` | ✅ shipped | C-API `dasher_frame` + ported canvas (bold+subpixel glyphs) |
+| `continuous-mode` | ✅ shipped | Default filter, touch pointer |
+| `touch-input` | ✅ shipped | `dasher_mouse_move/down/up` |
+| `tilt-input` | ✅ shipped | `TiltInputProvider` (game-rotation-vector) → `onTiltNormalized` |
+| `ppm-language-model` | ✅ shipped | Default LM |
+| `alternative-language-models` | ✅ shipped | LM id set via JNI |
+| `adaptive-learning` | ✅ shipped | `BP_LM_ADAPTIVE` toggle (settings) |
+| `alphabets-and-languages` | ✅ shipped | alphabet picker over `dasher_get_alphabet_*` |
+| `cjk-pinyin-conversion` | ✅ shipped | engine-side |
+| `colour-palettes` | ✅ shipped | palette picker + `dasher_set_palette` |
+| `screen-orientation` | ✅ shipped | `BP_ORIENT_L_R` toggle (settings) |
+| `dark-mode` | ✅ shipped | palette + Material3 dynamic/night theme |
+| `settings-persistence` | ✅ shipped | `dasher_save_settings` on every change |
+| `speed-control` | ✅ shipped | status-bar slider + `BP_AUTO_SPEEDCONTROL` |
+| `copy-to-clipboard` | ✅ shipped | ClipboardManager "Copy all" |
+| `control-mode` | ✅ shipped | `BP_CONTROL_MODE` toggle (settings) |
+| `custom-fonts` | partial | UI uses bundled Inter; canvas `SP_DASHER_FONT` wiring = Phase 3 |
+| `pointer-eye-gaze-input` | beta | touch-as-pointer now; real eye gaze = Phase 4 (socket input) |
+
+**Still open in Phase 1:** wire the canvas glyph font to `SP_DASHER_FONT`;
+paste-from-clipboard into the engine buffer; on-device smoke test.
+
+**feature-status.json:** adding an `android` column to
+`website/src/data/feature-status.json` is a deliberate public change to the
+*website* repo — deferred until reviewed.
 
 ---
 
