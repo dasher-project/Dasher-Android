@@ -214,6 +214,42 @@ class DasherEngine(
         NativeBridge.nativeSaveSettings(nativeHandle)
     }
 
+    // ── Parameter helpers (resolve BP_*/LP_*/SP_* names to keys internally) ─────
+
+    /** Reads a boolean parameter by enum name (e.g. "BP_CONTROL_MODE"). */
+    fun getBoolParam(name: String): Boolean {
+        if (destroyed || nativeHandle == 0L) return false
+        val key = NativeBridge.nativeFindParameterKey(name)
+        if (key < 0) return false
+        return NativeBridge.nativeGetBoolParameter(nativeHandle, key) != 0
+    }
+
+    /** Sets a boolean parameter by enum name and persists. */
+    fun setBoolParam(name: String, value: Boolean) {
+        if (destroyed || nativeHandle == 0L) return
+        val key = NativeBridge.nativeFindParameterKey(name)
+        if (key < 0) return
+        NativeBridge.nativeSetBoolParameter(nativeHandle, key, if (value) 1 else 0)
+        saveSettings()
+    }
+
+    /** Reads a long parameter by enum name (e.g. "LP_DASHER_FONTSIZE"). */
+    fun getLongParam(name: String): Long {
+        if (destroyed || nativeHandle == 0L) return 0L
+        val key = NativeBridge.nativeFindParameterKey(name)
+        if (key < 0) return 0L
+        return NativeBridge.nativeGetLongParameter(nativeHandle, key)
+    }
+
+    /** Sets a long parameter by enum name and persists. */
+    fun setLongParam(name: String, value: Long) {
+        if (destroyed || nativeHandle == 0L) return
+        val key = NativeBridge.nativeFindParameterKey(name)
+        if (key < 0) return
+        NativeBridge.nativeSetLongParameter(nativeHandle, key, value)
+        saveSettings()
+    }
+
     /** [Choreographer.FrameCallback] — one render step per vsync. */
     override fun doFrame(frameTimeNanos: Long) {
         if (!running) return

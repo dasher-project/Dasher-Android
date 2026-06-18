@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +31,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +67,7 @@ class MainActivity : ComponentActivity() {
     private var speedPercent by mutableStateOf(100)
     private var inputMode by mutableStateOf(InputMode.TOUCH)
     private var tiltAvailable by mutableStateOf(false)
+    private var showSettings by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,10 +132,47 @@ class MainActivity : ComponentActivity() {
                             // After recalibration the user wants to resume zooming.
                             engine?.clearTiltInput()
                             engine?.setInputMode(InputMode.TILT)
-                        }
+                        },
+                        onOpenSettings = { showSettings = true }
                     )
+                    if (showSettings) SettingsDialog(onDismiss = { showSettings = false })
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun SettingsDialog(onDismiss: () -> Unit) {
+        val eng = engine ?: run { onDismiss(); return }
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Quick settings") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    BoolToggle("Control mode (edit via Dasher nodes)", "BP_CONTROL_MODE")
+                    BoolToggle("Auto speed control", "BP_AUTO_SPEEDCONTROL")
+                    BoolToggle("Adaptive learning", "BP_LM_ADAPTIVE")
+                    BoolToggle("Left-handed layout", "BP_ORIENT_L_R")
+                }
+            },
+            confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } }
+        )
+    }
+
+    @Composable
+    private fun BoolToggle(label: String, paramName: String) {
+        val eng = engine ?: return
+        var checked by remember { mutableStateOf(eng.getBoolParam(paramName)) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(label, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.bodyLarge)
+            Switch(checked = checked, onCheckedChange = { v ->
+                checked = v
+                eng.setBoolParam(paramName, v)
+            })
         }
     }
 
@@ -174,7 +215,8 @@ class MainActivity : ComponentActivity() {
         onPaletteSelected: (String) -> Unit,
         onSpeedChanged: (Int) -> Unit,
         onToggleMode: () -> Unit,
-        onCalibrate: () -> Unit
+        onCalibrate: () -> Unit,
+        onOpenSettings: () -> Unit
     ) {
         Scaffold { padding ->
             Column(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -185,6 +227,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     OutlinedButton(onClick = onClear) { Text("Clear") }
                     OutlinedButton(onClick = onCopyAll) { Text("Copy all") }
+                    OutlinedButton(onClick = onOpenSettings) { Text("Settings") }
                 }
                 Box(
                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = 8.dp)
