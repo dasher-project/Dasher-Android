@@ -1,0 +1,165 @@
+package org.dasherproject.android
+
+import android.util.Log
+import android.view.Choreographer
+
+/**
+ * Drives a single DasherCore session frame-by-frame via Android's [Choreographer].
+ *
+ * Translates touch input into the C-API pointer surface
+ * ([NativeBridge.nativeMouseDown]/[nativeMouseUp]/[nativeMouseMove]), runs the
+ * per-vsync frame loop, and forwards rendered draw-commands and output text to
+ * registered consumers.
+ *
+ * All public methods must be called on the main thread (the same thread on which
+ * [Choreographer.getInstance] is obtained).
+ *
+ * @param nativeHandle opaque session handle from [NativeBridge.nativeCreate].
+ * @param frameConsumer invoked every rendered frame with the draw-command buffer
+ *   and its accompanying string labels.
+ */
+class DasherEngine(
+    private val nativeHandle: Long,
+    frameConsumer: (IntArray, Array<String>) -> Unit
+) : Choreographer.FrameCallback {
+
+    private val choreographer = Choreographer.getInstance()
+    private var running = false
+    private var destroyed = false
+    private var hasSurface = false
+    private var isPaused = true
+    private var isTouching = false
+
+    /** Invoked on the main thread whenever the accumulated output text changes. */
+    var onTextUpdate: ((String) -> Unit)? = null
+
+    @Volatile
+    private var frameConsumer: (IntArray, Array<String>) -> Unit = frameConsumer
+
+    /** Starts the vsync frame loop. No-op if already running or destroyed. */
+    fun start() {
+        if (running || destroyed) return
+        running = true
+        choreographer.postFrameCallback(this)
+    }
+
+    /** Stops the frame loop without releasing native resources. Restartable via [start]. */
+    fun stop() {
+        if (!running) return
+        running = false
+        choreographer.removeFrameCallback(this)
+    }
+
+    /** Permanently tears down the engine and frees the native session. */
+    fun destroy() {
+        if (destroyed) return
+        stop()
+        destroyed = true
+        if (nativeHandle != 0L) NativeBridge.nativeDestroy(nativeHandle)
+    }
+
+    /** Notifies the engine of new canvas dimensions. Call on init and on resize. */
+    fun onSurfaceSizeChanged(width: Int, height: Int) {
+        if (destroyed || nativeHandle == 0L || width <= 0 || height <= 0) return
+        hasSurface = true
+        NativeBridge.nativeSetScreenSize(nativeHandle, width, height)
+    }
+
+    /**
+     * Forwards a touch event to DasherCore.
+     *
+     * In continuous (touch) mode:
+     *  - DOWN resumes the engine and starts zooming,
+     *  - MOVE updates the pointer position,
+     *  - UP/CANCEL pauses zooming.
+     *
+     * @param action Android [android.view.MotionEvent] action masked value
+     *   (0 = DOWN, 1 = MOVE, 2 = UP/CANCEL).
+     */
+    fun onTouch(action: Int, x: Float, y: Float) {
+        if (destroyed || nativeHandle == 0L) return
+        when (action) {
+            0 -> { // DOWN
+                isPaused = false
+                isTouching = true
+                NativeBridge.nativeMouseMove(nativeHandle, x, y)
+                NativeBridge.nativeMouseDown(nativeHandle)
+            }
+            1 -> { // MOVE
+                if (!isPaused && isTouching) {
+                    NativeBridge.nativeMouseMove(nativeHandle, x, y)
+                }
+            }
+            2 -> { // UP / CANCEL
+                if (isTouching) {
+                    NativeBridge.nativeMouseUp(nativeHandle)
+                    isTouching = false
+                }
+                isPaused = true
+            }
+        }
+    }
+
+    fun setSpeedPercent(percent: Int) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetSpeedPercent(nativeHandle, percent)
+    }
+
+    fun setAlphabet(alphabetId: String) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetAlphabetId(nativeHandle, alphabetId)
+    }
+
+    fun setLanguageModelId(id: Int) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetLanguageModelId(nativeHandle, id)
+    }
+
+    fun resetOutputText() {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeResetOutputText(nativeHandle)
+    }
+
+    /** [Choreographer.FrameCallback] — one render step per vsync. */
+    override fun doFrame(frameTimeNanos: Long) {
+        if (!running) return
+        if (!destroyed && nativeHandle != 0L && hasSurface) {
+            val timeMs = frameTimeNanos / 1_000_000L
+            // When paused we still tick the engine so the canvas redraws; the engine
+            // itself won't advance the zoom without a pressed pointer.
+            val commands = NativeBridge.nativeFrame(nativeHandle, timeMs)
+            val strings = NativeBridge.nativeGetFrameStrings(nativeHandle)
+            frameConsumer(commands, strings)
+            onTextUpdate?.invoke(NativeBridge.nativeGetOutputText(nativeHandle))
+        }
+        if (running) {
+            choreographer.postFrameCallback(this)
+        }
+    }
+
+    /** Replaces the frame consumer (e.g. across configuration changes). */
+    fun setFrameConsumer(consumer: (IntArray, Array<String>) -> Unit) {
+        frameConsumer = consumer
+    }
+
+    companion object {
+        private const val TAG = "DasherEngine"
+
+        /**
+         * Convenience factory: ensures the native library is loaded, extracts data,
+         * and creates the engine session.
+         *
+         * @return a ready-to- [start] engine, or null if the session could not be created.
+         */
+        fun create(dataDir: String, userDir: String,
+                   frameConsumer: (IntArray, Array<String>) -> Unit): DasherEngine? {
+            NativeBridge.ensureLoaded()
+            val handle = NativeBridge.nativeCreate(dataDir, userDir)
+            if (handle == 0L) {
+                Log.e(TAG, "nativeCreate returned 0 — dataDir=$dataDir")
+                return null
+            }
+            return DasherEngine(handle, frameConsumer)
+        }
+    }
+}

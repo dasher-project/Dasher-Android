@@ -1,0 +1,27 @@
+# Built artifacts
+/build/
+/app/build/
+/.gradle/
+/local.properties
+/captures/
+.cxx/
+*.iml
+
+# IDE
+.idea/
+*.swp
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Native build
+/app/.cxx/
+/app/src/main/cpp/.cxx/
+
+# Submodule build dirs
+third_party/DasherCore/build/
+
+# Gradle wrapper jar is committed; keep it.
+!gradle/wrapper/gradle-wrapper.jar

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Base theme used by the AndroidManifest; the actual UI colours come from
+      DasherAndroidTheme (Compose Material3) applied in MainActivity. This XML
+      theme only needs to be a compatible Material3 parent so that the launch
+      window matches.
+    -->
+    <style name="Theme.DasherAndroid" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
