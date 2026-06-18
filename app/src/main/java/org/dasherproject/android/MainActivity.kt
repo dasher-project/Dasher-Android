@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -36,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -51,18 +52,28 @@ class MainActivity : ComponentActivity() {
 
     private var engine: DasherEngine? = null
     private var canvasView: DasherCanvasView? = null
+    private var tiltProvider: TiltInputProvider? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
 
-    // Observable UI state. Updated on the main thread by the engine's frame loop
-    // (output) and once after engine creation (alphabets/palettes/speed).
+    // Observable UI state.
     private var outputText by mutableStateOf("")
     private var alphabets by mutableStateOf<List<String>>(emptyList())
     private var currentAlphabet by mutableStateOf("")
     private var palettes by mutableStateOf<List<String>>(emptyList())
     private var currentPalette by mutableStateOf("")
     private var speedPercent by mutableStateOf(100)
+    private var inputMode by mutableStateOf(InputMode.TOUCH)
+    private var tiltAvailable by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Tilt provider forwards normalised coords to the engine on the main thread
+        // (the C API context is single-threaded; sensor callbacks arrive elsewhere).
+        tiltProvider = TiltInputProvider(this) { nx, ny ->
+            mainHandler.post { engine?.onTiltNormalized(nx, ny) }
+        }
+        tiltAvailable = tiltProvider?.hasSensor() == true
 
         lifecycleScope.launch {
             val dataDir = withContext(Dispatchers.IO) {
@@ -77,7 +88,6 @@ class MainActivity : ComponentActivity() {
             }
             eng.onTextUpdate = { text -> outputText = text }
             engine = eng
-            // Seed status-bar state from the engine.
             alphabets = eng.getAlphabetNames()
             currentAlphabet = eng.getCurrentAlphabet()
             palettes = eng.getPaletteNames()
@@ -99,27 +109,46 @@ class MainActivity : ComponentActivity() {
                         palettes = palettes,
                         currentPalette = currentPalette,
                         speedPercent = speedPercent,
+                        inputMode = inputMode,
+                        tiltAvailable = tiltAvailable,
                         onClear = { engine?.resetOutputText(); outputText = "" },
                         onCopyAll = { copyToClipboard(outputText) },
                         onAlphabetSelected = { name ->
-                            engine?.setAlphabet(name)
-                            currentAlphabet = name
-                            engine?.saveSettings()
+                            engine?.setAlphabet(name); currentAlphabet = name; engine?.saveSettings()
                         },
                         onPaletteSelected = { name ->
-                            engine?.setPalette(name)
-                            currentPalette = name
-                            engine?.saveSettings()
+                            engine?.setPalette(name); currentPalette = name; engine?.saveSettings()
                         },
                         onSpeedChanged = { pct ->
-                            speedPercent = pct
-                            engine?.setSpeedPercent(pct)
-                            engine?.saveSettings()
+                            speedPercent = pct; engine?.setSpeedPercent(pct); engine?.saveSettings()
+                        },
+                        onToggleMode = { toggleInputMode() },
+                        onCalibrate = {
+                            tiltProvider?.calibrate()
+                            // After recalibration the user wants to resume zooming.
+                            engine?.clearTiltInput()
+                            engine?.setInputMode(InputMode.TILT)
                         }
                     )
                 }
             }
         }
+    }
+
+    private fun toggleInputMode() {
+        val newMode = if (inputMode == InputMode.TOUCH) InputMode.TILT else InputMode.TOUCH
+        when (newMode) {
+            InputMode.TILT -> {
+                engine?.setInputMode(InputMode.TILT)
+                tiltProvider?.register()
+            }
+            InputMode.TOUCH -> {
+                tiltProvider?.unregister()
+                engine?.clearTiltInput()
+                engine?.setInputMode(InputMode.TOUCH)
+            }
+        }
+        inputMode = newMode
     }
 
     private fun copyToClipboard(text: String) {
@@ -137,17 +166,18 @@ class MainActivity : ComponentActivity() {
         palettes: List<String>,
         currentPalette: String,
         speedPercent: Int,
+        inputMode: InputMode,
+        tiltAvailable: Boolean,
         onClear: () -> Unit,
         onCopyAll: () -> Unit,
         onAlphabetSelected: (String) -> Unit,
         onPaletteSelected: (String) -> Unit,
-        onSpeedChanged: (Int) -> Unit
+        onSpeedChanged: (Int) -> Unit,
+        onToggleMode: () -> Unit,
+        onCalibrate: () -> Unit
     ) {
         Scaffold { padding ->
-            Column(
-                modifier = Modifier.fillMaxSize().padding(padding)
-            ) {
-                // Output panel + actions.
+            Column(modifier = Modifier.fillMaxSize().padding(padding)) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -166,7 +196,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                // Dasher canvas.
                 AndroidView(
                     factory = { ctx ->
                         DasherCanvasView(ctx).also { view ->
@@ -178,7 +207,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 )
 
-                // Bottom status bar (DESIGN.md §Status Bar): alphabet, palette, speed.
                 StatusBar(
                     alphabets = alphabets,
                     currentAlphabet = currentAlphabet,
@@ -187,7 +215,11 @@ class MainActivity : ComponentActivity() {
                     currentPalette = currentPalette,
                     onPaletteSelected = onPaletteSelected,
                     speedPercent = speedPercent,
-                    onSpeedChanged = onSpeedChanged
+                    onSpeedChanged = onSpeedChanged,
+                    inputMode = inputMode,
+                    tiltAvailable = tiltAvailable,
+                    onToggleMode = onToggleMode,
+                    onCalibrate = onCalibrate
                 )
             }
         }
@@ -202,25 +234,25 @@ class MainActivity : ComponentActivity() {
         currentPalette: String,
         onPaletteSelected: (String) -> Unit,
         speedPercent: Int,
-        onSpeedChanged: (Int) -> Unit
+        onSpeedChanged: (Int) -> Unit,
+        inputMode: InputMode,
+        tiltAvailable: Boolean,
+        onToggleMode: () -> Unit,
+        onCalibrate: () -> Unit
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 DropdownPicker(
-                    label = "Alphabet",
                     options = alphabets,
                     selected = currentAlphabet.ifEmpty { "—" },
                     onSelect = onAlphabetSelected,
                     modifier = Modifier.weight(1f)
                 )
                 DropdownPicker(
-                    label = "Palette",
                     options = palettes,
                     selected = currentPalette.ifEmpty { "—" },
                     onSelect = onPaletteSelected,
@@ -232,6 +264,14 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                if (tiltAvailable) {
+                    OutlinedButton(onClick = onToggleMode) {
+                        Text(if (inputMode == InputMode.TILT) "Tilt" else "Touch")
+                    }
+                    if (inputMode == InputMode.TILT) {
+                        OutlinedButton(onClick = onCalibrate) { Text("Calibrate") }
+                    }
+                }
                 Text("Speed", style = MaterialTheme.typography.labelLarge)
                 Slider(
                     value = speedPercent.toFloat(),
@@ -244,13 +284,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /**
-     * Minimal dropdown picker. Uses a LazyColumn inside DropdownMenu so large lists
-     * (e.g. the 622-alphabet set) scroll without materialising every row at once.
-     */
+    /** LazyColumn-backed dropdown so large lists (622 alphabets) scroll cheaply. */
     @Composable
     private fun DropdownPicker(
-        label: String,
         options: List<String>,
         selected: String,
         onSelect: (String) -> Unit,
@@ -258,15 +294,8 @@ class MainActivity : ComponentActivity() {
     ) {
         var expanded by remember { mutableStateOf(false) }
         Box(modifier) {
-            OutlinedButton(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = selected,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+            OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
+                Text(selected, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 LazyColumn(modifier = Modifier.heightIn(max = 360.dp)) {
@@ -284,14 +313,19 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         engine?.start()
+        if (inputMode == InputMode.TILT) tiltProvider?.register()
     }
 
     override fun onPause() {
         super.onPause()
+        tiltProvider?.unregister()
+        engine?.clearTiltInput()
         engine?.stop()
     }
 
     override fun onDestroy() {
+        tiltProvider?.unregister()
+        tiltProvider = null
         engine?.destroy()
         engine = null
         canvasView = null

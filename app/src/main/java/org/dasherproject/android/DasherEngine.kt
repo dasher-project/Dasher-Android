@@ -3,6 +3,9 @@ package org.dasherproject.android
 import android.util.Log
 import android.view.Choreographer
 
+/** Physical input mechanism driving the Dasher cursor. */
+enum class InputMode { TOUCH, TILT }
+
 /**
  * Drives a single DasherCore session frame-by-frame via Android's [Choreographer].
  *
@@ -27,8 +30,12 @@ class DasherEngine(
     private var running = false
     private var destroyed = false
     private var hasSurface = false
+    private var surfaceWidth = 0
+    private var surfaceHeight = 0
     private var isPaused = true
     private var isTouching = false
+    private var inputMode = InputMode.TOUCH
+    private var tiltActive = false
 
     /** Invoked on the main thread whenever the accumulated output text changes. */
     var onTextUpdate: ((String) -> Unit)? = null
@@ -62,7 +69,51 @@ class DasherEngine(
     fun onSurfaceSizeChanged(width: Int, height: Int) {
         if (destroyed || nativeHandle == 0L || width <= 0 || height <= 0) return
         hasSurface = true
+        surfaceWidth = width
+        surfaceHeight = height
         NativeBridge.nativeSetScreenSize(nativeHandle, width, height)
+    }
+
+    /** Active input mode (touch or tilt). */
+    fun getInputMode(): InputMode = inputMode
+
+    /**
+     * Switches input mode. When leaving tilt the active tilt pointer is released.
+     * The caller is responsible for registering/unregistering the tilt sensor.
+     */
+    fun setInputMode(mode: InputMode) {
+        if (inputMode == mode) return
+        if (inputMode == InputMode.TILT && tiltActive) {
+            NativeBridge.nativeMouseUp(nativeHandle)
+            tiltActive = false
+        }
+        inputMode = mode
+    }
+
+    /**
+     * Delivers a normalised tilt position `(0..1, 0..1)` where `(0.5, 0.5)` is neutral.
+     * Drives a continuously-pressed pointer in TILT mode. No-op in TOUCH mode, before
+     * the surface is sized, or when destroyed.
+     */
+    fun onTiltNormalized(normalizedX: Float, normalizedY: Float) {
+        if (destroyed || nativeHandle == 0L) return
+        if (inputMode != InputMode.TILT || !hasSurface) return
+        val x = normalizedX.coerceIn(0f, 1f) * surfaceWidth
+        val y = normalizedY.coerceIn(0f, 1f) * surfaceHeight
+        NativeBridge.nativeMouseMove(nativeHandle, x, y)
+        if (!tiltActive) {
+            NativeBridge.nativeMouseDown(nativeHandle)
+            tiltActive = true
+            isPaused = false
+        }
+    }
+
+    /** Releases an active tilt pointer (call when unregistering the sensor). */
+    fun clearTiltInput() {
+        if (destroyed || nativeHandle == 0L || !tiltActive) return
+        NativeBridge.nativeMouseUp(nativeHandle)
+        tiltActive = false
+        isPaused = true
     }
 
     /**
@@ -78,6 +129,7 @@ class DasherEngine(
      */
     fun onTouch(action: Int, x: Float, y: Float) {
         if (destroyed || nativeHandle == 0L) return
+        if (inputMode != InputMode.TOUCH) return
         when (action) {
             0 -> { // DOWN
                 isPaused = false
