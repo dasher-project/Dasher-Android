@@ -120,6 +120,48 @@ class DasherEngine(
         NativeBridge.nativeResetOutputText(nativeHandle)
     }
 
+    // ── Status-bar surface (Phase 1) ──────────────────────────────────────────
+
+    fun getSpeedPercent(): Int {
+        if (destroyed || nativeHandle == 0L) return 100
+        return NativeBridge.nativeGetSpeedPercent(nativeHandle)
+    }
+
+    /** Display name of the currently active alphabet. */
+    fun getCurrentAlphabet(): String {
+        if (destroyed || nativeHandle == 0L) return ""
+        return NativeBridge.nativeGetAlphabetId(nativeHandle)
+    }
+
+    /** All available alphabet display names (for the alphabet picker). */
+    fun getAlphabetNames(): List<String> {
+        if (destroyed || nativeHandle == 0L) return emptyList()
+        val count = NativeBridge.nativeGetAlphabetCount(nativeHandle)
+        return (0 until count).map { NativeBridge.nativeGetAlphabetName(nativeHandle, it) }
+    }
+
+    fun getCurrentPalette(): String {
+        if (destroyed || nativeHandle == 0L) return ""
+        return NativeBridge.nativeGetCurrentPalette(nativeHandle)
+    }
+
+    fun getPaletteNames(): List<String> {
+        if (destroyed || nativeHandle == 0L) return emptyList()
+        val count = NativeBridge.nativeGetPaletteCount(nativeHandle)
+        return (0 until count).map { NativeBridge.nativeGetPaletteName(nativeHandle, it) }
+    }
+
+    fun setPalette(name: String) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetPalette(nativeHandle, name)
+    }
+
+    /** Flush settings to dasher_settings.xml in the user dir. */
+    fun saveSettings() {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSaveSettings(nativeHandle)
+    }
+
     /** [Choreographer.FrameCallback] — one render step per vsync. */
     override fun doFrame(frameTimeNanos: Long) {
         if (!running) return
