@@ -388,7 +388,7 @@ class MainActivity : ComponentActivity() {
         onOpenSettings: () -> Unit
     ) {
         // DESIGN.md §Top Toolbar: New, Play/Pause, Copy, Save, Game, Prefs — Lucide icons (RFC 0002).
-        Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 2.dp) {
+        Surface(color = MaterialTheme.colorScheme.surface) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -520,7 +520,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** LazyColumn-backed dropdown so large lists (622 alphabets) scroll cheaply. */
+    /** Scrollable dropdown so large lists (622 alphabets) work without LazyColumn
+     *  (LazyColumn inside DropdownMenu crashes on some Compose versions). */
     @Composable
     private fun DropdownPicker(
         options: List<String>,
@@ -539,8 +540,8 @@ class MainActivity : ComponentActivity() {
                 Text(selected, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                LazyColumn(modifier = Modifier.heightIn(max = 360.dp)) {
-                    items(options) { opt ->
+                Column(modifier = Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
+                    options.forEach { opt ->
                         DropdownMenuItem(
                             text = { Text(opt, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             onClick = { onSelect(opt); expanded = false }
