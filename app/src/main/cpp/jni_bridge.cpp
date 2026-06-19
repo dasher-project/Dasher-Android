@@ -211,6 +211,15 @@ Java_at_dasher_android_NativeBridge_nativeDestroy(JNIEnv*, jclass, jlong handle)
     delete s;
 }
 
+// Low-memory mode for memory-constrained hosts (e.g. an IME process). The C API
+// requires this be called before dasher_set_screen_size().
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetLowMemoryMode(JNIEnv*, jclass,
+                                                            jlong handle, jint enabled) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_low_memory_mode(s->ctx, enabled);
+}
+
 JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSetScreenSize(JNIEnv*, jclass,
                                                                  jlong handle,

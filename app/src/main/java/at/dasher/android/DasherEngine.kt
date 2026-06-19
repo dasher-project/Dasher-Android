@@ -74,6 +74,15 @@ class DasherEngine(
         NativeBridge.nativeSetScreenSize(nativeHandle, width, height)
     }
 
+    /**
+     * Enables low-memory mode (IME). MUST be called before the first
+     * [onSurfaceSizeChanged] / engine realization.
+     */
+    fun setLowMemoryMode(enabled: Boolean) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetLowMemoryMode(nativeHandle, if (enabled) 1 else 0)
+    }
+
     /** Active input mode (touch or tilt). */
     fun getInputMode(): InputMode = inputMode
 

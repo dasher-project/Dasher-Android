@@ -43,6 +43,12 @@ object NativeBridge {
     /** Releases all native resources for [handle]. The handle is invalid afterwards. */
     @JvmStatic external fun nativeDestroy(handle: Long)
 
+    /**
+     * Enables low-memory mode (loads only the selected alphabet + default input filter).
+     * Must be called before [nativeSetScreenSize]. Used by the IME process.
+     */
+    @JvmStatic external fun nativeSetLowMemoryMode(handle: Long, enabled: Int)
+
     /** Notifies the engine of canvas dimensions. Call on init and on resize. */
     @JvmStatic external fun nativeSetScreenSize(handle: Long, width: Int, height: Int)
 
