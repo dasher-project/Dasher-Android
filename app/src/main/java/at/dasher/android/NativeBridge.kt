@@ -135,6 +135,27 @@ object NativeBridge {
     /** Flush current settings to dasher_settings.xml in the user dir. */
     @JvmStatic external fun nativeSaveSettings(handle: Long)
 
+    // ── Parameter schema introspection (manifest-driven settings UI) ──
+    /** Number of parameters in the engine schema (not context-bound). */
+    @JvmStatic external fun nativeGetParameterCount(): Int
+    /** Fetch parameter [index] (0..count-1), or null if out of range. */
+    @JvmStatic external fun nativeGetParameterInfo(index: Int): ParameterInfo?
+
+    /** Number of enum entries for a long parameter [key] (0 if not enum). */
+    @JvmStatic external fun nativeGetParameterEnumCount(key: Int): Int
+    @JvmStatic external fun nativeGetParameterEnumName(key: Int, index: Int): String
+    @JvmStatic external fun nativeGetParameterEnumValue(key: Int, index: Int): Int
+
+    /** Permitted string values for a string parameter (alphabet/palette/filter lists). */
+    @JvmStatic external fun nativeGetParameterStringValues(handle: Long, key: Int): Array<String>
+
+    // ── Locale (RFC 0003) ──
+    @JvmStatic external fun nativeSetLocale(handle: Long, locale: String): Int
+    @JvmStatic external fun nativeGetLocale(handle: Long): String
+
+    // ── Parameter-change callback (two-way sync: settings <-> toolbar) ──
+    @JvmStatic external fun nativeSetParameterCallback(handle: Long)
+
     // ── Engine callbacks (DasherCore/docs/CUSTOM_ACTIONS.md) ──
     // The C wrappers in jni_bridge.cpp marshal these onto NativeBridge.onX(...).
 
@@ -152,6 +173,7 @@ object NativeBridge {
     @JvmStatic var onSpeakListener: ((text: String, interrupt: Boolean) -> Unit)? = null
     @JvmStatic var onMessageListener: ((type: Int, text: String) -> Unit)? = null
     @JvmStatic var onOutputListener: ((type: Int, text: String) -> Unit)? = null
+    @JvmStatic var onParameterChangedListener: ((key: Int) -> Unit)? = null
 
     @JvmStatic fun onClipboard(text: String) { onClipboardListener?.invoke(text) }
     @JvmStatic fun onSpeak(text: String, interrupt: Int) {
@@ -159,4 +181,5 @@ object NativeBridge {
     }
     @JvmStatic fun onMessage(type: Int, text: String) { onMessageListener?.invoke(type, text) }
     @JvmStatic fun onOutput(type: Int, text: String) { onOutputListener?.invoke(type, text) }
+    @JvmStatic fun onParameterChanged(key: Int) { onParameterChangedListener?.invoke(key) }
 }

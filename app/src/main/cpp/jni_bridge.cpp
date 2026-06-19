@@ -96,6 +96,7 @@ static jmethodID g_onClipboard = nullptr;
 static jmethodID g_onSpeak = nullptr;
 static jmethodID g_onMessage = nullptr;
 static jmethodID g_onOutput = nullptr;
+static jmethodID g_onParameterChanged = nullptr;
 
 // Returns an env for the current thread, attaching it if necessary.
 // [attached] is set true when the caller must DetachCurrentThread afterwards.
@@ -170,8 +171,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     g_onSpeak = env->GetStaticMethodID(g_nbClass, "onSpeak", "(Ljava/lang/String;I)V");
     g_onMessage = env->GetStaticMethodID(g_nbClass, "onMessage", "(ILjava/lang/String;)V");
     g_onOutput = env->GetStaticMethodID(g_nbClass, "onOutput", "(ILjava/lang/String;)V");
-    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p)",
-         (void*)g_onClipboard, (void*)g_onSpeak, (void*)g_onMessage, (void*)g_onOutput);
+    g_onParameterChanged = env->GetStaticMethodID(g_nbClass, "onParameterChanged", "(I)V");
+    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p param=%p)",
+         (void*)g_onClipboard, (void*)g_onSpeak, (void*)g_onMessage, (void*)g_onOutput,
+         (void*)g_onParameterChanged);
     return JNI_VERSION_1_6;
 }
 
@@ -474,6 +477,107 @@ JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSaveSettings(JNIEnv*, jclass, jlong handle) {
     auto* s = fromHandle(handle);
     if (s && s->ctx) dasher_save_settings(s->ctx);
+}
+
+// ── Parameter schema introspection (manifest-driven settings UI) ────────────
+// dasher_get_parameter_count / _info / enum accessors are NOT context-bound.
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetParameterCount(JNIEnv*, jclass) {
+    return dasher_get_parameter_count();
+}
+
+JNIEXPORT jobject JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetParameterInfo(JNIEnv* env, jclass, jint index) {
+    dasher_parameter_info info;
+    if (dasher_get_parameter_info(index, &info) != 0) return nullptr;
+    static jclass cls = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("at/dasher/android/ParameterInfo")));
+    static jmethodID ctor = env->GetMethodID(cls, "<init>",
+        "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIJJJI)V");
+    jstring jname = env->NewStringUTF(info.name ? info.name : "");
+    jstring jdesc = env->NewStringUTF(info.desc ? info.desc : "");
+    jstring jgroup = env->NewStringUTF(info.group ? info.group : "");
+    jstring jsub = env->NewStringUTF(info.subgroup ? info.subgroup : "");
+    jobject obj = env->NewObject(cls, ctor,
+        static_cast<jint>(info.key), jname, jdesc, jgroup, jsub,
+        static_cast<jint>(info.type), static_cast<jint>(info.ui_type),
+        static_cast<jlong>(info.min_val), static_cast<jlong>(info.max_val),
+        static_cast<jlong>(info.step), static_cast<jint>(info.advanced));
+    env->DeleteLocalRef(jname);
+    env->DeleteLocalRef(jdesc);
+    env->DeleteLocalRef(jgroup);
+    env->DeleteLocalRef(jsub);
+    return obj;
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetParameterEnumCount(JNIEnv*, jclass, jint key) {
+    return dasher_get_parameter_enum_count(key);
+}
+
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetParameterEnumName(JNIEnv* env, jclass, jint key, jint index) {
+    return env->NewStringUTF(dasher_get_parameter_enum_name(key, index));
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetParameterEnumValue(JNIEnv*, jclass, jint key, jint index) {
+    return dasher_get_parameter_enum_value(key, index);
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetParameterStringValues(JNIEnv* env, jclass, jlong handle, jint key) {
+    auto* s = fromHandle(handle);
+    jclass strClass = env->FindClass("java/lang/String");
+    if (!s || !s->ctx) return env->NewObjectArray(0, strClass, nullptr);
+    constexpr int kMax = 1024;
+    const char* buf[kMax] = {};
+    int count = dasher_get_parameter_string_values(s->ctx, key, buf, kMax);
+    if (count < 0) count = 0;
+    if (count > kMax) count = kMax;
+    auto arr = env->NewObjectArray(static_cast<jsize>(count), strClass, nullptr);
+    for (int i = 0; i < count; ++i) {
+        jstring js = env->NewStringUTF(buf[i] ? buf[i] : "");
+        env->SetObjectArrayElement(arr, i, js);
+        env->DeleteLocalRef(js);
+    }
+    return arr;
+}
+
+// ── Locale (RFC 0003) ───────────────────────────────────────────────────────
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetLocale(JNIEnv* env, jclass, jlong handle, jstring jLocale) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jLocale) return -1;
+    const char* loc = env->GetStringUTFChars(jLocale, nullptr);
+    int rc = dasher_set_locale(s->ctx, loc);
+    env->ReleaseStringUTFChars(jLocale, loc);
+    return rc;
+}
+
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetLocale(JNIEnv* env, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("en");
+    return env->NewStringUTF(dasher_get_locale(s->ctx));
+}
+
+// ── Parameter-change callback (two-way sync: settings <-> toolbar) ──────────
+
+static void parameterCallback(int key, void*) {
+    if (!g_nbClass || !g_onParameterChanged) return;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return;
+    env->CallStaticVoidMethod(g_nbClass, g_onParameterChanged, static_cast<jint>(key));
+    if (attached) g_jvm->DetachCurrentThread();
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetParameterCallback(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_parameter_callback(s->ctx, parameterCallback, nullptr);
 }
 
 // ── Engine callbacks (see DasherCore/docs/CUSTOM_ACTIONS.md) ────────────────
