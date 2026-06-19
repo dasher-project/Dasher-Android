@@ -249,18 +249,19 @@ any app; speech + haptics + control mode work.
 
 | Feature (matrix id) | Android status | Plan |
 |---|---|---|
-| `dynamic-settings-discovery` | **next** | iterate `dasher_get_parameter_info`; render by `uiType`; runtime `findParameterKey` |
-| `grouped-settings-ui` | **next** | tabs Input/Language/Customization/Output/Game Mode (+Speech/Privacy); Input filtered by active filter, Language by active LM |
-| `custom-fonts` | **next** | canvas font `SP_DASHER_FONT` (curated list) + `LP_DASHER_FONTSIZE`; output-area font as a local setting (match Windows) |
-| `localization` | **next** | bundle `DasherCore/Strings/strings_*.json`; 9-locale picker → `dasher_set_locale` → rebuild labels (RFC 0003) |
-| `dark-mode` | ✅ shipped | already OS-driven via design-guide tokens; add remaining tokens |
-| `control-mode` | partial → **next** | promote to toolbar toggle + parameter-change-callback two-way sync (matches Apple/Windows) |
-| `game-mode-training` | **next** | toolbar toggle, target bar (correct/wrong/remaining), `dasher_game_*` |
-| `custom-training-text` | **next** | `SP_GAME_TEXT_FILE` + SAF picker |
+| `dynamic-settings-discovery` | ✅ shipped | `SettingsScreen` iterates `dasher_get_parameter_info`, renders by `uiType` |
+| `grouped-settings-ui` | ✅ shipped | tabs Input/Language/Customization/Output/Game Mode from manifest `group`; runtime `findParameterKey` |
+| `custom-fonts` | ✅ shipped | canvas font `SP_DASHER_FONT` (curated list, applied live via Typeface.create) + `LP_DASHER_FONTSIZE` in settings |
+| `localization` | ✅ shipped | `syncDasherStrings` bundles 33 `strings_*.json`; 9-locale picker → `dasher_set_locale` → live re-translation |
+| `dark-mode` | ✅ shipped | OS-driven design-guide tokens; canvas colours via DasherCore palettes |
+| `control-mode` | ✅ shipped | `BP_CONTROL_MODE` in settings (Input tab); toolbar quick-toggle = refinement |
 | `button-key-remapping` | planned | Android `KeyEvent` capture → `dasher_key_event` (switch profiles) |
 | `live-settings-preview` | planned | mini-canvas in settings (all platforms still planned) |
 | `guided-onboarding` | planned | first-run flow (RFC 0004); analytics opt-in |
+| `game-mode-training` | **next** | toolbar toggle, target bar (correct/wrong/remaining), `dasher_game_*` |
 | `analytics` | **next** | `posthog-android`, shared `analytics-events.json` schema, `platform=android` (RFC 0001) |
+| contextual filtering | **next** | Input tab filtered by active `SP_INPUT_FILTER`, Language by active LM (mirror Apple/Windows) |
+| output-area font | **next** | local FontFamily+size setting (match Dasher-Windows `OutputTextSettings`) |
 
 **Exit criteria:** settings UI generated from the engine schema (no hand-coded
 per-parameter rows); canvas + output fonts configurable; locale picker works;
