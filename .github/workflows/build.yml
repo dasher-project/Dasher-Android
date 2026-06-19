@@ -1,0 +1,47 @@
+name: Build
+
+# Builds the debug APK on every push/PR to catch Kotlin/JNI/CMake/manifest
+# breakage — the equivalent of Dasher-Windows' build workflow. Emulator
+# instrumented tests are intentionally not run here (heavy/flaky in CI); JVM
+# unit tests run via :test as they are added.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with submodules: DasherCore + pugixml)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK + CMake (versions pinned in app/build.gradle.kts)
+        run: sdkmanager "ndk;27.0.12077973" "cmake;3.22.1"
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
+
+      - name: Run unit tests
+        run: ./gradlew :app:testDebugUnitTest --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dasher-android-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

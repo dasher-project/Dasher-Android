@@ -1,0 +1,6 @@
+# Default owner - all paths not matched below
+* @willwade
+
+# DasherCore submodule - do not edit in this repo; open the PR upstream at
+# dasher-project/DasherCore instead.
+/third_party/DasherCore/ @willwade
