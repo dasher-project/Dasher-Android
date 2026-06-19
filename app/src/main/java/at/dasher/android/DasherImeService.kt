@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.inputmethodservice.InputMethodService
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -68,7 +70,10 @@ class DasherImeService : InputMethodService() {
         root.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, imeHeight)
         root.minimumHeight = imeHeight
 
-        createEngine()
+        // Defer engine creation to the next main-loop tick so onCreateInputView
+        // returns immediately (the DasherCore nativeCreate takes ~100-500ms and
+        // blocking here causes the system to cancel the IME show with a timeout).
+        Handler(Looper.getMainLooper()).post { createEngine() }
         return root
     }
 
@@ -103,10 +108,10 @@ class DasherImeService : InputMethodService() {
         }
         NativeBridge.onSpeakListener = null
         engine = eng
-        canvasView?.let { v ->
-            if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
-        }
-        eng.start()
+        // DON'T call onSurfaceSizeChanged here — the heavy DasherCore Realize (~1-2s)
+        // would block onCreateInputView and cause the IME show to time out. Instead,
+        // let the canvas View's natural onSizeChanged callback fire after layout.
+        eng.start() // hasSurface=false until onSizeChanged fires, so this is a no-op
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
