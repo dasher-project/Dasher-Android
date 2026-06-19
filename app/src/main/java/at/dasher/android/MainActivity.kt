@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -331,7 +332,6 @@ class MainActivity : ComponentActivity() {
     ) {
         Scaffold { padding ->
             Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-                // DESIGN.md §Top Toolbar (64px): New, Play/Pause, Copy, Save, Game, Prefs.
                 TopBar(isPlaying = isPlaying, onClear = onClear, onTogglePlay = onTogglePlay,
                     onCopyAll = onCopyAll, onSave = onSave,
                     gameMode = gameMode, onToggleGame = onToggleGame,
