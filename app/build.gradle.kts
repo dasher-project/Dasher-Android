@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Copy
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -59,9 +61,12 @@ android {
     sourceSets {
         getByName("main") {
             // Bundle DasherCore's alphabets / colours / training / settings as app assets.
-            // asset_copier.cpp unpacks these to filesDir on first run so dasher_create()
+            // DataInstaller.kt unpacks these to filesDir on first run so dasher_create()
             // receives real filesystem paths.
             assets.srcDir("../third_party/DasherCore/Data")
+            // Generated locale strings (see syncDasherStrings below) - bundled under
+            // a Strings/ asset dir so dasher_set_locale finds data_dir/Strings/strings_*.json.
+            assets.srcDir(layout.buildDirectory.dir("generated/dasher-assets"))
         }
     }
 
@@ -72,6 +77,16 @@ android {
         }
     }
 }
+
+// Mirror DasherCore's locale files (strings_*.json) into a Strings/ asset dir,
+// auto-synced from the submodule (no duplicated files to maintain).
+val syncDasherStrings by tasks.registering(Copy::class) {
+    from(layout.projectDirectory.dir("../third_party/DasherCore/Strings"))
+    include("strings_*.json")
+    into(layout.buildDirectory.dir("generated/dasher-assets/Strings"))
+}
+tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }
+    .configureEach { dependsOn(syncDasherStrings) }
 
 dependencies {
     implementation(libs.androidx.core.ktx)

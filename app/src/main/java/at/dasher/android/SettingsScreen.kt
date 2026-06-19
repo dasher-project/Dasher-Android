@@ -49,10 +49,12 @@ import com.composables.icons.lucide.X
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
-    val params by remember { mutableStateOf(engine.allParameters()) }
+    var params by remember { mutableStateOf(engine.allParameters()) }
     // Bumped on every change so rows re-read fresh values from the engine.
     var version by remember { mutableIntStateOf(0) }
     val bump: () -> Unit = { version++ }
+    // Re-fetch the schema (labels re-translate after a locale change).
+    val reload: () -> Unit = { params = engine.allParameters(); version++ }
 
     val tabs = remember(params) {
         val order = listOf("Input", "Language", "Customization", "Output", "Game Mode")
@@ -93,8 +95,51 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                 params.filter { (it.group.ifEmpty { "Input" }) == tabGroup }
             }
             LazyColumn(modifier = Modifier.fillMaxSize()) {
+                if (tabGroup == "Language") {
+                    item { LocaleRow(engine, reload) }
+                }
                 items(rows, key = { it.key }) { p ->
                     ParameterRow(engine, p, version, bump)
+                }
+            }
+        }
+    }
+}
+
+// Locale list matching DasherApple / Dasher-Windows (RFC 0003). Translations live
+// in DasherCore/Strings/strings_*.json, bundled via the syncDasherStrings Gradle task.
+private val DASHER_LOCALES = listOf(
+    "en" to "English", "de" to "Deutsch", "es" to "Español", "fr" to "Français",
+    "it" to "Italiano", "pt" to "Português (BR)", "pt-PT" to "Português (PT)",
+    "zh-CN" to "中文", "ar" to "العربية"
+)
+
+@Composable
+private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    var current by remember { mutableStateOf(engine.locale()) }
+    val label = DASHER_LOCALES.firstOrNull { it.first == current }?.second ?: current
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text("App language", style = MaterialTheme.typography.bodyLarge)
+            Text("Translates parameter names in this settings screen.",
+                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Box {
+            OutlinedButton(onClick = { expanded = true }) { Text(label) }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                DASHER_LOCALES.forEach { (code, name) ->
+                    DropdownMenuItem(
+                        text = { Text(name) },
+                        onClick = {
+                            if (engine.setLocale(code)) { current = code; reload() }
+                            expanded = false
+                        }
+                    )
                 }
             }
         }
