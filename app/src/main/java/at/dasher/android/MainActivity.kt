@@ -105,6 +105,11 @@ class MainActivity : ComponentActivity() {
     private var dasherFontKey = -1
     private var speedKey = -1
     private var alphabetKey = -1
+    private var autoSpeedKey = -1
+    private var learningKey = -1
+    // Bottom-bar toggle states
+    private var autoSpeed by mutableStateOf(false)
+    private var learning by mutableStateOf(false)
 
     // SAF launcher: writes the output text to a user-chosen file (DESIGN.md §Toolbar "Save").
     private val saveLauncher =
@@ -146,14 +151,20 @@ class MainActivity : ComponentActivity() {
             dasherFontKey = NativeBridge.nativeFindParameterKey("SP_DASHER_FONT")
             speedKey = NativeBridge.nativeFindParameterKey("LP_MAX_BITRATE")
             alphabetKey = NativeBridge.nativeFindParameterKey("SP_ALPHABET_ID")
+            autoSpeedKey = NativeBridge.nativeFindParameterKey("BP_AUTO_SPEEDCONTROL")
+            learningKey = NativeBridge.nativeFindParameterKey("BP_LM_ADAPTIVE")
+            // Realize the engine (via setScreenSize) BEFORE querying its state,
+            // so alphabet/palette/speed return proper values.
+            canvasView?.let { v ->
+                if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
+            }
             alphabets = eng.getAlphabetNames()
             currentAlphabet = eng.getCurrentAlphabet()
             palettes = eng.getPaletteNames()
             currentPalette = eng.getCurrentPalette()
             speedPercent = eng.getSpeedPercent()
-            canvasView?.let { v ->
-                if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
-            }
+            autoSpeed = if (autoSpeedKey >= 0) eng.boolValue(autoSpeedKey) else false
+            learning = if (learningKey >= 0) eng.boolValue(learningKey) else false
             eng.start()
             // Engine→frontend callbacks (clipboard copy, speak, messages).
             eng.installEngineCallbacks()
@@ -169,11 +180,8 @@ class MainActivity : ComponentActivity() {
                         output = outputText,
                         alphabets = alphabets,
                         currentAlphabet = currentAlphabet,
-                        palettes = palettes,
-                        currentPalette = currentPalette,
                         speedPercent = speedPercent,
-                        inputMode = inputMode,
-                        tiltAvailable = tiltAvailable,
+                        autoSpeed = autoSpeed,
                         isPlaying = isPlaying,
                         onClear = { engine?.resetOutputText(); outputText = "" },
                         onCopyAll = { copyToClipboard(outputText) },
@@ -186,18 +194,12 @@ class MainActivity : ComponentActivity() {
                             engine?.setAlphabet(name); currentAlphabet = name; engine?.saveSettings()
                             AnalyticsService.capture("alphabet_selected", mapOf("alphabet_id" to name))
                         },
-                        onPaletteSelected = { name ->
-                            engine?.setPalette(name); currentPalette = name; engine?.saveSettings()
-                        },
                         onSpeedChanged = { pct ->
                             speedPercent = pct; engine?.setSpeedPercent(pct); engine?.saveSettings()
                         },
-                        onToggleMode = { toggleInputMode() },
-                        onCalibrate = {
-                            tiltProvider?.calibrate()
-                            // After recalibration the user wants to resume zooming.
-                            engine?.clearTiltInput()
-                            engine?.setInputMode(InputMode.TILT)
+                        onAutoSpeedChanged = { v ->
+                            autoSpeed = v
+                            if (autoSpeedKey >= 0) { engine?.setBoolValue(autoSpeedKey, v); engine?.saveSettings() }
                         },
                         onOpenSettings = { showSettings = true },
                         onSave = { saveOutput() },
@@ -275,11 +277,12 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
         }
         NativeBridge.onParameterChangedListener = { key ->
-            // Refresh UI-facing state when the engine (or settings) changes a param.
             engine?.let {
                 if (key == dasherFontKey) applyCanvasFont(it)
                 if (key == speedKey) speedPercent = it.getSpeedPercent()
                 if (key == alphabetKey) currentAlphabet = it.getCurrentAlphabet()
+                if (key == autoSpeedKey) autoSpeed = it.boolValue(autoSpeedKey)
+                if (key == learningKey) learning = it.boolValue(learningKey)
             }
         }
     }
@@ -310,20 +313,15 @@ class MainActivity : ComponentActivity() {
         output: String,
         alphabets: List<String>,
         currentAlphabet: String,
-        palettes: List<String>,
-        currentPalette: String,
         speedPercent: Int,
-        inputMode: InputMode,
-        tiltAvailable: Boolean,
+        autoSpeed: Boolean,
         isPlaying: Boolean,
         onClear: () -> Unit,
         onCopyAll: () -> Unit,
         onTogglePlay: () -> Unit,
         onAlphabetSelected: (String) -> Unit,
-        onPaletteSelected: (String) -> Unit,
         onSpeedChanged: (Int) -> Unit,
-        onToggleMode: () -> Unit,
-        onCalibrate: () -> Unit,
+        onAutoSpeedChanged: (Boolean) -> Unit,
         onOpenSettings: () -> Unit,
         onSave: () -> Unit,
         gameMode: Boolean,
@@ -362,15 +360,10 @@ class MainActivity : ComponentActivity() {
                     alphabets = alphabets,
                     currentAlphabet = currentAlphabet,
                     onAlphabetSelected = onAlphabetSelected,
-                    palettes = palettes,
-                    currentPalette = currentPalette,
-                    onPaletteSelected = onPaletteSelected,
                     speedPercent = speedPercent,
                     onSpeedChanged = onSpeedChanged,
-                    inputMode = inputMode,
-                    tiltAvailable = tiltAvailable,
-                    onToggleMode = onToggleMode,
-                    onCalibrate = onCalibrate
+                    autoSpeed = autoSpeed,
+                    onAutoSpeedChanged = onAutoSpeedChanged
                 )
             }
         }
@@ -456,66 +449,44 @@ class MainActivity : ComponentActivity() {
         alphabets: List<String>,
         currentAlphabet: String,
         onAlphabetSelected: (String) -> Unit,
-        palettes: List<String>,
-        currentPalette: String,
-        onPaletteSelected: (String) -> Unit,
         speedPercent: Int,
         onSpeedChanged: (Int) -> Unit,
-        inputMode: InputMode,
-        tiltAvailable: Boolean,
-        onToggleMode: () -> Unit,
-        onCalibrate: () -> Unit
+        autoSpeed: Boolean,
+        onAutoSpeedChanged: (Boolean) -> Unit
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)) {
+        // Windows-style single-row bottom bar: alphabet picker | speed stepper | auto toggle.
+        Surface(color = MaterialTheme.colorScheme.surface) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 DropdownPicker(
                     leadingIcon = Lucide.Languages,
                     options = alphabets,
-                    selected = currentAlphabet.ifEmpty { "—" },
+                    selected = currentAlphabet.ifEmpty { "English" },
                     onSelect = onAlphabetSelected,
                     modifier = Modifier.weight(1f)
                 )
-                DropdownPicker(
-                    leadingIcon = Lucide.Palette,
-                    options = palettes,
-                    selected = currentPalette.ifEmpty { "—" },
-                    onSelect = onPaletteSelected,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (tiltAvailable) {
-                    IconButton(onClick = onToggleMode) {
-                        Icon(
-                            if (inputMode == InputMode.TILT) Lucide.Smartphone else Lucide.Hand,
-                            contentDescription = "Input mode",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    if (inputMode == InputMode.TILT) {
-                        IconButton(onClick = onCalibrate) {
-                            Icon(Lucide.Crosshair, contentDescription = "Calibrate",
-                                tint = MaterialTheme.colorScheme.onSurface)
-                        }
-                    }
+                // Speed stepper (− value +) — matches Dasher-Windows.
+                Text("Speed", style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                IconButton(onClick = {
+                    onSpeedChanged((speedPercent - 10).coerceIn(20, 400))
+                }, modifier = Modifier.size(36.dp)) {
+                    Text("−", style = MaterialTheme.typography.titleMedium)
                 }
-                Icon(Lucide.Gauge, contentDescription = "Speed",
-                    tint = MaterialTheme.colorScheme.onSurface)
-                Slider(
-                    value = speedPercent.toFloat(),
-                    onValueChange = { onSpeedChanged(it.toInt()) },
-                    valueRange = 20f..400f,
-                    modifier = Modifier.weight(1f)
-                )
-                Text("$speedPercent%", style = MaterialTheme.typography.labelLarge)
+                Text("$speedPercent%", style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.width(48.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                IconButton(onClick = {
+                    onSpeedChanged((speedPercent + 10).coerceIn(20, 400))
+                }, modifier = Modifier.size(36.dp)) {
+                    Text("+", style = MaterialTheme.typography.titleMedium)
+                }
+                // Auto speed toggle.
+                Text("Auto", style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Switch(checked = autoSpeed, onCheckedChange = onAutoSpeedChanged)
             }
         }
     }
