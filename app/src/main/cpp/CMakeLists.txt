@@ -46,7 +46,7 @@ find_library(log-lib log)
 find_library(android-lib android)
 
 target_include_directories(dasher_jni PRIVATE
-    "${DASHER_CORE_DIR}/Src"
+    "${DASHER_CORE_DIR}/src"
 )
 
 # Link the C API surface (declared in dasher.h) + Android platform libs.
