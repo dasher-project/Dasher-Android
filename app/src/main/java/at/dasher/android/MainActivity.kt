@@ -193,6 +193,8 @@ class MainActivity : ComponentActivity() {
                     BoolToggle("Auto speed control", "BP_AUTO_SPEEDCONTROL")
                     BoolToggle("Adaptive learning", "BP_LM_ADAPTIVE")
                     BoolToggle("Left-handed layout", "BP_ORIENT_L_R")
+                    BoolToggle("Speak typed text on stop", "BP_SPEAK_ALL_ON_STOP")
+                    BoolToggle("Speak each word", "BP_SPEAK_WORDS")
                 }
             },
             confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } }
