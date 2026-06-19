@@ -258,8 +258,9 @@ any app; speech + haptics + control mode work.
 | `button-key-remapping` | planned | Android `KeyEvent` capture → `dasher_key_event` (switch profiles) |
 | `live-settings-preview` | planned | mini-canvas in settings (all platforms still planned) |
 | `guided-onboarding` | planned | first-run flow (RFC 0004); analytics opt-in |
-| `game-mode-training` | **next** | toolbar toggle, target bar (correct/wrong/remaining), `dasher_game_*` |
-| `analytics` | **next** | `posthog-android`, shared `analytics-events.json` schema, `platform=android` (RFC 0001) |
+| `game-mode-training` | ✅ shipped | toolbar toggle (gamepad-2), `GameTargetBar` (correct/wrong/remaining), `dasher_game_*` |
+| `analytics` | ✅ shipped | `posthog-android` 3.51.0, shared `analytics-events.json` schema, opt-in + Privacy tab (RFC 0001) |
+| `custom-training-text` | **next** | `SP_GAME_TEXT_FILE` + SAF picker in the Game Mode tab |
 | contextual filtering | **next** | Input tab filtered by active `SP_INPUT_FILTER`, Language by active LM (mirror Apple/Windows) |
 | output-area font | **next** | local FontFamily+size setting (match Dasher-Windows `OutputTextSettings`) |
 
