@@ -1,4 +1,4 @@
-package org.dasherproject.android
+package at.dasher.android
 
 /**
  * Thin Kotlin facade over the DasherCore C API (`dasher.h`).

@@ -1,4 +1,4 @@
-package org.dasherproject.android.ui.theme
+package at.dasher.android.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -46,7 +46,10 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun DasherAndroidTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    // Brand palette from dasher-design-guide/DESIGN.md, not the device's dynamic
+    // (wallpaper-derived) colours. Dynamic colour was producing an all-black scheme
+    // on emulators with a dark wallpaper, making the whole UI invisible.
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current

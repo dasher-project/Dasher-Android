@@ -1,4 +1,4 @@
-package org.dasherproject.android.ui.theme
+package at.dasher.android.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package org.dasherproject.android.ui
+package at.dasher.android.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,7 +14,7 @@ import kotlin.math.min
 
 /**
  * Renders one Dasher frame from the flat `[op, a, b, c, d, argb]` command buffer
- * produced by [org.dasherproject.android.NativeBridge.nativeFrame].
+ * produced by [at.dasher.android.NativeBridge.nativeFrame].
  *
  * Directly adapted from Dasher-Mobile's `DasherCanvasView` (the command-buffer
  * protocol is identical to DasherCore's C API `dasher_frame` output), with the

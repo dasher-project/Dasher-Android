@@ -1,4 +1,4 @@
-package org.dasherproject.android
+package at.dasher.android
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -67,8 +67,8 @@ import com.composables.icons.lucide.Smartphone
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.dasherproject.android.ui.DasherCanvasView
-import org.dasherproject.android.ui.theme.DasherAndroidTheme
+import at.dasher.android.ui.DasherCanvasView
+import at.dasher.android.ui.theme.DasherAndroidTheme
 
 class MainActivity : ComponentActivity() {
 

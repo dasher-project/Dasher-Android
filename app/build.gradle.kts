@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "org.dasherproject.android"
+    namespace = "at.dasher.android"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
-        applicationId = "org.dasherproject.android"
+        applicationId = "at.dasher.android"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

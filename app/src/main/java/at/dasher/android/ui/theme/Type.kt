@@ -1,4 +1,4 @@
-package org.dasherproject.android.ui.theme
+package at.dasher.android.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import org.dasherproject.android.R
+import at.dasher.android.R
 
 // Interface text font: Inter (OFL), per dasher-design-guide/DESIGN.md §Typography.
 // "Inter / Google Sans" — wide apertures and distinct letterforms reduce eye fatigue.

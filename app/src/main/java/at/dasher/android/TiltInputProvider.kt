@@ -1,4 +1,4 @@
-package org.dasherproject.android
+package at.dasher.android
 
 import android.content.Context
 import android.hardware.Sensor
