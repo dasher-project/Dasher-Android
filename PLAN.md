@@ -123,6 +123,69 @@ on-device smoke test.
 
 ---
 
+## Settings, theming & fonts — architecture (from the Apple/Windows review)
+
+The current "Quick settings" dialog (a handful of hand-coded toggles) is a
+**placeholder**. Both reference frontends generate settings from the engine
+schema, not by hand — Android must do the same to stay in sync with DasherCore.
+This is the core Phase-3 deliverable.
+
+### Manifest-driven settings (mirror DasherApple `DasherSettingsView` / Dasher-Windows `SettingsPanel`)
+- Iterate `dasher_get_parameter_count` / `dasher_get_parameter_info`; each entry
+  carries `key, name, desc, group, subgroup, type, uiType, min, max, step, advanced`.
+- Bucket by `group` → **tabs**: `Input, Language, Customization, Output, Game Mode`
+  (+ synthetic `Speech`, `Privacy`), with the same tab order Apple/Windows use.
+- Render each row by `uiType`: **Switch / Slider / Step / Enum(StringDropdown) /
+  TextField**, plus special-cased **font** and **colour-palette** pickers.
+- Resolve **every** parameter key at runtime via `nativeFindParameterKey("BP_*")`
+  — no hardcoded integer keys (per Apple `f057748`).
+- **Input tab** filtered by the active input filter (`SP_INPUT_FILTER` → subgroup);
+  **Language tab** filtered by the active language model.
+- Done → `dasher_save_settings`.
+
+### Hand-built specials layered above the manifest (these are NOT auto-generated)
+- **Colour palette** swatch strip (`dasher_get_palette_*` / preview colours) in Customization.
+- **Canvas (Dasher) font** picker — `SP_DASHER_FONT` with a curated Android-safe
+  preset list (`System, Sans Serif, Serif, Monospace, Roboto, …`; `"System"`→empty)
+  + `LP_DASHER_FONTSIZE` slider 8–72. Read each frame in `DasherCanvasView` and
+  map the name → `Typeface` (empty → `Typeface.DEFAULT_BOLD`).
+- **Writing-area / output font** — local setting (DataStore) `FontFamily` + size,
+  mirroring Dasher-Windows `OutputTextSettings` (Apple lacks this — Android can match Windows).
+- **App locale** picker (9 locales) → `dasher_set_locale`, then **rebuild the
+  parameter list** so labels re-fetch translated. Requires bundling
+  `DasherCore/Strings/strings_*.json` (33 files) as assets.
+- **Speech** tab (engine/voice/rate/pitch over the existing `dasher_set_speak_callback` → Android TTS).
+- **Privacy** tab (analytics opt-in + reset ID).
+
+### Dark mode — OS-driven, no manual toggle (matches Apple + Windows)
+- Already correct in principle: `DasherAndroidTheme` follows `isSystemInDarkTheme()`
+  with the design-guide light/dark token tables (`Color.kt`), `dynamicColor=false`.
+- Add the few missing tokens to match Windows' table (TextSecondary/Muted,
+  ControlBg/Hover) and ensure all chrome uses them (no hardcoded colours).
+- The **canvas** colours stay separate — they come from DasherCore **palettes**
+  (`dasher_set_palette`), never the UI theme.
+
+### Control mode — toolbar quick-toggle (matches Apple + Windows)
+- Single `BP_CONTROL_MODE` bool exposed as a **toolbar button** (icon
+  `mouse-pointer-click`), not buried in the grid. Two-way sync via the
+  parameter-change callback (`dasher_set_parameter_callback`) so flipping it in
+  settings updates the toolbar, like Windows.
+- Bundle `DasherCore/Data/control/` (`control.xml`) — already shipped via assets.
+
+### Analytics (RFC 0001) — shared schema
+- `posthog-android`, EU host, opt-in, same shared project token as Apple/Windows.
+- Auto-inject `platform="android"`, `app_variant="dasher-android"`, `app_version`,
+  `os_version` on every event. **Reuse the exact event names/props** from the
+  shared `analytics-events.json` (`app_launched`, `settings_viewed{tab_name}`,
+  `alphabet_selected`, `input_method_changed{method}`, …) for cross-frontend
+  comparability.
+
+### Lucide icons — shared name map
+- Already use `com.composables:icons-lucide-cmp`. Adopt the same `DasherIcon`
+  name constants Apple/Windows use (RFC 0002) so the three frontends stay aligned.
+
+---
+
 ## Phase 1 — Core parity baseline  *(~20 matrix rows → shipped)*
 
 Minimum lovable Dasher on Android. Roughly what Dasher-Mobile ships today,
@@ -178,21 +241,30 @@ any app; speech + haptics + control mode work.
 
 ---
 
-## Phase 3 — Customization & training parity  *(settings from the manifest)*
+## Phase 3 — Customization, settings & training parity
 
-| Feature (matrix id) | Android target | Notes |
+> Driven by the **Settings, theming & fonts architecture** section above.
+> Current state: a placeholder "Quick settings" dialog (6 toggles) — the real,
+> manifest-driven UI is the main Phase-3 build.
+
+| Feature (matrix id) | Android status | Plan |
 |---|---|---|
-| `dynamic-settings-discovery` | **shipped** | `dasher_get_parameter_info` → build Compose controls dynamically (mirror GTK/Windows) |
-| `grouped-settings-ui` | **shipped** | 5 tabs from `settings_manifest.json` groups (RFC 0006) |
-| `localization` | **shipped** | `dasher_set_locale` (33 locales) + Android `values-<locale>` (RFC 0003) |
-| `button-key-remapping` | **beta** | Android `KeyEvent` capture → `dasher_key_event` |
-| `live-settings-preview` | planned | Mini-canvas in settings (all platforms still planned) |
-| `guided-onboarding` | planned | First-run flow (RFC 0004) |
-| `game-mode-training` | **shipped** | `dasher_enter_game_mode` family — fully C-API supported |
-| `custom-training-text` | **shipped** | `SP_GAME_TEXT_FILE` + SAF picker |
+| `dynamic-settings-discovery` | **next** | iterate `dasher_get_parameter_info`; render by `uiType`; runtime `findParameterKey` |
+| `grouped-settings-ui` | **next** | tabs Input/Language/Customization/Output/Game Mode (+Speech/Privacy); Input filtered by active filter, Language by active LM |
+| `custom-fonts` | **next** | canvas font `SP_DASHER_FONT` (curated list) + `LP_DASHER_FONTSIZE`; output-area font as a local setting (match Windows) |
+| `localization` | **next** | bundle `DasherCore/Strings/strings_*.json`; 9-locale picker → `dasher_set_locale` → rebuild labels (RFC 0003) |
+| `dark-mode` | ✅ shipped | already OS-driven via design-guide tokens; add remaining tokens |
+| `control-mode` | partial → **next** | promote to toolbar toggle + parameter-change-callback two-way sync (matches Apple/Windows) |
+| `game-mode-training` | **next** | toolbar toggle, target bar (correct/wrong/remaining), `dasher_game_*` |
+| `custom-training-text` | **next** | `SP_GAME_TEXT_FILE` + SAF picker |
+| `button-key-remapping` | planned | Android `KeyEvent` capture → `dasher_key_event` (switch profiles) |
+| `live-settings-preview` | planned | mini-canvas in settings (all platforms still planned) |
+| `guided-onboarding` | planned | first-run flow (RFC 0004); analytics opt-in |
+| `analytics` | **next** | `posthog-android`, shared `analytics-events.json` schema, `platform=android` (RFC 0001) |
 
-**Exit criteria:** settings UI is generated from the engine schema, not
-hardcoded; game mode playable; localized.
+**Exit criteria:** settings UI generated from the engine schema (no hand-coded
+per-parameter rows); canvas + output fonts configurable; locale picker works;
+control mode + game mode in the toolbar; analytics opt-in.
 
 ---
 
