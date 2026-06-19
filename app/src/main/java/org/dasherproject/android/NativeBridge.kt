@@ -128,4 +128,29 @@ object NativeBridge {
     // ── Persistence ──
     /** Flush current settings to dasher_settings.xml in the user dir. */
     @JvmStatic external fun nativeSaveSettings(handle: Long)
+
+    // ── Engine callbacks (DasherCore/docs/CUSTOM_ACTIONS.md) ──
+    // The C wrappers in jni_bridge.cpp marshal these onto NativeBridge.onX(...).
+
+    /** Installs the clipboard callback (engine → copy control action / copy-on-stop). */
+    @JvmStatic external fun nativeSetClipboardCallback(handle: Long)
+    /** Installs the speak callback (engine → TTS via speak control action / speak-on-stop). */
+    @JvmStatic external fun nativeSetSpeakCallback(handle: Long)
+    /** Installs the message callback (engine warnings/info as native UI). */
+    @JvmStatic external fun nativeSetMessageCallback(handle: Long)
+    /** Installs the real-time output callback (per-char insert/delete; enables reactive output). */
+    @JvmStatic external fun nativeSetOutputCallback(handle: Long)
+
+    // ── Callback listeners (set by the app; invoked on the main thread) ──
+    @JvmStatic var onClipboardListener: ((String) -> Unit)? = null
+    @JvmStatic var onSpeakListener: ((text: String, interrupt: Boolean) -> Unit)? = null
+    @JvmStatic var onMessageListener: ((type: Int, text: String) -> Unit)? = null
+    @JvmStatic var onOutputListener: ((type: Int, text: String) -> Unit)? = null
+
+    @JvmStatic fun onClipboard(text: String) { onClipboardListener?.invoke(text) }
+    @JvmStatic fun onSpeak(text: String, interrupt: Int) {
+        onSpeakListener?.invoke(text, interrupt != 0)
+    }
+    @JvmStatic fun onMessage(type: Int, text: String) { onMessageListener?.invoke(type, text) }
+    @JvmStatic fun onOutput(type: Int, text: String) { onOutputListener?.invoke(type, text) }
 }

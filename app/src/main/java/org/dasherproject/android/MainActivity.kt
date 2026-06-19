@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
     private var canvasView: DasherCanvasView? = null
     private var tiltProvider: TiltInputProvider? = null
     private val mainHandler = Handler(Looper.getMainLooper())
+    private var tts: TextToSpeech? = null
 
     // Observable UI state.
     private var outputText by mutableStateOf("")
@@ -78,6 +80,11 @@ class MainActivity : ComponentActivity() {
             mainHandler.post { engine?.onTiltNormalized(nx, ny) }
         }
         tiltAvailable = tiltProvider?.hasSensor() == true
+
+        // Android TTS for the engine's speak callback (speak-on-stop, speak control nodes).
+        tts = TextToSpeech(this) { status ->
+            if (status != TextToSpeech.SUCCESS) tts = null
+        }
 
         lifecycleScope.launch {
             val dataDir = withContext(Dispatchers.IO) {
@@ -101,6 +108,14 @@ class MainActivity : ComponentActivity() {
                 if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
             }
             eng.start()
+            // Engine→frontend callbacks (clipboard copy, speak, messages, live output).
+            eng.installEngineCallbacks()
+            NativeBridge.onClipboardListener = { text -> copyToClipboard(text) }
+            NativeBridge.onSpeakListener = { text, interrupt -> speak(text, interrupt) }
+            NativeBridge.onMessageListener = { type, text ->
+                // type 0 = info, 1 = warning (modal)
+                Toast.makeText(this@MainActivity, text, Toast.LENGTH_SHORT).show()
+            }
         }
 
         setContent {
@@ -197,6 +212,12 @@ class MainActivity : ComponentActivity() {
         val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
         Toast.makeText(this, "Copied", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun speak(text: String, interrupt: Boolean) {
+        val t = tts ?: return
+        if (interrupt) t.stop()
+        t.speak(text, TextToSpeech.QUEUE_ADD, null, "dasher_${System.nanoTime()}")
     }
 
     @Composable
@@ -369,6 +390,12 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         tiltProvider?.unregister()
         tiltProvider = null
+        NativeBridge.onClipboardListener = null
+        NativeBridge.onSpeakListener = null
+        NativeBridge.onMessageListener = null
+        tts?.stop()
+        tts?.shutdown()
+        tts = null
         engine?.destroy()
         engine = null
         canvasView = null

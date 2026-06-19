@@ -86,7 +86,94 @@ bool hasVisibleBox(const std::vector<jint>& cmds) {
 
 }  // namespace
 
+// ── JVM + engine-callback infrastructure ───────────────────────────────────
+// Engine callbacks (clipboard/speak/message/output) fire on the thread that calls
+// dasher_frame(), i.e. the main thread here. We cache the JavaVM and NativeBridge
+// method IDs in JNI_OnLoad so the C callback wrappers can call back into Kotlin.
+static JavaVM* g_jvm = nullptr;
+static jclass g_nbClass = nullptr;
+static jmethodID g_onClipboard = nullptr;
+static jmethodID g_onSpeak = nullptr;
+static jmethodID g_onMessage = nullptr;
+static jmethodID g_onOutput = nullptr;
+
+// Returns an env for the current thread, attaching it if necessary.
+// [attached] is set true when the caller must DetachCurrentThread afterwards.
+static JNIEnv* attachEnv(bool& attached) {
+    JNIEnv* env = nullptr;
+    if (g_jvm && g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) == JNI_OK) {
+        attached = false;
+        return env;
+    }
+    if (!g_jvm) return nullptr;
+    JavaVMAttachArgs args = {JNI_VERSION_1_6, "DasherCallback", nullptr};
+    // Android NDK: AttachCurrentThread(JNIEnv**, void*).
+    if (g_jvm->AttachCurrentThread(&env, &args) != JNI_OK) return nullptr;
+    attached = true;
+    return env;
+}
+
+static void clipboardCallback(const char* text, void*) {
+    if (!g_nbClass || !g_onClipboard) return;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return;
+    jstring jtext = env->NewStringUTF(text ? text : "");
+    env->CallStaticVoidMethod(g_nbClass, g_onClipboard, jtext);
+    env->DeleteLocalRef(jtext);
+    if (attached) g_jvm->DetachCurrentThread();
+}
+
+static void speakCallback(const char* text, int interrupt, void*) {
+    if (!g_nbClass || !g_onSpeak || !text) return;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return;
+    jstring jtext = env->NewStringUTF(text);
+    env->CallStaticVoidMethod(g_nbClass, g_onSpeak, jtext, static_cast<jint>(interrupt));
+    env->DeleteLocalRef(jtext);
+    if (attached) g_jvm->DetachCurrentThread();
+}
+
+static void messageCallback(int type, const char* text, void*) {
+    if (!g_nbClass || !g_onMessage || !text) return;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return;
+    jstring jtext = env->NewStringUTF(text);
+    env->CallStaticVoidMethod(g_nbClass, g_onMessage, static_cast<jint>(type), jtext);
+    env->DeleteLocalRef(jtext);
+    if (attached) g_jvm->DetachCurrentThread();
+}
+
+static void outputCallback(int type, const char* text, void*) {
+    if (!g_nbClass || !g_onOutput || !text) return;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return;
+    jstring jtext = env->NewStringUTF(text);
+    env->CallStaticVoidMethod(g_nbClass, g_onOutput, static_cast<jint>(type), jtext);
+    env->DeleteLocalRef(jtext);
+    if (attached) g_jvm->DetachCurrentThread();
+}
+
 extern "C" {
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
+    g_jvm = vm;
+    JNIEnv* env = nullptr;
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) return JNI_ERR;
+    jclass cls = env->FindClass("org/dasherproject/android/NativeBridge");
+    if (!cls) return JNI_ERR;
+    g_nbClass = reinterpret_cast<jclass>(env->NewGlobalRef(cls));
+    g_onClipboard = env->GetStaticMethodID(g_nbClass, "onClipboard", "(Ljava/lang/String;)V");
+    g_onSpeak = env->GetStaticMethodID(g_nbClass, "onSpeak", "(Ljava/lang/String;I)V");
+    g_onMessage = env->GetStaticMethodID(g_nbClass, "onMessage", "(ILjava/lang/String;)V");
+    g_onOutput = env->GetStaticMethodID(g_nbClass, "onOutput", "(ILjava/lang/String;)V");
+    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p)",
+         (void*)g_onClipboard, (void*)g_onSpeak, (void*)g_onMessage, (void*)g_onOutput);
+    return JNI_VERSION_1_6;
+}
 
 JNIEXPORT jstring JNICALL
 Java_org_dasherproject_android_NativeBridge_nativeVersion(JNIEnv* env, jclass) {
@@ -378,6 +465,33 @@ JNIEXPORT void JNICALL
 Java_org_dasherproject_android_NativeBridge_nativeSaveSettings(JNIEnv*, jclass, jlong handle) {
     auto* s = fromHandle(handle);
     if (s && s->ctx) dasher_save_settings(s->ctx);
+}
+
+// ── Engine callbacks (see DasherCore/docs/CUSTOM_ACTIONS.md) ────────────────
+// Each installs a C wrapper that marshals back into NativeBridge.onX(...).
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetClipboardCallback(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_clipboard_callback(s->ctx, clipboardCallback, nullptr);
+}
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetSpeakCallback(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_speak_callback(s->ctx, speakCallback, nullptr);
+}
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetMessageCallback(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_message_callback(s->ctx, messageCallback, nullptr);
+}
+
+JNIEXPORT void JNICALL
+Java_org_dasherproject_android_NativeBridge_nativeSetOutputCallback(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_output_callback(s->ctx, outputCallback, nullptr);
 }
 
 }  // extern "C"

@@ -214,6 +214,19 @@ class DasherEngine(
         NativeBridge.nativeSaveSettings(nativeHandle)
     }
 
+    /**
+     * Installs the engine→frontend callbacks (clipboard/speak/message/output).
+     * Call after the engine is created; the listeners live on [NativeBridge].
+     * See DasherCore/docs/CUSTOM_ACTIONS.md.
+     */
+    fun installEngineCallbacks() {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetClipboardCallback(nativeHandle)
+        NativeBridge.nativeSetSpeakCallback(nativeHandle)
+        NativeBridge.nativeSetMessageCallback(nativeHandle)
+        NativeBridge.nativeSetOutputCallback(nativeHandle)
+    }
+
     // ── Parameter helpers (resolve BP_*/LP_*/SP_* names to keys internally) ─────
 
     /** Reads a boolean parameter by enum name (e.g. "BP_CONTROL_MODE"). */
