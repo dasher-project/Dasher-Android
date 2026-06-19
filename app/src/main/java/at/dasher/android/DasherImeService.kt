@@ -73,43 +73,40 @@ class DasherImeService : InputMethodService() {
     }
 
     private fun createEngine() {
-        scope.launch {
-            val dataDir = withContext(Dispatchers.IO) {
-                DataInstaller.ensureInstalled(this@DasherImeService)
-            }
-            val eng = DasherEngine.create(dataDir, dataDir) { commands, strings ->
-                canvasView?.submitFrame(commands, strings)
-            }
-            if (eng == null) {
-                Log.e(TAG, "IME engine creation failed (dataDir=$dataDir)")
-                return@launch
-            }
-            // Low-memory mode MUST be set before the engine realises (first setScreenSize).
-            eng.setLowMemoryMode(true)
-            eng.installEngineCallbacks()
-            // Real-time output -> host app. type 0 = insert, 1 = delete (backspace run).
-            NativeBridge.onOutputListener = { type, text ->
-                val ic = currentInputConnection
-                if (ic != null) {
-                    if (type == 0) ic.commitText(text, 1)
-                    else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
-                }
-            }
-            // IME owns its own listeners (don't borrow a possibly-destroyed Activity's context).
-            NativeBridge.onMessageListener = { _, msg ->
-                Toast.makeText(this@DasherImeService, msg, Toast.LENGTH_SHORT).show()
-            }
-            NativeBridge.onClipboardListener = { text ->
-                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
-            }
-            NativeBridge.onSpeakListener = null // TTS in the IME process is out of Phase-2 scope
-            engine = eng
-            canvasView?.let { v ->
-                if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
-            }
-            eng.start()
+        // The main app already ran DataInstaller (shared filesDir), so this is a fast
+        // marker check. Create the engine synchronously — coroutine scheduling in an
+        // InputMethodService context is unreliable.
+        val dataDir = DataInstaller.ensureInstalled(this)
+        val eng = DasherEngine.create(dataDir, dataDir) { commands, strings ->
+            canvasView?.submitFrame(commands, strings)
         }
+        if (eng == null) {
+            Log.e(TAG, "IME engine creation failed (dataDir=$dataDir)")
+            return
+        }
+        eng.setLowMemoryMode(true)
+        eng.installEngineCallbacks()
+        // Real-time output -> host app. type 0 = insert, 1 = delete (backspace run).
+        NativeBridge.onOutputListener = { type, text ->
+            val ic = currentInputConnection
+            if (ic != null) {
+                if (type == 0) ic.commitText(text, 1)
+                else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
+            }
+        }
+        NativeBridge.onMessageListener = { _, msg ->
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        }
+        NativeBridge.onClipboardListener = { text ->
+            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
+        }
+        NativeBridge.onSpeakListener = null
+        engine = eng
+        canvasView?.let { v ->
+            if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
+        }
+        eng.start()
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {

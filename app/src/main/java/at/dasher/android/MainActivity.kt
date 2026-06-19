@@ -165,6 +165,12 @@ class MainActivity : ComponentActivity() {
             speedPercent = eng.getSpeedPercent()
             autoSpeed = if (autoSpeedKey >= 0) eng.boolValue(autoSpeedKey) else false
             learning = if (learningKey >= 0) eng.boolValue(learningKey) else false
+            // Set default game text from the bundled DasherCore gamemode file.
+            val gameTextKey = NativeBridge.nativeFindParameterKey("SP_GAME_TEXT_FILE")
+            if (gameTextKey >= 0 && eng.stringValue(gameTextKey).isNullOrEmpty()) {
+                eng.setStringValue(gameTextKey, "training/gamemode_en_Latn.txt")
+                eng.saveSettings()
+            }
             eng.start()
             // Engine→frontend callbacks (clipboard copy, speak, messages).
             eng.installEngineCallbacks()
