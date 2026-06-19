@@ -55,10 +55,10 @@ DasherCore, and renders the zooming canvas with touch input.
 
 **STATUS: COMPLETE** — `./gradlew :app:assembleDebug` builds a 53 MB APK
 (`libdasher.so` + `libdasher_jni.so` for arm64-v8a + x86_64, bundled alphabet/
-colour assets). Required two DasherCore Android portability fixes
-([dasher-project/DasherCore#21](https://github.com/dasher-project/DasherCore/pull/21),
-pending CI): `I18n.h` (Android joins the no-op `_()` branch) and
-`UserLocation.cpp` (dropped unused `<sys/timeb.h>`).
+colour assets). The two DasherCore Android portability fixes landed on `main`
+via [PR #21](https://github.com/dasher-project/DasherCore/pull/21) (merged):
+`I18n.h` (Android joins the no-op `_()` branch) and `UserLocation.cpp`
+(dropped unused `<sys/timeb.h>`). The submodule now pins `main` directly.
 
 | Item | Status |
 |---|---|
@@ -95,13 +95,20 @@ Status after the initial push:
 | `dark-mode` | ✅ shipped | palette + Material3 dynamic/night theme |
 | `settings-persistence` | ✅ shipped | `dasher_save_settings` on every change |
 | `speed-control` | ✅ shipped | status-bar slider + `BP_AUTO_SPEEDCONTROL` |
-| `copy-to-clipboard` | ✅ shipped | ClipboardManager "Copy all" |
+| `copy-to-clipboard` | ✅ shipped | ClipboardManager "Copy all" **and** `dasher_set_clipboard_callback` (copy control nodes, copy-on-stop) |
 | `control-mode` | ✅ shipped | `BP_CONTROL_MODE` toggle (settings) |
+| `spoken-output-tts` | ✅ shipped | `dasher_set_speak_callback` → Android `TextToSpeech` |
+| `speak-on-stop` | ✅ shipped | `BP_SPEAK_ALL_ON_STOP` fires the speak callback |
 | `custom-fonts` | partial | UI uses bundled Inter; canvas `SP_DASHER_FONT` wiring = Phase 3 |
 | `pointer-eye-gaze-input` | beta | touch-as-pointer now; real eye gaze = Phase 4 (socket input) |
 
+Engine→frontend callbacks (`dasher_set_clipboard/speak/message/output_callback`)
+are wired via `JNI_OnLoad` + C wrappers → `NativeBridge.onX(...)`. See
+`DasherCore/docs/CUSTOM_ACTIONS.md`. There is **no paste blocker**: paste is a
+frontend clipboard-read like other platforms (not a DasherCore concern).
+
 **Still open in Phase 1:** wire the canvas glyph font to `SP_DASHER_FONT`;
-paste-from-clipboard into the engine buffer; on-device smoke test.
+on-device smoke test.
 
 **feature-status.json:** adding an `android` column to
 `website/src/data/feature-status.json` is a deliberate public change to the
