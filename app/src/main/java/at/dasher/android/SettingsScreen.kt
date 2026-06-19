@@ -59,11 +59,12 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
     val tabs = remember(params) {
         val order = listOf("Input", "Language", "Customization", "Output", "Game Mode")
         val present = params.map { it.group.ifEmpty { "Input" } }.distinct()
-        // keep the canonical order, append any unexpected groups at the end
-        order.filter { it in present } + present.filter { it !in order }
+        // keep the canonical order, append any unexpected groups + a synthetic Privacy tab
+        order.filter { it in present } + present.filter { it !in order } + listOf("Privacy")
     }
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabGroup = tabs.getOrNull(selectedTab) ?: "Input"
+    val ctx = androidx.compose.ui.platform.LocalContext.current
 
     Scaffold(
         topBar = {
@@ -86,7 +87,10 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                 tabs.forEachIndexed { i, name ->
                     Tab(
                         selected = selectedTab == i,
-                        onClick = { selectedTab = i },
+                        onClick = {
+                            selectedTab = i
+                            AnalyticsService.capture("settings_viewed", mapOf("tab_name" to name))
+                        },
                         text = { Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                     )
                 }
@@ -95,13 +99,45 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                 params.filter { (it.group.ifEmpty { "Input" }) == tabGroup }
             }
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                if (tabGroup == "Language") {
-                    item { LocaleRow(engine, reload) }
-                }
-                items(rows, key = { it.key }) { p ->
-                    ParameterRow(engine, p, version, bump)
+                if (tabGroup == "Privacy") {
+                    item { PrivacyContent(ctx) }
+                } else {
+                    if (tabGroup == "Language") {
+                        item { LocaleRow(engine, reload) }
+                    }
+                    items(rows, key = { it.key }) { p ->
+                        ParameterRow(engine, p, version, bump)
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PrivacyContent(context: android.content.Context) {
+    var optedIn by remember { mutableStateOf(AnalyticsService.optedIn(context)) }
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Privacy-preserving analytics", style = MaterialTheme.typography.titleLarge)
+        Text(
+            "Anonymous usage analytics help understand how Dasher is used and fix crashes. " +
+                "No typed text, clipboard contents, canvas contents, or personal information is ever collected. " +
+                "Opt out any time.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Allow anonymous analytics", style = MaterialTheme.typography.bodyLarge)
+            Switch(checked = optedIn, onCheckedChange = { v ->
+                AnalyticsService.setOptedIn(context, v); optedIn = v
+            })
+        }
+        OutlinedButton(onClick = { AnalyticsService.resetId(context) }) {
+            Text("Reset anonymous ID")
         }
     }
 }

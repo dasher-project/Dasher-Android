@@ -113,6 +113,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AnalyticsService.init(this)
+        AnalyticsService.capture("app_launched", mapOf("locale" to java.util.Locale.getDefault().toLanguageTag()))
 
         // Tilt provider forwards normalised coords to the engine on the main thread
         // (the C API context is single-threaded; sensor callbacks arrive elsewhere).
@@ -181,6 +183,7 @@ class MainActivity : ComponentActivity() {
                         },
                         onAlphabetSelected = { name ->
                             engine?.setAlphabet(name); currentAlphabet = name; engine?.saveSettings()
+                            AnalyticsService.capture("alphabet_selected", mapOf("alphabet_id" to name))
                         },
                         onPaletteSelected = { name ->
                             engine?.setPalette(name); currentPalette = name; engine?.saveSettings()
@@ -224,6 +227,8 @@ class MainActivity : ComponentActivity() {
             }
         }
         inputMode = newMode
+        AnalyticsService.capture("input_method_changed",
+            mapOf("method" to if (newMode == InputMode.TILT) "tilt" else "touch"))
     }
 
     private fun toggleGame() {
