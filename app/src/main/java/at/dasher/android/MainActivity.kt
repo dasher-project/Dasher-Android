@@ -135,14 +135,9 @@ class MainActivity : ComponentActivity() {
                 if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
             }
             eng.start()
-            // Engine→frontend callbacks (clipboard copy, speak, messages, live output).
+            // Engine→frontend callbacks (clipboard copy, speak, messages).
             eng.installEngineCallbacks()
-            NativeBridge.onClipboardListener = { text -> copyToClipboard(text) }
-            NativeBridge.onSpeakListener = { text, interrupt -> speak(text, interrupt) }
-            NativeBridge.onMessageListener = { type, text ->
-                // type 0 = info, 1 = warning (modal)
-                Toast.makeText(this@MainActivity, text, Toast.LENGTH_SHORT).show()
-            }
+            installAppListeners()
         }
 
         setContent {
@@ -254,6 +249,20 @@ class MainActivity : ComponentActivity() {
         val t = tts ?: return
         if (interrupt) t.stop()
         t.speak(text, TextToSpeech.QUEUE_ADD, null, "dasher_${System.nanoTime()}")
+    }
+
+    /**
+     * Points the engine-callback listeners at THIS activity. Called after engine
+     * creation and from [onResume], so the main app re-owns the callbacks after
+     * the IME (which installs its own) is dismissed.
+     */
+    private fun installAppListeners() {
+        NativeBridge.onOutputListener = null // main app uses polled onTextUpdate, not per-char output
+        NativeBridge.onClipboardListener = { text -> copyToClipboard(text) }
+        NativeBridge.onSpeakListener = { text, interrupt -> speak(text, interrupt) }
+        NativeBridge.onMessageListener = { _, text ->
+            Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun saveOutput() {
@@ -475,6 +484,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        installAppListeners() // re-own callbacks after the IME released them
         engine?.start()
         if (inputMode == InputMode.TILT) tiltProvider?.register()
     }

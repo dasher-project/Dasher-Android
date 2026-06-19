@@ -1,5 +1,8 @@
 package at.dasher.android
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.Gravity
@@ -8,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -91,6 +95,15 @@ class DasherImeService : InputMethodService() {
                     else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
                 }
             }
+            // IME owns its own listeners (don't borrow a possibly-destroyed Activity's context).
+            NativeBridge.onMessageListener = { _, msg ->
+                Toast.makeText(this@DasherImeService, msg, Toast.LENGTH_SHORT).show()
+            }
+            NativeBridge.onClipboardListener = { text ->
+                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
+            }
+            NativeBridge.onSpeakListener = null // TTS in the IME process is out of Phase-2 scope
             engine = eng
             canvasView?.let { v ->
                 if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
@@ -111,6 +124,9 @@ class DasherImeService : InputMethodService() {
 
     override fun onDestroy() {
         NativeBridge.onOutputListener = null
+        NativeBridge.onMessageListener = null
+        NativeBridge.onClipboardListener = null
+        NativeBridge.onSpeakListener = null
         scope.cancel()
         engine?.destroy()
         engine = null
