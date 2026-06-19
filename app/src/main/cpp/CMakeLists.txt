@@ -12,6 +12,14 @@ project(dasher_android LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 16 KB page-size compatibility (Android 15+). NDK r27 doesn't default to this
+# (r28 will). Without it, libdasher.so / libdasher_jni.so LOAD segments are 4 KB
+# aligned and the app crashes on 16 KB-page devices (Pixel/Android 15+, ARMv9),
+# and Google Play rejects new apps targeting Android 15+ from 2025-11-01. Set
+# before add_subdirectory so it propagates to DasherCore's `dasher` target (which
+# links the DasherCore + pugixml static libs) as well as our JNI shim, in both ABIs.
+add_link_options(-Wl,-z,max-page-size=16384)
+
 # ── DasherCore (as submodule at third_party/DasherCore) ───────────────────
 # Produce the C API shared library only; skip its test executables.
 set(BUILD_CAPI ON CACHE BOOL "" FORCE)
