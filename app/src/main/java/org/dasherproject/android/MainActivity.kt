@@ -15,11 +15,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -27,6 +30,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -42,10 +47,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
+import com.composables.icons.lucide.ClipboardCopy
+import com.composables.icons.lucide.Crosshair
+import com.composables.icons.lucide.FilePlus
+import com.composables.icons.lucide.Gauge
+import com.composables.icons.lucide.Hand
+import com.composables.icons.lucide.Languages
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Palette
+import com.composables.icons.lucide.Pause
+import com.composables.icons.lucide.Play
+import com.composables.icons.lucide.Settings
+import com.composables.icons.lucide.Smartphone
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,6 +88,7 @@ class MainActivity : ComponentActivity() {
     private var inputMode by mutableStateOf(InputMode.TOUCH)
     private var tiltAvailable by mutableStateOf(false)
     private var showSettings by mutableStateOf(false)
+    private var isPlaying by mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,8 +149,14 @@ class MainActivity : ComponentActivity() {
                         speedPercent = speedPercent,
                         inputMode = inputMode,
                         tiltAvailable = tiltAvailable,
+                        isPlaying = isPlaying,
                         onClear = { engine?.resetOutputText(); outputText = "" },
                         onCopyAll = { copyToClipboard(outputText) },
+                        onTogglePlay = {
+                            val eng = engine ?: return@AppScreen
+                            if (isPlaying) { eng.stop(); isPlaying = false }
+                            else { eng.start(); isPlaying = true }
+                        },
                         onAlphabetSelected = { name ->
                             engine?.setAlphabet(name); currentAlphabet = name; engine?.saveSettings()
                         },
@@ -230,8 +255,10 @@ class MainActivity : ComponentActivity() {
         speedPercent: Int,
         inputMode: InputMode,
         tiltAvailable: Boolean,
+        isPlaying: Boolean,
         onClear: () -> Unit,
         onCopyAll: () -> Unit,
+        onTogglePlay: () -> Unit,
         onAlphabetSelected: (String) -> Unit,
         onPaletteSelected: (String) -> Unit,
         onSpeedChanged: (Int) -> Unit,
@@ -241,15 +268,9 @@ class MainActivity : ComponentActivity() {
     ) {
         Scaffold { padding ->
             Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedButton(onClick = onClear) { Text("Clear") }
-                    OutlinedButton(onClick = onCopyAll) { Text("Copy all") }
-                    OutlinedButton(onClick = onOpenSettings) { Text("Settings") }
-                }
+                // DESIGN.md §Top Toolbar (64px): New, Play/Pause, Copy, Prefs.
+                TopBar(isPlaying = isPlaying, onClear = onClear, onTogglePlay = onTogglePlay,
+                    onCopyAll = onCopyAll, onOpenSettings = onOpenSettings)
                 Box(
                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = 8.dp)
                 ) {
@@ -290,6 +311,38 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    private fun TopBar(
+        isPlaying: Boolean,
+        onClear: () -> Unit,
+        onTogglePlay: () -> Unit,
+        onCopyAll: () -> Unit,
+        onOpenSettings: () -> Unit
+    ) {
+        // DESIGN.md §Top Toolbar: New, Play/Pause, Copy, Prefs — Lucide icons (RFC 0002).
+        Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 2.dp) {
+            Row(
+                modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                ToolbarButton(Lucide.FilePlus, "New / clear output", onClear)
+                ToolbarButton(if (isPlaying) Lucide.Pause else Lucide.Play,
+                    if (isPlaying) "Pause" else "Play", onTogglePlay)
+                ToolbarButton(Lucide.ClipboardCopy, "Copy all", onCopyAll)
+                Spacer(Modifier.weight(1f))
+                ToolbarButton(Lucide.Settings, "Settings", onOpenSettings)
+            }
+        }
+    }
+
+    @Composable
+    private fun ToolbarButton(icon: ImageVector, description: String, onClick: () -> Unit) {
+        IconButton(onClick = onClick) {
+            Icon(icon, contentDescription = description, tint = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+
+    @Composable
     private fun StatusBar(
         alphabets: List<String>,
         currentAlphabet: String,
@@ -311,12 +364,14 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 DropdownPicker(
+                    leadingIcon = Lucide.Languages,
                     options = alphabets,
                     selected = currentAlphabet.ifEmpty { "—" },
                     onSelect = onAlphabetSelected,
                     modifier = Modifier.weight(1f)
                 )
                 DropdownPicker(
+                    leadingIcon = Lucide.Palette,
                     options = palettes,
                     selected = currentPalette.ifEmpty { "—" },
                     onSelect = onPaletteSelected,
@@ -329,14 +384,22 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (tiltAvailable) {
-                    OutlinedButton(onClick = onToggleMode) {
-                        Text(if (inputMode == InputMode.TILT) "Tilt" else "Touch")
+                    IconButton(onClick = onToggleMode) {
+                        Icon(
+                            if (inputMode == InputMode.TILT) Lucide.Smartphone else Lucide.Hand,
+                            contentDescription = "Input mode",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                     if (inputMode == InputMode.TILT) {
-                        OutlinedButton(onClick = onCalibrate) { Text("Calibrate") }
+                        IconButton(onClick = onCalibrate) {
+                            Icon(Lucide.Crosshair, contentDescription = "Calibrate",
+                                tint = MaterialTheme.colorScheme.onSurface)
+                        }
                     }
                 }
-                Text("Speed", style = MaterialTheme.typography.labelLarge)
+                Icon(Lucide.Gauge, contentDescription = "Speed",
+                    tint = MaterialTheme.colorScheme.onSurface)
                 Slider(
                     value = speedPercent.toFloat(),
                     onValueChange = { onSpeedChanged(it.toInt()) },
@@ -354,11 +417,16 @@ class MainActivity : ComponentActivity() {
         options: List<String>,
         selected: String,
         onSelect: (String) -> Unit,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        leadingIcon: ImageVector? = null
     ) {
         var expanded by remember { mutableStateOf(false) }
         Box(modifier) {
             OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
+                if (leadingIcon != null) {
+                    Icon(leadingIcon, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(6.dp))
+                }
                 Text(selected, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
