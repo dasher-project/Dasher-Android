@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Dasher</string>
     <string name="ime_name">Dasher Keyboard</string>
+    <string name="save_default_name">dasher.txt</string>
 </resources>

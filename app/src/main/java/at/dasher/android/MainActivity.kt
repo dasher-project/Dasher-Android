@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Palette
 import com.composables.icons.lucide.Pause
 import com.composables.icons.lucide.Play
+import com.composables.icons.lucide.Save
 import com.composables.icons.lucide.Settings
 import com.composables.icons.lucide.Smartphone
 import kotlinx.coroutines.Dispatchers
@@ -89,6 +91,12 @@ class MainActivity : ComponentActivity() {
     private var tiltAvailable by mutableStateOf(false)
     private var showSettings by mutableStateOf(false)
     private var isPlaying by mutableStateOf(true)
+
+    // SAF launcher: writes the output text to a user-chosen file (DESIGN.md §Toolbar "Save").
+    private val saveLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+            if (uri != null) saveOutputTo(uri)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,7 +181,8 @@ class MainActivity : ComponentActivity() {
                             engine?.clearTiltInput()
                             engine?.setInputMode(InputMode.TILT)
                         },
-                        onOpenSettings = { showSettings = true }
+                        onOpenSettings = { showSettings = true },
+                        onSave = { saveOutput() }
                     )
                     if (showSettings) SettingsDialog(onDismiss = { showSettings = false })
                 }
@@ -247,6 +256,23 @@ class MainActivity : ComponentActivity() {
         t.speak(text, TextToSpeech.QUEUE_ADD, null, "dasher_${System.nanoTime()}")
     }
 
+    private fun saveOutput() {
+        if (outputText.isEmpty()) {
+            Toast.makeText(this, "Nothing to save", Toast.LENGTH_SHORT).show()
+            return
+        }
+        saveLauncher.launch(getString(R.string.save_default_name))
+    }
+
+    private fun saveOutputTo(uri: android.net.Uri) {
+        try {
+            contentResolver.openOutputStream(uri)?.use { it.write(outputText.toByteArray()) }
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     @Composable
     private fun AppScreen(
         output: String,
@@ -266,13 +292,14 @@ class MainActivity : ComponentActivity() {
         onSpeedChanged: (Int) -> Unit,
         onToggleMode: () -> Unit,
         onCalibrate: () -> Unit,
-        onOpenSettings: () -> Unit
+        onOpenSettings: () -> Unit,
+        onSave: () -> Unit
     ) {
         Scaffold { padding ->
             Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-                // DESIGN.md §Top Toolbar (64px): New, Play/Pause, Copy, Prefs.
+                // DESIGN.md §Top Toolbar (64px): New, Play/Pause, Copy, Save, Prefs.
                 TopBar(isPlaying = isPlaying, onClear = onClear, onTogglePlay = onTogglePlay,
-                    onCopyAll = onCopyAll, onOpenSettings = onOpenSettings)
+                    onCopyAll = onCopyAll, onSave = onSave, onOpenSettings = onOpenSettings)
                 Box(
                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = 8.dp)
                 ) {
@@ -318,9 +345,10 @@ class MainActivity : ComponentActivity() {
         onClear: () -> Unit,
         onTogglePlay: () -> Unit,
         onCopyAll: () -> Unit,
+        onSave: () -> Unit,
         onOpenSettings: () -> Unit
     ) {
-        // DESIGN.md §Top Toolbar: New, Play/Pause, Copy, Prefs — Lucide icons (RFC 0002).
+        // DESIGN.md §Top Toolbar: New, Play/Pause, Copy, Save, Prefs — Lucide icons (RFC 0002).
         Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 2.dp) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
@@ -331,6 +359,7 @@ class MainActivity : ComponentActivity() {
                 ToolbarButton(if (isPlaying) Lucide.Pause else Lucide.Play,
                     if (isPlaying) "Pause" else "Play", onTogglePlay)
                 ToolbarButton(Lucide.ClipboardCopy, "Copy all", onCopyAll)
+                ToolbarButton(Lucide.Save, "Save to file", onSave)
                 Spacer(Modifier.weight(1f))
                 ToolbarButton(Lucide.Settings, "Settings", onOpenSettings)
             }
