@@ -48,8 +48,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
@@ -57,6 +62,7 @@ import com.composables.icons.lucide.ClipboardCopy
 import com.composables.icons.lucide.Crosshair
 import com.composables.icons.lucide.FilePlus
 import com.composables.icons.lucide.Gauge
+import com.composables.icons.lucide.Gamepad2
 import com.composables.icons.lucide.Hand
 import com.composables.icons.lucide.Languages
 import com.composables.icons.lucide.Lucide
@@ -91,6 +97,8 @@ class MainActivity : ComponentActivity() {
     private var tiltAvailable by mutableStateOf(false)
     private var showSettings by mutableStateOf(false)
     private var isPlaying by mutableStateOf(true)
+    private var gameMode by mutableStateOf(false)
+    private var gameState by mutableStateOf<GameState?>(null)
 
     // Parameter keys resolved once the native lib is loaded (for the param-change listener).
     private var dasherFontKey = -1
@@ -130,6 +138,7 @@ class MainActivity : ComponentActivity() {
                 return@launch
             }
             eng.onTextUpdate = { text -> outputText = text }
+            eng.onGameUpdate = { gameState = it }
             engine = eng
             dasherFontKey = NativeBridge.nativeFindParameterKey("SP_DASHER_FONT")
             speedKey = NativeBridge.nativeFindParameterKey("LP_MAX_BITRATE")
@@ -187,7 +196,10 @@ class MainActivity : ComponentActivity() {
                             engine?.setInputMode(InputMode.TILT)
                         },
                         onOpenSettings = { showSettings = true },
-                        onSave = { saveOutput() }
+                        onSave = { saveOutput() },
+                        gameMode = gameMode,
+                        gameState = gameState,
+                        onToggleGame = { toggleGame() }
                     )
                     if (showSettings) SettingsScreen(
                         engine = engine ?: return@Surface,
@@ -212,6 +224,23 @@ class MainActivity : ComponentActivity() {
             }
         }
         inputMode = newMode
+    }
+
+    private fun toggleGame() {
+        val eng = engine ?: return
+        if (gameMode) {
+            eng.leaveGameMode()
+            eng.setGameCanvasText(true)
+            gameMode = false
+            gameState = null
+        } else {
+            if (eng.enterGameMode()) {
+                eng.setGameCanvasText(false) // platform renders its own target bar
+                gameMode = true
+            } else {
+                Toast.makeText(this, "No game text available", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun copyToClipboard(text: String) {
@@ -290,13 +319,19 @@ class MainActivity : ComponentActivity() {
         onToggleMode: () -> Unit,
         onCalibrate: () -> Unit,
         onOpenSettings: () -> Unit,
-        onSave: () -> Unit
+        onSave: () -> Unit,
+        gameMode: Boolean,
+        gameState: GameState?,
+        onToggleGame: () -> Unit
     ) {
         Scaffold { padding ->
             Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-                // DESIGN.md §Top Toolbar (64px): New, Play/Pause, Copy, Save, Prefs.
+                // DESIGN.md §Top Toolbar (64px): New, Play/Pause, Copy, Save, Game, Prefs.
                 TopBar(isPlaying = isPlaying, onClear = onClear, onTogglePlay = onTogglePlay,
-                    onCopyAll = onCopyAll, onSave = onSave, onOpenSettings = onOpenSettings)
+                    onCopyAll = onCopyAll, onSave = onSave,
+                    gameMode = gameMode, onToggleGame = onToggleGame,
+                    onOpenSettings = onOpenSettings)
+                if (gameMode && gameState != null) GameTargetBar(gameState!!)
                 Box(
                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = 8.dp)
                 ) {
@@ -343,9 +378,11 @@ class MainActivity : ComponentActivity() {
         onTogglePlay: () -> Unit,
         onCopyAll: () -> Unit,
         onSave: () -> Unit,
+        gameMode: Boolean,
+        onToggleGame: () -> Unit,
         onOpenSettings: () -> Unit
     ) {
-        // DESIGN.md §Top Toolbar: New, Play/Pause, Copy, Save, Prefs — Lucide icons (RFC 0002).
+        // DESIGN.md §Top Toolbar: New, Play/Pause, Copy, Save, Game, Prefs — Lucide icons (RFC 0002).
         Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 2.dp) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
@@ -358,6 +395,8 @@ class MainActivity : ComponentActivity() {
                 ToolbarButton(Lucide.ClipboardCopy, "Copy all", onCopyAll)
                 ToolbarButton(Lucide.Save, "Save to file", onSave)
                 Spacer(Modifier.weight(1f))
+                ToolbarButton(Lucide.Gamepad2, if (gameMode) "Leave game mode" else "Game mode",
+                    onToggleGame)
                 ToolbarButton(Lucide.Settings, "Settings", onOpenSettings)
             }
         }
@@ -367,6 +406,43 @@ class MainActivity : ComponentActivity() {
     private fun ToolbarButton(icon: ImageVector, description: String, onClick: () -> Unit) {
         IconButton(onClick = onClick) {
             Icon(icon, contentDescription = description, tint = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+
+    /** Game-mode target bar: correct (green) / wrong (red) / remaining (grey) + progress. */
+    @Composable
+    private fun GameTargetBar(state: GameState) {
+        val target = state.target
+        val correct = state.correct.coerceAtLeast(0)
+        val wrongLen = state.wrong.length
+        val green = Color(0xFF1F6B46)
+        val red = Color(0xFFB00020)
+        val grey = MaterialTheme.colorScheme.onSurfaceVariant
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)) {
+            Text(
+                text = buildAnnotatedString {
+                    if (target.isNotEmpty()) {
+                        val cEnd = minOf(correct, target.length)
+                        val wEnd = minOf(cEnd + wrongLen, target.length)
+                        if (cEnd > 0) withStyle(SpanStyle(color = green, fontWeight = FontWeight.Bold)) {
+                            append(target.substring(0, cEnd))
+                        }
+                        if (wEnd > cEnd) withStyle(SpanStyle(color = red, fontWeight = FontWeight.Bold)) {
+                            append(target.substring(cEnd, wEnd))
+                        }
+                        if (target.length > wEnd) withStyle(SpanStyle(color = grey)) {
+                            append(target.substring(wEnd))
+                        }
+                    }
+                },
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+            )
+            Text(
+                "${state.correct}/${state.targetLength}",
+                style = MaterialTheme.typography.labelMedium,
+                color = grey
+            )
         }
     }
 

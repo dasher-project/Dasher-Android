@@ -6,6 +6,14 @@ import android.view.Choreographer
 /** Physical input mechanism driving the Dasher cursor. */
 enum class InputMode { TOUCH, TILT }
 
+/** Per-frame game-mode snapshot for the target bar. */
+data class GameState(
+    val target: String,
+    val correct: Int,
+    val wrong: String,
+    val targetLength: Int
+)
+
 /**
  * Drives a single DasherCore session frame-by-frame via Android's [Choreographer].
  *
@@ -39,6 +47,9 @@ class DasherEngine(
 
     /** Invoked on the main thread whenever the accumulated output text changes. */
     var onTextUpdate: ((String) -> Unit)? = null
+
+    /** Invoked each frame while game mode is active, with a fresh [GameState]. */
+    var onGameUpdate: ((GameState) -> Unit)? = null
 
     @Volatile
     private var frameConsumer: (IntArray, Array<String>) -> Unit = frameConsumer
@@ -336,10 +347,38 @@ class DasherEngine(
             val strings = NativeBridge.nativeGetFrameStrings(nativeHandle)
             frameConsumer(commands, strings)
             onTextUpdate?.invoke(NativeBridge.nativeGetOutputText(nativeHandle))
+            if (onGameUpdate != null && NativeBridge.nativeGameModeActive(nativeHandle) != 0) {
+                onGameUpdate?.invoke(
+                    GameState(
+                        target = NativeBridge.nativeGameGetTargetText(nativeHandle),
+                        correct = NativeBridge.nativeGameGetCorrectCount(nativeHandle),
+                        wrong = NativeBridge.nativeGameGetWrongText(nativeHandle),
+                        targetLength = NativeBridge.nativeGameGetTargetLength(nativeHandle)
+                    )
+                )
+            }
         }
         if (running) {
             choreographer.postFrameCallback(this)
         }
+    }
+
+    // ── Game mode ───────────────────────────────────────────────────────────
+
+    /** Enters game mode; returns false if no game text is available. */
+    fun enterGameMode(): Boolean =
+        nativeHandle != 0L && NativeBridge.nativeEnterGameMode(nativeHandle) == 0
+
+    fun leaveGameMode() {
+        if (nativeHandle != 0L) NativeBridge.nativeLeaveGameMode(nativeHandle)
+    }
+
+    fun gameModeActive(): Boolean =
+        nativeHandle != 0L && NativeBridge.nativeGameModeActive(nativeHandle) != 0
+
+    /** Suppress (or restore) on-canvas target/wrong text when the platform renders its own. */
+    fun setGameCanvasText(enabled: Boolean) {
+        if (nativeHandle != 0L) NativeBridge.nativeGameSetCanvasText(nativeHandle, if (enabled) 1 else 0)
     }
 
     /** Replaces the frame consumer (e.g. across configuration changes). */

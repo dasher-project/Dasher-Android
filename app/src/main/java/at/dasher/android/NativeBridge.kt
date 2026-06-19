@@ -156,6 +156,16 @@ object NativeBridge {
     // ── Parameter-change callback (two-way sync: settings <-> toolbar) ──
     @JvmStatic external fun nativeSetParameterCallback(handle: Long)
 
+    // ── Game mode ──
+    @JvmStatic external fun nativeEnterGameMode(handle: Long): Int
+    @JvmStatic external fun nativeLeaveGameMode(handle: Long)
+    @JvmStatic external fun nativeGameModeActive(handle: Long): Int
+    @JvmStatic external fun nativeGameSetCanvasText(handle: Long, enabled: Int)
+    @JvmStatic external fun nativeGameGetTargetText(handle: Long): String
+    @JvmStatic external fun nativeGameGetCorrectCount(handle: Long): Int
+    @JvmStatic external fun nativeGameGetTargetLength(handle: Long): Int
+    @JvmStatic external fun nativeGameGetWrongText(handle: Long): String
+
     // ── Engine callbacks (DasherCore/docs/CUSTOM_ACTIONS.md) ──
     // The C wrappers in jni_bridge.cpp marshal these onto NativeBridge.onX(...).
 

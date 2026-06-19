@@ -607,4 +607,56 @@ Java_at_dasher_android_NativeBridge_nativeSetOutputCallback(JNIEnv*, jclass, jlo
     if (s && s->ctx) dasher_set_output_callback(s->ctx, outputCallback, nullptr);
 }
 
+// ── Game mode ───────────────────────────────────────────────────────────────
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeEnterGameMode(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_enter_game_mode(s->ctx) : -1;
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeLeaveGameMode(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_leave_game_mode(s->ctx);
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGameModeActive(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_game_mode_active(s->ctx) : 0;
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeGameSetCanvasText(JNIEnv*, jclass, jlong handle, jint enabled) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_game_set_canvas_text(s->ctx, enabled);
+}
+
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeGameGetTargetText(JNIEnv* env, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_game_get_target_text(s->ctx));
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGameGetCorrectCount(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_game_get_correct_count(s->ctx) : -1;
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGameGetTargetLength(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_game_get_target_length(s->ctx) : -1;
+}
+
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeGameGetWrongText(JNIEnv* env, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_game_get_wrong_text(s->ctx));
+}
+
 }  // extern "C"
