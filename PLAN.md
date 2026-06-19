@@ -101,6 +101,13 @@ Status after the initial push:
 | `speak-on-stop` | ✅ shipped | `BP_SPEAK_ALL_ON_STOP` fires the speak callback |
 | `custom-fonts` | partial | UI uses bundled Inter; canvas `SP_DASHER_FONT` wiring = Phase 3 |
 | `pointer-eye-gaze-input` | beta | touch-as-pointer now; real eye gaze = Phase 4 (socket input) |
+| `direct-text-injection` | ✅ shipped | **DasherImeService** → host `InputConnection` (system keyboard). Android parity advantage over iOS (no Accessibility API needed) |
+| `ios-keyboard-extension` → Android IME | ✅ shipped | enable "Dasher Keyboard" in system settings; low-memory mode |
+| `app-group-sharing` | ✅ shipped | IME + app share `dasher_settings.xml` + data (same `filesDir`) |
+| `save-to-file` | ✅ shipped | toolbar Save → Storage Access Framework |
+
+Phase 2 deferred: `undo-redo` (no append/undo API in the C surface — needs a
+DasherCore addition); `haptic-feedback` is gamepad rumble = Phase 4.
 
 Engine→frontend callbacks (`dasher_set_clipboard/speak/message/output_callback`)
 are wired via `JNI_OnLoad` + C wrappers → `NativeBridge.onX(...)`. See
