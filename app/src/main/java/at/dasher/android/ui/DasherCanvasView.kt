@@ -42,12 +42,25 @@ class DasherCanvasView @JvmOverloads constructor(
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         textAlign = Paint.Align.LEFT
-        // DESIGN.md §Canvas Glyphs: heavy weight (700) + subpixel smoothing for
-        // high-speed zoom legibility. Android's default bold sans (Roboto/Noto) is
-        // the platform equivalent of the guide's "Arial / Noto Sans".
-        typeface = Typeface.DEFAULT_BOLD
         isSubpixelText = true
+        typeface = typefaceFor("") // default; updated by [glyphFontName] setter
     }
+
+    /**
+     * The Dasher canvas (glyph) font, from `SP_DASHER_FONT`. Empty = system bold
+     * (the default); otherwise a family name resolved via [Typeface.create].
+     * Per DESIGN.md §Canvas Glyphs the weight stays heavy (700).
+     */
+    var glyphFontName: String = ""
+        set(value) {
+            field = value
+            textPaint.typeface = typefaceFor(value)
+            postInvalidateOnAnimation()
+        }
+
+    private fun typefaceFor(name: String): Typeface =
+        if (name.isEmpty()) Typeface.DEFAULT_BOLD
+        else Typeface.create(name, Typeface.BOLD)
 
     private var commands: IntArray = IntArray(0)
     private var strings: Array<String> = emptyArray()

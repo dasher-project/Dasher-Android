@@ -272,6 +272,59 @@ class DasherEngine(
         saveSettings()
     }
 
+    // ── Key-based access (for the manifest-driven settings UI) ─────────────
+
+    fun boolValue(key: Int): Boolean =
+        nativeHandle != 0L && NativeBridge.nativeGetBoolParameter(nativeHandle, key) != 0
+    fun setBoolValue(key: Int, value: Boolean) {
+        if (nativeHandle == 0L) return
+        NativeBridge.nativeSetBoolParameter(nativeHandle, key, if (value) 1 else 0)
+    }
+    fun longValue(key: Int): Long =
+        if (nativeHandle == 0L) 0L else NativeBridge.nativeGetLongParameter(nativeHandle, key)
+    fun setLongValue(key: Int, value: Long) {
+        if (nativeHandle == 0L) return
+        NativeBridge.nativeSetLongParameter(nativeHandle, key, value)
+    }
+    fun stringValue(key: Int): String =
+        if (nativeHandle == 0L) "" else NativeBridge.nativeGetStringParameter(nativeHandle, key)
+    fun setStringValue(key: Int, value: String) {
+        if (nativeHandle == 0L) return
+        NativeBridge.nativeSetStringParameter(nativeHandle, key, value)
+    }
+
+    /** Enum entries (display name → int value) for a long parameter; empty if not enum. */
+    fun enumValues(key: Int): List<Pair<String, Int>> {
+        if (nativeHandle == 0L) return emptyList()
+        val count = NativeBridge.nativeGetParameterEnumCount(key)
+        return (0 until count).map {
+            NativeBridge.nativeGetParameterEnumName(key, it) to NativeBridge.nativeGetParameterEnumValue(key, it)
+        }
+    }
+
+    /** Permitted string values for a string parameter (alphabet/palette/filter lists). */
+    fun stringValues(key: Int): List<String> =
+        if (nativeHandle == 0L) emptyList()
+        else NativeBridge.nativeGetParameterStringValues(nativeHandle, key).toList()
+
+    /** The full parameter schema, bucketed by manifest group (order of first appearance). */
+    fun allParameters(): List<ParameterInfo> {
+        if (nativeHandle == 0L) return emptyList()
+        val count = NativeBridge.nativeGetParameterCount()
+        return (0 until count).mapNotNull { NativeBridge.nativeGetParameterInfo(it) }
+    }
+
+    fun setLocale(code: String): Boolean =
+        nativeHandle != 0L && NativeBridge.nativeSetLocale(nativeHandle, code) == 0
+    fun locale(): String =
+        if (nativeHandle == 0L) "en" else NativeBridge.nativeGetLocale(nativeHandle)
+
+    /** Installs the parameter-change callback → [NativeBridge.onParameterChangedListener]. */
+    fun installParameterCallback() {
+        if (nativeHandle == 0L) return
+        NativeBridge.nativeSetParameterCallback(nativeHandle)
+    }
+
     /** [Choreographer.FrameCallback] — one render step per vsync. */
     override fun doFrame(frameTimeNanos: Long) {
         if (!running) return

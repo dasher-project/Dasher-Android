@@ -92,6 +92,11 @@ class MainActivity : ComponentActivity() {
     private var showSettings by mutableStateOf(false)
     private var isPlaying by mutableStateOf(true)
 
+    // Parameter keys resolved once the native lib is loaded (for the param-change listener).
+    private var dasherFontKey = -1
+    private var speedKey = -1
+    private var alphabetKey = -1
+
     // SAF launcher: writes the output text to a user-chosen file (DESIGN.md §Toolbar "Save").
     private val saveLauncher =
         registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
@@ -126,6 +131,9 @@ class MainActivity : ComponentActivity() {
             }
             eng.onTextUpdate = { text -> outputText = text }
             engine = eng
+            dasherFontKey = NativeBridge.nativeFindParameterKey("SP_DASHER_FONT")
+            speedKey = NativeBridge.nativeFindParameterKey("LP_MAX_BITRATE")
+            alphabetKey = NativeBridge.nativeFindParameterKey("SP_ALPHABET_ID")
             alphabets = eng.getAlphabetNames()
             currentAlphabet = eng.getCurrentAlphabet()
             palettes = eng.getPaletteNames()
@@ -137,6 +145,8 @@ class MainActivity : ComponentActivity() {
             eng.start()
             // Engine→frontend callbacks (clipboard copy, speak, messages).
             eng.installEngineCallbacks()
+            eng.installParameterCallback() // two-way sync (settings <-> toolbar/canvas)
+            applyCanvasFont(eng)
             installAppListeners()
         }
 
@@ -179,46 +189,12 @@ class MainActivity : ComponentActivity() {
                         onOpenSettings = { showSettings = true },
                         onSave = { saveOutput() }
                     )
-                    if (showSettings) SettingsDialog(onDismiss = { showSettings = false })
+                    if (showSettings) SettingsScreen(
+                        engine = engine ?: return@Surface,
+                        onDismiss = { showSettings = false }
+                    )
                 }
             }
-        }
-    }
-
-    @Composable
-    private fun SettingsDialog(onDismiss: () -> Unit) {
-        val eng = engine ?: run { onDismiss(); return }
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text("Quick settings") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    BoolToggle("Control mode (edit via Dasher nodes)", "BP_CONTROL_MODE")
-                    BoolToggle("Auto speed control", "BP_AUTO_SPEEDCONTROL")
-                    BoolToggle("Adaptive learning", "BP_LM_ADAPTIVE")
-                    BoolToggle("Left-handed layout", "BP_ORIENT_L_R")
-                    BoolToggle("Speak typed text on stop", "BP_SPEAK_ALL_ON_STOP")
-                    BoolToggle("Speak each word", "BP_SPEAK_WORDS")
-                }
-            },
-            confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } }
-        )
-    }
-
-    @Composable
-    private fun BoolToggle(label: String, paramName: String) {
-        val eng = engine ?: return
-        var checked by remember { mutableStateOf(eng.getBoolParam(paramName)) }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(label, modifier = Modifier.padding(end = 8.dp), style = MaterialTheme.typography.bodyLarge)
-            Switch(checked = checked, onCheckedChange = { v ->
-                checked = v
-                eng.setBoolParam(paramName, v)
-            })
         }
     }
 
@@ -263,6 +239,18 @@ class MainActivity : ComponentActivity() {
         NativeBridge.onMessageListener = { _, text ->
             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
         }
+        NativeBridge.onParameterChangedListener = { key ->
+            // Refresh UI-facing state when the engine (or settings) changes a param.
+            engine?.let {
+                if (key == dasherFontKey) applyCanvasFont(it)
+                if (key == speedKey) speedPercent = it.getSpeedPercent()
+                if (key == alphabetKey) currentAlphabet = it.getCurrentAlphabet()
+            }
+        }
+    }
+
+    private fun applyCanvasFont(eng: DasherEngine) {
+        canvasView?.glyphFontName = eng.stringValue(dasherFontKey)
     }
 
     private fun saveOutput() {
