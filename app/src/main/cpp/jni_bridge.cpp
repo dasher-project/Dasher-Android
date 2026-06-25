@@ -97,6 +97,7 @@ static jmethodID g_onSpeak = nullptr;
 static jmethodID g_onMessage = nullptr;
 static jmethodID g_onOutput = nullptr;
 static jmethodID g_onParameterChanged = nullptr;
+static jmethodID g_onLog = nullptr;
 
 // Returns an env for the current thread, attaching it if necessary.
 // [attached] is set true when the caller must DetachCurrentThread afterwards.
@@ -147,6 +148,19 @@ static void messageCallback(int type, const char* text, void*) {
     if (attached) g_jvm->DetachCurrentThread();
 }
 
+// Engine diagnostic log. Replaces the former CFileLogger/CBasicLog/UserLog systems;
+// see dasher_set_log_callback in dasher.h. Level: 0=debug 1=info 2=warn 3=error.
+static void logCallback(int level, const char* text, void*) {
+    if (!g_nbClass || !g_onLog || !text) return;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return;
+    jstring jtext = env->NewStringUTF(text);
+    env->CallStaticVoidMethod(g_nbClass, g_onLog, static_cast<jint>(level), jtext);
+    env->DeleteLocalRef(jtext);
+    if (attached) g_jvm->DetachCurrentThread();
+}
+
 static void outputCallback(int type, const char* text, void*) {
     if (!g_nbClass || !g_onOutput || !text) return;
     bool attached = false;
@@ -172,9 +186,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     g_onMessage = env->GetStaticMethodID(g_nbClass, "onMessage", "(ILjava/lang/String;)V");
     g_onOutput = env->GetStaticMethodID(g_nbClass, "onOutput", "(ILjava/lang/String;)V");
     g_onParameterChanged = env->GetStaticMethodID(g_nbClass, "onParameterChanged", "(I)V");
-    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p param=%p)",
+    g_onLog = env->GetStaticMethodID(g_nbClass, "onLog", "(ILjava/lang/String;)V");
+    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p param=%p log=%p)",
          (void*)g_onClipboard, (void*)g_onSpeak, (void*)g_onMessage, (void*)g_onOutput,
-         (void*)g_onParameterChanged);
+         (void*)g_onParameterChanged, (void*)g_onLog);
     return JNI_VERSION_1_6;
 }
 
@@ -599,6 +614,13 @@ JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSetMessageCallback(JNIEnv*, jclass, jlong handle) {
     auto* s = fromHandle(handle);
     if (s && s->ctx) dasher_set_message_callback(s->ctx, messageCallback, nullptr);
+}
+
+// min_level mirrors Dasher-Windows (DasherCanvas.cs): 0 = pass all levels through.
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetLogCallback(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_log_callback(s->ctx, logCallback, nullptr, /*min_level*/ 0);
 }
 
 JNIEXPORT void JNICALL

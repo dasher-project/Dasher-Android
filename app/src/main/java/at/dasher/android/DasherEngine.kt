@@ -235,9 +235,13 @@ class DasherEngine(
     }
 
     /**
-     * Installs the engine→frontend callbacks (clipboard/speak/message/output).
+     * Installs the engine→frontend callbacks (clipboard/speak/message/output/log).
      * Call after the engine is created; the listeners live on [NativeBridge].
-     * See DasherCore/docs/CUSTOM_ACTIONS.md.
+     * See DasherCore/docs/CUSTOM_ACTIONS.md and dasher_set_log_callback in dasher.h.
+     *
+     * The log callback is always routed to logcat under the "DasherCore" tag — the Android
+     * analogue of Dasher-Windows's Debug.Write + engine.log (DasherCanvas.cs:OnEngineLog).
+     * Override [NativeBridge.onLogListener] to redirect (e.g. to a file).
      */
     fun installEngineCallbacks() {
         if (destroyed || nativeHandle == 0L) return
@@ -245,6 +249,17 @@ class DasherEngine(
         NativeBridge.nativeSetSpeakCallback(nativeHandle)
         NativeBridge.nativeSetMessageCallback(nativeHandle)
         NativeBridge.nativeSetOutputCallback(nativeHandle)
+        NativeBridge.nativeSetLogCallback(nativeHandle)
+        if (NativeBridge.onLogListener == null) {
+            NativeBridge.onLogListener = { level, text ->
+                when (level) {
+                    3 -> Log.e("DasherCore", text)
+                    2 -> Log.w("DasherCore", text)
+                    1 -> Log.i("DasherCore", text)
+                    else -> Log.d("DasherCore", text)
+                }
+            }
+        }
     }
 
     // ── Parameter helpers (resolve BP_*/LP_*/SP_* names to keys internally) ─────

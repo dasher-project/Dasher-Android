@@ -175,6 +175,12 @@ object NativeBridge {
     @JvmStatic external fun nativeSetSpeakCallback(handle: Long)
     /** Installs the message callback (engine warnings/info as native UI). */
     @JvmStatic external fun nativeSetMessageCallback(handle: Long)
+    /**
+     * Installs the diagnostic log callback (replaces the former CFileLogger/CBasicLog/UserLog
+     * systems — see `dasher_set_log_callback` in dasher.h). Routes engine log messages at
+     * level >= debug to [onLogListener]. Mirrors Dasher-Windows DasherCanvas.cs.
+     */
+    @JvmStatic external fun nativeSetLogCallback(handle: Long)
     /** Installs the real-time output callback (per-char insert/delete; enables reactive output). */
     @JvmStatic external fun nativeSetOutputCallback(handle: Long)
 
@@ -182,6 +188,12 @@ object NativeBridge {
     @JvmStatic var onClipboardListener: ((String) -> Unit)? = null
     @JvmStatic var onSpeakListener: ((text: String, interrupt: Boolean) -> Unit)? = null
     @JvmStatic var onMessageListener: ((type: Int, text: String) -> Unit)? = null
+    /**
+     * Diagnostic log receiver. Level: 0=debug 1=info 2=warn 3=error (per dasher.h).
+     * Default install (see [DasherEngine.installEngineCallbacks]) routes to `android.util.Log`
+     * under the "DasherCore" tag — the logcat equivalent of Dasher-Windows's engine.log.
+     */
+    @JvmStatic var onLogListener: ((level: Int, text: String) -> Unit)? = null
     @JvmStatic var onOutputListener: ((type: Int, text: String) -> Unit)? = null
     @JvmStatic var onParameterChangedListener: ((key: Int) -> Unit)? = null
 
@@ -190,6 +202,7 @@ object NativeBridge {
         onSpeakListener?.invoke(text, interrupt != 0)
     }
     @JvmStatic fun onMessage(type: Int, text: String) { onMessageListener?.invoke(type, text) }
+    @JvmStatic fun onLog(level: Int, text: String) { onLogListener?.invoke(level, text) }
     @JvmStatic fun onOutput(type: Int, text: String) { onOutputListener?.invoke(type, text) }
     @JvmStatic fun onParameterChanged(key: Int) { onParameterChangedListener?.invoke(key) }
 }
