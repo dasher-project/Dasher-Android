@@ -175,6 +175,7 @@ class MainActivity : ComponentActivity() {
             // Engine→frontend callbacks (clipboard copy, speak, messages).
             eng.installEngineCallbacks()
             eng.installParameterCallback() // two-way sync (settings <-> toolbar/canvas)
+            eng.installLogCallback() // engine diagnostics → logcat
             applyCanvasFont(eng)
             installAppListeners()
         }
@@ -289,6 +290,14 @@ class MainActivity : ComponentActivity() {
                 if (key == alphabetKey) currentAlphabet = it.getCurrentAlphabet()
                 if (key == autoSpeedKey) autoSpeed = it.boolValue(autoSpeedKey)
                 if (key == learningKey) learning = it.boolValue(learningKey)
+            }
+        }
+        NativeBridge.onLogListener = { level, text ->
+            when (level) {
+                0 -> Log.d("DasherCore", text)
+                1 -> Log.i("DasherCore", text)
+                2 -> Log.w("DasherCore", text)
+                else -> Log.e("DasherCore", text)
             }
         }
     }

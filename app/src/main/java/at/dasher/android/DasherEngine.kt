@@ -351,6 +351,12 @@ class DasherEngine(
         NativeBridge.nativeSetParameterCallback(nativeHandle)
     }
 
+    /** Installs the engine diagnostic log callback (→ NativeBridge.onLogListener). */
+    fun installLogCallback() {
+        if (nativeHandle == 0L) return
+        NativeBridge.nativeSetLogCallback(nativeHandle)
+    }
+
     /** [Choreographer.FrameCallback] — one render step per vsync. */
     override fun doFrame(frameTimeNanos: Long) {
         if (!running) return
