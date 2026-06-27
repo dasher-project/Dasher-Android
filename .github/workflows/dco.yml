@@ -39,7 +39,7 @@ jobs:
             echo "❌ $missing commit(s) missing Signed-off-by."
             echo ""
             echo "To fix, rebase with signoff:"
-            echo "  git rebase --signoff origin/\${{ github.base_ref }}"
+            echo "  git rebase --signoff origin/${{ github.base_ref }}"
             echo "  git push --force-with-lease"
             echo ""
             echo "Or amend the last commit:"
