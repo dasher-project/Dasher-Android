@@ -106,6 +106,13 @@ class DasherCanvasView @JvmOverloads constructor(
         val data = commands
         if (data.isEmpty()) return
 
+        // Clip every primitive to this View's bounds. Dasher coordinates can land
+        // partially outside [0,W]x[0,H]; without this, fills/boxes bleed over the
+        // Compose toolbar above (which then renders pure black while still taking
+        // touches, since View hit-testing is already bounds-clipped).
+        canvas.save()
+        canvas.clipRect(0f, 0f, width.toFloat(), height.toFloat())
+
         if (showPauseOverlay) {
             fillPaint.color = 0x80D3D3D3.toInt()
             canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), fillPaint)
@@ -189,6 +196,7 @@ class DasherCanvasView @JvmOverloads constructor(
             }
             i += 6
         }
+        canvas.restore()
     }
 
     init {
