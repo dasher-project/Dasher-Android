@@ -364,6 +364,9 @@ class DasherEngine(
                     1 -> Log.i("DasherCore", text)
                     else -> Log.d("DasherCore", text)
                 }
+                // Also feed the crash ring buffer (RFC 0009): info+ kept so a crash
+                // report can carry the engine's last actions as engine_log_tail.
+                if (level >= 1) AnalyticsService.appendEngineLog(level, text)
             }
         }
     }

@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
 import com.composables.icons.lucide.ClipboardCopy
@@ -108,6 +109,7 @@ class MainActivity : ComponentActivity() {
     private var inputMode by mutableStateOf(InputMode.TOUCH)
     private var tiltAvailable by mutableStateOf(false)
     private var showSettings by mutableStateOf(false)
+    private var showAnalyticsPrompt by mutableStateOf(false)
     private var isPlaying by mutableStateOf(true)
     private var gameMode by mutableStateOf(false)
     private var gameState by mutableStateOf<GameState?>(null)
@@ -136,9 +138,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AnalyticsService.init(this)
+        // Analytics + crash handler are initialised in DasherApp (Application.onCreate).
         AnalyticsService.capture("app_launched", mapOf("locale" to java.util.Locale.getDefault().toLanguageTag()))
         loadOutputFontPrefs()
+        // RFC 0001: first-run opt-in prompt (only if the user hasn't been asked yet).
+        showAnalyticsPrompt = !AnalyticsService.hasPrompted(this)
 
         // Tilt provider forwards normalised coords to the engine on the main thread
         // (the C API context is single-threaded; sensor callbacks arrive elsewhere).
@@ -252,6 +256,26 @@ class MainActivity : ComponentActivity() {
                             outputFontFamily = family; outputFontSize = size; saveOutputFontPrefs()
                         }
                     )
+                    // RFC 0001: first-run analytics opt-in. No events are sent before this choice.
+                    if (showAnalyticsPrompt) {
+                        androidx.compose.material3.AlertDialog(
+                            onDismissRequest = {
+                                AnalyticsService.setOptedIn(this@MainActivity, false); showAnalyticsPrompt = false
+                            },
+                            title = { Text(stringResource(R.string.analytics_title)) },
+                            text = { Text(stringResource(R.string.analytics_body)) },
+                            confirmButton = {
+                                androidx.compose.material3.TextButton(onClick = {
+                                    AnalyticsService.setOptedIn(this@MainActivity, true); showAnalyticsPrompt = false
+                                }) { Text(stringResource(R.string.analytics_accept)) }
+                            },
+                            dismissButton = {
+                                androidx.compose.material3.TextButton(onClick = {
+                                    AnalyticsService.setOptedIn(this@MainActivity, false); showAnalyticsPrompt = false
+                                }) { Text(stringResource(R.string.analytics_decline)) }
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -445,7 +469,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = 8.dp)
                 ) {
                     Text(
-                        text = output.ifEmpty { "Touch the canvas to start writing." },
+                        text = output.ifEmpty { stringResource(R.string.output_placeholder) },
                         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(4.dp),
                         color = MaterialTheme.colorScheme.onBackground,
                         fontFamily = outputFontFamilyFor(outputFontFamily),
@@ -497,17 +521,19 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                ToolbarButton(Lucide.FilePlus, "New / clear output", onClear)
-                ToolbarButton(Lucide.FolderOpen, "Open file", onOpen)
+                ToolbarButton(Lucide.FilePlus, stringResource(R.string.toolbar_new), onClear)
+                ToolbarButton(Lucide.FolderOpen, stringResource(R.string.toolbar_open), onOpen)
                 ToolbarButton(if (isPlaying) Lucide.Pause else Lucide.Play,
-                    if (isPlaying) "Pause" else "Play", onTogglePlay)
-                ToolbarButton(Lucide.ClipboardCopy, "Copy all", onCopyAll)
-                ToolbarButton(Lucide.Save, "Save to file", onSave)
-                ToolbarButton(Lucide.Share2, "Share", onShare)
+                    stringResource(if (isPlaying) R.string.toolbar_pause else R.string.toolbar_play),
+                    onTogglePlay)
+                ToolbarButton(Lucide.ClipboardCopy, stringResource(R.string.toolbar_copy), onCopyAll)
+                ToolbarButton(Lucide.Save, stringResource(R.string.toolbar_save), onSave)
+                ToolbarButton(Lucide.Share2, stringResource(R.string.toolbar_share), onShare)
                 Spacer(Modifier.weight(1f))
-                ToolbarButton(Lucide.Gamepad2, if (gameMode) "Leave game mode" else "Game mode",
+                ToolbarButton(Lucide.Gamepad2,
+                    stringResource(if (gameMode) R.string.toolbar_game_leave else R.string.toolbar_game),
                     onToggleGame)
-                ToolbarButton(Lucide.Settings, "Settings", onOpenSettings)
+                ToolbarButton(Lucide.Settings, stringResource(R.string.toolbar_settings), onOpenSettings)
             }
         }
     }

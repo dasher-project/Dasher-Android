@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
@@ -72,6 +73,11 @@ fun SettingsScreen(
     // Re-fetch the schema (labels re-translate after a locale change).
     val reload: () -> Unit = { params = engine.allParameters(); version++ }
 
+    // RFC 0006: Simple/Advanced progressive disclosure. The engine exposes a binary
+    // `advanced` flag per parameter; Simple (default) hides advanced params, matching
+    // Apple's tier filter. A 3-tier (common/advanced/expert) needs a future CAPI.
+    var simpleMode by remember { mutableStateOf(true) }
+
     val tabs = remember(params) {
         val order = listOf("Input", "Language", "Customization", "Output", "Game Mode")
         val present = params.map { it.group.ifEmpty { "Input" } }.distinct()
@@ -85,16 +91,26 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = { engine.saveSettings(); onDismiss() }) {
-                        Icon(Lucide.X, contentDescription = "Close")
+                        Icon(Lucide.X, contentDescription = stringResource(R.string.settings_close))
                     }
                 }
             )
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // RFC 0006: Simple/Advanced disclosure toggle.
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(stringResource(R.string.settings_advanced), style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f))
+                Switch(checked = !simpleMode, onCheckedChange = { simpleMode = !it })
+            }
             PrimaryScrollableTabRow(
                 selectedTabIndex = selectedTab,
                 edgePadding = 8.dp,
@@ -111,13 +127,15 @@ fun SettingsScreen(
                     )
                 }
             }
-            val rows = remember(params, tabGroup) {
+            val rows = remember(params, tabGroup, simpleMode) {
                 params.filter {
                     val g = it.group.ifEmpty { "Input" }
                     g == tabGroup &&
                         // The colour palette param is rendered as the swatch picker in
                         // the Customization tab (AppearanceSection), not as a dropdown.
-                        !(tabGroup == "Customization" && it.name.contains("colour", true) && it.name.contains("palette", true))
+                        !(tabGroup == "Customization" && it.name.contains("colour", true) && it.name.contains("palette", true)) &&
+                        // RFC 0006: hide advanced params in Simple mode.
+                        !(simpleMode && it.advanced != 0)
                 }
             }
             LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -184,6 +202,7 @@ private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var current by remember { mutableStateOf(engine.locale()) }
     val label = DASHER_LOCALES.firstOrNull { it.first == current }?.second ?: current
+    val ctx = androidx.compose.ui.platform.LocalContext.current
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -201,7 +220,13 @@ private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
                     DropdownMenuItem(
                         text = { Text(name) },
                         onClick = {
-                            if (engine.setLocale(code)) { current = code; reload() }
+                            if (engine.setLocale(code)) {
+                                current = code
+                                LocaleHelper.setLocale(ctx, code)
+                                reload()
+                                // Recreate so the Compose UI chrome re-localises too (RFC 0003).
+                                (ctx as? android.app.Activity)?.recreate()
+                            }
                             expanded = false
                         }
                     )
