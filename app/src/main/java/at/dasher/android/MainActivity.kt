@@ -176,6 +176,13 @@ class MainActivity : ComponentActivity() {
             eng.installEngineCallbacks()
             eng.installParameterCallback() // two-way sync (settings <-> toolbar/canvas)
             eng.installLogCallback() // engine diagnostics → logcat
+            // RFC 0007: push the OS dark-mode state into the engine so a SYSTEM
+            // appearance-mode user gets the right (derived) palette. Activity is
+            // recreated on uiMode change (not in configChanges), so this also covers
+            // the user toggling system dark mode at runtime.
+            val nightMode = resources.configuration.uiMode and
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK
+            eng.setSystemAppearance(nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES)
             applyCanvasFont(eng)
             installAppListeners()
         }

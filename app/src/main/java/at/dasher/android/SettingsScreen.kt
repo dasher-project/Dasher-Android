@@ -1,17 +1,26 @@
 package at.dasher.android
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
@@ -96,7 +106,13 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                 }
             }
             val rows = remember(params, tabGroup) {
-                params.filter { (it.group.ifEmpty { "Input" }) == tabGroup }
+                params.filter {
+                    val g = it.group.ifEmpty { "Input" }
+                    g == tabGroup &&
+                        // The colour palette param is rendered as the swatch picker in
+                        // the Customization tab (AppearanceSection), not as a dropdown.
+                        !(tabGroup == "Customization" && it.name.contains("colour", true) && it.name.contains("palette", true))
+                }
             }
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 if (tabGroup == "Privacy") {
@@ -104,6 +120,10 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                 } else {
                     if (tabGroup == "Language") {
                         item { LocaleRow(engine, reload) }
+                        item { TrainingSection(engine) }
+                    }
+                    if (tabGroup == "Customization") {
+                        item { AppearanceSection(engine, bump) }
                     }
                     items(rows, key = { it.key }) { p ->
                         ParameterRow(engine, p, version, bump)
@@ -179,6 +199,194 @@ private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+// RFC 0007 appearance + palette picker. Mirrors DasherApple DasherSettingsView
+// (Customization section) and Dasher-Windows BuildPaletteSwatchPicker. The active
+// palette is *derived* from mode + system appearance + light/dark prefs; pickers must
+// route through dasher_set_palette / set_light/dark_palette (never SP_COLOUR_ID).
+@Composable
+private fun AppearanceSection(engine: DasherEngine, onChange: () -> Unit) {
+    var mode by remember { mutableIntStateOf(engine.getAppearanceMode()) }
+    var lightPal by remember { mutableStateOf(engine.getLightPalette()) }
+    var darkPal by remember { mutableStateOf(engine.getDarkPalette()) }
+    val palettes = remember { engine.getPalettes() }
+    val lightPalettes = palettes.filter { it.appearance == 1 || it.appearance == 0 }
+    val darkPalettes = palettes.filter { it.appearance == 2 || it.appearance == 0 }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("Appearance", style = MaterialTheme.typography.titleMedium)
+        Text("Choose how Dasher looks. System follows your device's dark-mode setting.",
+            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        // Mode picker: System / Light / Dark (RFC 0007: 0 / 1 / 2).
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(0 to "System", 1 to "Light", 2 to "Dark").forEach { (value, label) ->
+                FilterChip(
+                    selected = mode == value,
+                    onClick = {
+                        mode = value
+                        engine.setAppearanceMode(value)
+                        // Effective palette may flip; refresh the persisted prefs.
+                        lightPal = engine.getLightPalette()
+                        darkPal = engine.getDarkPalette()
+                        onChange()
+                    },
+                    label = { Text(label) }
+                )
+            }
+        }
+
+        Text("Light palette", style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 4.dp))
+        PaletteSwatchRow(
+            palettes = lightPalettes,
+            selected = lightPal,
+            onSelect = { name -> lightPal = name; engine.setLightPalette(name); onChange() }
+        )
+
+        Text("Dark palette", style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 4.dp))
+        PaletteSwatchRow(
+            palettes = darkPalettes,
+            selected = darkPal,
+            onSelect = { name -> darkPal = name; engine.setDarkPalette(name); onChange() }
+        )
+    }
+}
+
+/** Horizontal scrollable strip of palette swatches (4 ARGB preview colours each). */
+@Composable
+private fun PaletteSwatchRow(
+    palettes: List<DasherEngine.PaletteInfo>,
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    if (palettes.isEmpty()) {
+        Text("No palettes available", style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        return
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        palettes.forEach { p ->
+            val isSelected = p.name == selected
+            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.width(64.dp)) {
+                Row(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .width(56.dp)
+                        .then(Modifier.clickable { onSelect(p.name) })
+                        .border(
+                            width = if (isSelected) 2.dp else 1.dp,
+                            color = if (isSelected) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.outline
+                        )
+                ) {
+                    p.preview.take(4).forEach { argb ->
+                        Box(modifier = Modifier.weight(1f).fillMaxHeight().background(Color(argb)))
+                    }
+                }
+                Text(p.name, style = MaterialTheme.typography.labelSmall, maxLines = 1,
+                    overflow = TextOverflow.Ellipsis)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrainingSection(engine: DasherEngine) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var sizeBytes by remember { mutableStateOf(engine.userTrainingSize()) }
+    var status by remember { mutableStateOf("") }
+    var showResetConfirm by remember { mutableStateOf(false) }
+    val refresh: () -> Unit = { sizeBytes = engine.userTrainingSize() }
+
+    // SAF launchers (Compose-hosted). Import reads a .txt the user picks; export
+    // writes the accumulated training file to a user-chosen location.
+    val importLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        try {
+            val text = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                ?: return@rememberLauncherForActivityResult
+            val rc = engine.importTrainingText(text)
+            engine.appendTrainingFile(text) // persist for next launch (matches Dasher-Apple)
+            refresh()
+            status = if (rc == 0) "Imported ${(text.length / 1024).coerceAtLeast(1)} KB of training text"
+            else "Import failed (rc=$rc)"
+        } catch (e: Exception) {
+            status = "Import failed: ${e.message}"
+        }
+    }
+    val exportLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.CreateDocument("text/plain")
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        try {
+            val src = engine.userTrainingFile()
+            if (src == null || !src.exists()) {
+                status = "No training data to export yet"
+                return@rememberLauncherForActivityResult
+            }
+            context.contentResolver.openOutputStream(uri)?.use { out ->
+                src.inputStream().use { it.copyTo(out) }
+            }
+            status = "Exported training data"
+        } catch (e: Exception) {
+            status = "Export failed: ${e.message}"
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("Training data", style = MaterialTheme.typography.titleMedium)
+        Text(
+            "Import adds text to the language model (appends to existing learning). " +
+                "Export saves your accumulated training data for backup or transfer.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        val sizeText = if (sizeBytes <= 0) "No user training data yet"
+        else if (sizeBytes < 1024) "$sizeBytes B"
+        else "${sizeBytes / 1024} KB"
+        Text("Current: $sizeText", style = MaterialTheme.typography.bodyMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { importLauncher.launch(arrayOf("text/plain")) }) { Text("Import") }
+            OutlinedButton(onClick = { exportLauncher.launch("dasher_training.txt") },
+                enabled = sizeBytes > 0) { Text("Export") }
+            OutlinedButton(onClick = { showResetConfirm = true }, enabled = sizeBytes > 0) { Text("Reset") }
+        }
+        if (status.isNotEmpty()) {
+            Text(status, style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+
+    if (showResetConfirm) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showResetConfirm = false },
+            title = { Text("Reset training data?") },
+            text = { Text("This deletes your accumulated training data and cannot be undone. " +
+                    "Restart Dasher for the change to take full effect.") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    val n = engine.resetTrainingData()
+                    refresh()
+                    status = if (n > 0) "Reset. Restart Dasher to apply." else "Nothing to reset"
+                    showResetConfirm = false
+                }) { Text("Reset") }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showResetConfirm = false }) { Text("Cancel") }
+            }
+        )
     }
 }
 

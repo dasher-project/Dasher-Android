@@ -476,7 +476,7 @@ Java_at_dasher_android_NativeBridge_nativeGetCurrentPalette(JNIEnv* env, jclass,
 
 JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSetPalette(JNIEnv* env, jclass,
-                                                             jlong handle, jstring jName) {
+                                                              jlong handle, jstring jName) {
     auto* s = fromHandle(handle);
     if (!s || !s->ctx || !jName) return;
     const char* n = env->GetStringUTFChars(jName, nullptr);
@@ -485,6 +485,128 @@ Java_at_dasher_android_NativeBridge_nativeSetPalette(JNIEnv* env, jclass,
         env->ReleaseStringUTFChars(jName, n);
     }
 }
+
+// ── Colour palette preview + appearance model (RFC 0007) ─────────────────────
+
+JNIEXPORT jintArray JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetPalettePreviewColors(JNIEnv* env, jclass,
+                                                                          jlong handle, jint index) {
+    auto* s = fromHandle(handle);
+    jintArray out = env->NewIntArray(4);
+    if (!out) return nullptr;
+    if (!s || !s->ctx) return out;
+    jint buf[4] = {0, 0, 0, 0};
+    dasher_get_palette_preview_colors(s->ctx, index, reinterpret_cast<int*>(buf));
+    env->SetIntArrayRegion(out, 0, 4, buf);
+    return out;
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetPaletteAppearance(JNIEnv*, jclass, jlong handle, jint index) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_palette_appearance(s->ctx, index) : -1;
+}
+
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeFindCompanionPalette(JNIEnv* env, jclass,
+                                                                       jlong handle, jstring jName) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jName) return env->NewStringUTF("");
+    const char* n = env->GetStringUTFChars(jName, nullptr);
+    if (!n) return env->NewStringUTF("");
+    const char* companion = dasher_find_companion_palette(s->ctx, n);
+    env->ReleaseStringUTFChars(jName, n);
+    return env->NewStringUTF(companion ? companion : "");
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetAppearanceMode(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_appearance_mode(s->ctx) : 0;
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetAppearanceMode(JNIEnv*, jclass, jlong handle, jint mode) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_appearance_mode(s->ctx, mode);
+}
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetSystemAppearance(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_system_appearance(s->ctx) : 1;
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetSystemAppearance(JNIEnv*, jclass, jlong handle, jint appearance) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_system_appearance(s->ctx, appearance);
+}
+
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetLightPalette(JNIEnv* env, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_get_light_palette(s->ctx));
+}
+
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetDarkPalette(JNIEnv* env, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return env->NewStringUTF("");
+    return env->NewStringUTF(dasher_get_dark_palette(s->ctx));
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetLightPalette(JNIEnv* env, jclass,
+                                                                  jlong handle, jstring jName) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jName) return;
+    const char* n = env->GetStringUTFChars(jName, nullptr);
+    if (n) {
+        dasher_set_light_palette(s->ctx, n);
+        env->ReleaseStringUTFChars(jName, n);
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetDarkPalette(JNIEnv* env, jclass,
+                                                                jlong handle, jstring jName) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jName) return;
+    const char* n = env->GetStringUTFChars(jName, nullptr);
+    if (n) {
+        dasher_set_dark_palette(s->ctx, n);
+        env->ReleaseStringUTFChars(jName, n);
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetUserPalette(JNIEnv* env, jclass,
+                                                                jlong handle, jstring jName) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jName) return;
+    const char* n = env->GetStringUTFChars(jName, nullptr);
+    if (n) {
+        dasher_set_user_palette(s->ctx, n);
+        env->ReleaseStringUTFChars(jName, n);
+    }
+}
+
+// ── Training data ───────────────────────────────────────────────────────────
+
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeImportTrainingText(JNIEnv* env, jclass,
+                                                                    jlong handle, jstring jText) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jText) return -1;
+    const char* text = env->GetStringUTFChars(jText, nullptr);
+    if (!text) return -1;
+    int rc = dasher_import_training_text(s->ctx, text);
+    env->ReleaseStringUTFChars(jText, text);
+    return rc;
+}
+
 
 // ── Persistence ─────────────────────────────────────────────────────────────
 

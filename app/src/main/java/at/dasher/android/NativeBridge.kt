@@ -129,7 +129,43 @@ object NativeBridge {
     @JvmStatic external fun nativeGetPaletteCount(handle: Long): Int
     @JvmStatic external fun nativeGetPaletteName(handle: Long, index: Int): String
     @JvmStatic external fun nativeGetCurrentPalette(handle: Long): String
+    /**
+     * 4 ARGB preview colours for the palette at [index] (`0xAARRGGBB`).
+     * Mirrors `dasher_get_palette_preview_colors`; used for swatch rendering.
+     */
+    @JvmStatic external fun nativeGetPalettePreviewColors(handle: Long, index: Int): IntArray
+    /**
+     * Classify a palette. Returns 0=unspecified, 1=light, 2=dark, -1=out of range
+     * (per RFC 0007). Used to group palettes in the picker.
+     */
+    @JvmStatic external fun nativeGetPaletteAppearance(handle: Long, index: Int): Int
+    /** Companion (opposite-appearance) palette name for [name], or "" if none. */
+    @JvmStatic external fun nativeFindCompanionPalette(handle: Long, name: String): String
+    /**
+     * Set the active palette. Routes through the appearance model
+     * (`dasher_set_palette` -> `dasher_set_user_palette`); do NOT write `SP_COLOUR_ID`
+     * directly — that leaks the choice across restarts (see RFC 0007).
+     */
     @JvmStatic external fun nativeSetPalette(handle: Long, name: String)
+
+    // ── Appearance / dark mode (RFC 0007) ──
+    /** Persisted appearance mode: 0=system, 1=light, 2=dark. */
+    @JvmStatic external fun nativeGetAppearanceMode(handle: Long): Int
+    @JvmStatic external fun nativeSetAppearanceMode(handle: Long, mode: Int)
+    /** Transient OS appearance input (1=light, 2=dark). Consulted only in SYSTEM mode. */
+    @JvmStatic external fun nativeGetSystemAppearance(handle: Long): Int
+    @JvmStatic external fun nativeSetSystemAppearance(handle: Long, appearance: Int)
+    /** User's preferred palette for each appearance (persisted). */
+    @JvmStatic external fun nativeGetLightPalette(handle: Long): String
+    @JvmStatic external fun nativeGetDarkPalette(handle: Long): String
+    @JvmStatic external fun nativeSetLightPalette(handle: Long, name: String)
+    @JvmStatic external fun nativeSetDarkPalette(handle: Long, name: String)
+    /** Convenience: set palette for the current effective appearance (RFC 0007). */
+    @JvmStatic external fun nativeSetUserPalette(handle: Long, name: String)
+
+    // ── Training data ──
+    /** Feed text into the live language model. Returns 0 on success, -1 on failure. */
+    @JvmStatic external fun nativeImportTrainingText(handle: Long, text: String): Int
 
     // ── Persistence ──
     /** Flush current settings to dasher_settings.xml in the user dir. */

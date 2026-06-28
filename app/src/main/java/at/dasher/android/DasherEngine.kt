@@ -31,6 +31,7 @@ data class GameState(
  */
 class DasherEngine(
     private val nativeHandle: Long,
+    private val userDir: String,
     frameConsumer: (IntArray, Array<String>) -> Unit
 ) : Choreographer.FrameCallback {
 
@@ -228,6 +229,111 @@ class DasherEngine(
         NativeBridge.nativeSetPalette(nativeHandle, name)
     }
 
+    // ── Appearance / dark mode (RFC 0007) ─────────────────────────────────────
+    // The active palette is *derived* from mode + system input + light/dark prefs,
+    // persisted to appearance_settings.xml by DasherCore. Frontend must NOT write
+    // SP_COLOUR_ID directly (use these helpers / dasher_set_palette).
+
+    /** One palette row for the picker: name + 4 ARGB preview colours + appearance class. */
+    data class PaletteInfo(
+        val index: Int, val name: String,
+        val preview: IntArray,            // 4 ARGB ints
+        val appearance: Int               // 0=unspecified, 1=light, 2=dark
+    )
+
+    /** All palettes with preview swatches and appearance classification. */
+    fun getPalettes(): List<PaletteInfo> {
+        if (destroyed || nativeHandle == 0L) return emptyList()
+        val count = NativeBridge.nativeGetPaletteCount(nativeHandle)
+        return (0 until count).map { i ->
+            PaletteInfo(
+                index = i,
+                name = NativeBridge.nativeGetPaletteName(nativeHandle, i),
+                preview = NativeBridge.nativeGetPalettePreviewColors(nativeHandle, i),
+                appearance = NativeBridge.nativeGetPaletteAppearance(nativeHandle, i)
+            )
+        }
+    }
+
+    /** Appearance mode: 0=system, 1=light, 2=dark. */
+    fun getAppearanceMode(): Int =
+        if (destroyed || nativeHandle == 0L) 0 else NativeBridge.nativeGetAppearanceMode(nativeHandle)
+
+    fun setAppearanceMode(mode: Int) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetAppearanceMode(nativeHandle, mode)
+    }
+
+    /**
+     * Push the OS-reported appearance (1=light, 2=dark) into the engine.
+     * Call on init and on every `uiMode` config change. Only consulted when the
+     * user's mode == SYSTEM. Mirrors Dasher-Apple's setSystemAppearance(dark:).
+     */
+    fun setSystemAppearance(dark: Boolean) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetSystemAppearance(nativeHandle, if (dark) 2 else 1)
+    }
+
+    fun getLightPalette(): String =
+        if (destroyed || nativeHandle == 0L) "" else NativeBridge.nativeGetLightPalette(nativeHandle)
+
+    fun getDarkPalette(): String =
+        if (destroyed || nativeHandle == 0L) "" else NativeBridge.nativeGetDarkPalette(nativeHandle)
+
+    fun setLightPalette(name: String) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetLightPalette(nativeHandle, name)
+    }
+
+    fun setDarkPalette(name: String) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeSetDarkPalette(nativeHandle, name)
+    }
+
+    // ── Training data ─────────────────────────────────────────────────────────
+    /** Feed text into the live language model. Returns 0 on success, -1 on failure. */
+    fun importTrainingText(text: String): Int {
+        if (destroyed || nativeHandle == 0L) return -1
+        return NativeBridge.nativeImportTrainingText(nativeHandle, text)
+    }
+
+    /**
+     * Directory holding per-alphabet training files (`training_*.txt`) under the
+     * engine's user dir. Matches DasherCore's `<userDir>/training/` layout and the
+     * Apple/Windows frontends.
+     */
+    fun userTrainingDir(): java.io.File = java.io.File(userDir, "training")
+
+    /** The first `training_*.txt` in the user training dir, or null if none yet. */
+    fun userTrainingFile(): java.io.File? =
+        userTrainingDir().listFiles()?.firstOrNull { it.name.startsWith("training_") && it.extension.equals("txt", true) }
+
+    /** Total bytes of accumulated user training data (0 if none). */
+    fun userTrainingSize(): Long = userTrainingFile()?.length() ?: 0L
+
+    /** Delete every `training_*.txt` in the user training dir. Returns the count removed. */
+    fun resetTrainingData(): Int {
+        val dir = userTrainingDir()
+        val files = dir.listFiles()?.filter { it.name.startsWith("training_") && it.extension.equals("txt", true) }
+            ?: return 0
+        var n = 0
+        for (f in files) if (f.delete()) n++
+        return n
+    }
+
+    /** Append [text] to the user's training file, creating the dir/file if needed. */
+    fun appendTrainingFile(text: String) {
+        try {
+            val dir = userTrainingDir()
+            if (!dir.exists()) dir.mkdirs()
+            val target = userTrainingFile() ?: java.io.File(dir, "training_english_GB.txt")
+            target.appendText(text)
+        } catch (e: Exception) {
+            Log.w(TAG, "appendTrainingFile failed: ${e.message}")
+        }
+    }
+
+
     /** Flush settings to dasher_settings.xml in the user dir. */
     fun saveSettings() {
         if (destroyed || nativeHandle == 0L) return
@@ -424,7 +530,7 @@ class DasherEngine(
                 Log.e(TAG, "nativeCreate returned 0 — dataDir=$dataDir")
                 return null
             }
-            return DasherEngine(handle, frameConsumer)
+            return DasherEngine(handle, userDir, frameConsumer)
         }
     }
 }
