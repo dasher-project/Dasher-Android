@@ -67,6 +67,9 @@ object AnalyticsService {
             captureApplicationLifecycleEvents = false
             captureScreenViews = false
             captureDeepLinks = false
+            // Verbose SDK logs on debug builds so the crash-report path can be
+            // verified end-to-end via logcat (capture -> flush -> HTTP send).
+            debug = BuildConfig.DEBUG
         }
         PostHogAndroid.setup(ctx, config)
         PostHog.identify(anonId(ctx))
@@ -113,6 +116,10 @@ object AnalyticsService {
     // ── Crash reporting (RFC 0009) ─────────────────────────────────────────────
     // JVM-level capture only in v1: a native SIGSEGV inside libdasher.so is not seen
     // by Thread.setDefaultUncaughtExceptionHandler; a signal shim is a follow-up.
+    //
+    // Crash reports go via PostHog.captureException so they arrive as `$exception`
+    // events in PostHog Error Tracking (a plain `capture("crash", …)` is invisible
+    // to Error Tracking — it only shows in Events/Insights).
 
     /** Install the uncaught-exception handler. Call once from Application.onCreate. */
     fun installCrashHandler(context: Context) {
@@ -120,7 +127,16 @@ object AnalyticsService {
         val previous = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
-                writeCrashFile(context, thread.name, throwable)
+                if (initialized) {
+                    // Opted in: send now as an `$exception` event (best-effort; the SDK's
+                    // disk queue is the real safety net if the process dies mid-send).
+                    PostHog.captureException(throwable, crashProperties(thread.name, snapshotEngineLog()))
+                    PostHog.flush()
+                } else {
+                    // Not opted in yet: defer to a crash file, flushed on a future launch
+                    // if the user later opts in.
+                    writeCrashFile(context, thread.name, throwable)
+                }
             } catch (_: Throwable) { /* never throw in a crash handler */ }
             previous?.uncaughtException(thread, throwable)
         }
@@ -128,29 +144,51 @@ object AnalyticsService {
 
     /**
      * On launch: if a pending crash file exists, send it (only if opted in — RFC 0009)
-     * and delete it. Crash files older than 7 days are discarded regardless.
+     * and delete it. Crash files older than 7 days are discarded regardless. The
+     * deferred crash is rebuilt into a synthetic Throwable so it lands in Error Tracking
+     * as an `$exception` event, not a custom-named one.
      */
     fun flushPendingCrash(context: Context) {
         val file = java.io.File(context.filesDir, CRASH_FILE)
         if (!file.exists()) return
         val age = System.currentTimeMillis() - file.lastModified()
         if (age > CRASH_MAX_AGE_MS) { file.delete(); return }
-        if (optedIn(context)) {
+        if (optedIn(context) && initialized) {
             try {
-                val text = file.readText()
-                // Minimal envelope: lines "key=value", stack/engine tail after blank line.
-                val props = mutableMapOf<String, Any>()
-                val (header, body) = text.split("\n\n", limit = 2)
+                val raw = file.readText()
+                val (header, body) = raw.split("\n\n", limit = 2)
                     .let { it.first() to (it.getOrNull(1) ?: "") }
+                val props = mutableMapOf<String, Any>()
                 header.split('\n').forEach { ln ->
                     val idx = ln.indexOf('=')
                     if (idx > 0) props[ln.substring(0, idx)] = ln.substring(idx + 1)
                 }
-                if (body.isNotBlank()) props["stack_trace"] = body
-                capture("crash", props)
+                val originalType = props.remove("exception_type")?.toString() ?: "Throwable"
+                // Body is "<jvm stack>\n--- engine log ---\n<engine tail>".
+                val parts = body.split("\n--- engine log ---\n", limit = 2)
+                val stackStr = parts[0]
+                val engineTail = parts.getOrNull(1) ?: ""
+                if (engineTail.isNotBlank()) props["engine_log_tail"] = engineTail
+                props["deferred"] = true
+                val synthetic = DeferredCrashException(originalType)
+                synthetic.stackTrace = parseStackTrace(stackStr)
+                PostHog.captureException(synthetic, props)
+                PostHog.flush()
             } catch (_: Throwable) { }
         }
         file.delete()
+    }
+
+    /** Properties attached to every crash `$exception`: thread, versions, locale, engine log tail. */
+    private fun crashProperties(thread: String, engineLogTail: String): Map<String, Any> {
+        val props = mutableMapOf<String, Any>(
+            "thread" to thread,
+            "app_version" to appVersion(),
+            "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})",
+            "locale" to (appContext?.let { LocaleHelper.currentLanguageTag(it) } ?: "system")
+        )
+        if (engineLogTail.isNotBlank()) props["engine_log_tail"] = engineLogTail
+        return props
     }
 
     private fun writeCrashFile(context: Context, threadName: String, t: Throwable) {
@@ -164,19 +202,55 @@ object AnalyticsService {
             append("app_version=").append(appVersion()).append('\n')
             append("os_version=Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})\n")
         }
-        // stack_trace carries the JVM stack + the engine log tail (separated) so a
-        // maintainer can reconstruct what DasherCore was doing when the process died.
         val body = if (engineTail.isNotBlank()) "$stack\n--- engine log ---\n$engineTail" else stack
         java.io.File(context.filesDir, CRASH_FILE).writeText("$header\n\n$body")
     }
 
+    /** Best-effort parse of a printed JVM stack trace back into StackTraceElement frames. */
+    internal fun parseStackTrace(s: String): Array<StackTraceElement> {
+        val frame = Regex("""\s*at\s+([\w.$]+)\.([\w$<>]+)\(([^:)]*?)(?::(\d+))?\)""")
+        val frames = mutableListOf<StackTraceElement>()
+        for (line in s.lineSequence()) {
+            val m = frame.matchEntire(line) ?: continue
+            val cls = m.groupValues[1]
+            val method = m.groupValues[2]
+            val file = m.groupValues[3].ifBlank { null }
+            val n = m.groupValues[4].toIntOrNull()
+                ?: if (file.equals("Native Method", true)) -2 else -1
+            frames.add(StackTraceElement(cls, method, file, n))
+        }
+        if (frames.isEmpty()) frames.add(StackTraceElement("deferred", "unknown", null, -1))
+        return frames.toTypedArray()
+    }
+
+    /** Synthetic throwable used to replay a deferred crash; carries the original type name. */
+    private class DeferredCrashException(val originalType: String) :
+        Throwable("deferred crash: $originalType")
+
     /** Scrub home-directory path segments and emails; respect RFC 0001's no-PII promise. */
-    private fun scrub(s: String): String {
+    internal fun scrub(s: String): String {
         var out = s
         out = Regex("""(/Users/|/home/)([^/\\]+)""").replace(out) { "${it.groupValues[1]}<user>" }
-        out = Regex("""C:\\Users\\([^\\]+)""").replace(out, "C:\\Users\\<user>")
-        out = Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}""").replace(out, "<email>")
+        // Lambda form (not the string-replacement overload): backslashes in the
+        // replacement must be literal, not treated as regex escape characters.
+        out = Regex("""C:\\Users\\([^\\]+)""").replace(out) { "C:\\Users\\<user>" }
+        out = Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}""").replace(out) { "<email>" }
         return out
+    }
+
+    // ── Debug: end-to-end crash-report verification (debug builds only) ────────
+
+    /** Non-destructive: send a synthetic test exception so it appears in Error Tracking. */
+    fun sendTestException() {
+        if (!initialized) return
+        val t = RuntimeException("Dasher test exception (debug trigger)")
+        PostHog.captureException(t, crashProperties("main", snapshotEngineLog()) + mapOf("test" to true))
+        PostHog.flush()
+    }
+
+    /** Destructive: throw on a worker thread so the real UncaughtExceptionHandler path fires. */
+    fun triggerRealCrash() {
+        Thread({ throw RuntimeException("Dasher real crash (debug trigger)") }, "DasherCrashTest").start()
     }
 
     private fun anonId(context: Context): String =
