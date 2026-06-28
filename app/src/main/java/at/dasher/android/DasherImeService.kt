@@ -212,6 +212,12 @@ class DasherImeService : InputMethodService() {
         }
         eng.setLowMemoryMode(true)
         eng.installEngineCallbacks()
+        // RFC 0007: push the OS dark-mode state so a SYSTEM-mode user gets the right
+        // derived palette (mirrors MainActivity; settings/appearance persist on disk
+        // and are read at engine creation).
+        val nightMode = resources.configuration.uiMode and
+            android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        eng.setSystemAppearance(nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES)
         NativeBridge.onOutputListener = { type, text ->
             val ic = currentInputConnection
             if (ic != null) {
