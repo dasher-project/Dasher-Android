@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dasher</string>
+    <string name="ime_name">Dasher-Tastatur</string>
+    <string name="save_default_name">dasher.txt</string>
+
+    <!-- Toolbar (RFC 0002 Lucide icons) -->
+    <string name="toolbar_new">Neu / Ausgabe löschen</string>
+    <string name="toolbar_open">Datei öffnen</string>
+    <string name="toolbar_play">Starten</string>
+    <string name="toolbar_pause">Pause</string>
+    <string name="toolbar_copy">Alles kopieren</string>
+    <string name="toolbar_save">In Datei speichern</string>
+    <string name="toolbar_share">Teilen</string>
+    <string name="toolbar_game">Spielmodus</string>
+    <string name="toolbar_game_leave">Spielmodus verlassen</string>
+    <string name="toolbar_settings">Einstellungen</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_close">Schließen</string>
+    <string name="settings_advanced">Erweiterte Einstellungen</string>
+
+    <!-- Analytics opt-in (RFC 0001) -->
+    <string name="analytics_title">Dasher verbessern helfen</string>
+    <string name="analytics_body">Anonyme Nutzungsstatistiken helfen uns zu verstehen, wie Dasher verwendet wird, und Abstürze zu beheben. Es werden keine getippten Texte, Zwischenablageinhalte oder persönlichen Daten erhoben. Deaktivierung jederzeit unter Einstellungen → Datenschutz.</string>
+    <string name="analytics_accept">Dasher verbessern helfen</string>
+    <string name="analytics_decline">Nicht jetzt</string>
+
+    <!-- Output -->
+    <string name="output_placeholder">Berühre die Leinwand, um zu schreiben.</string>
+    <string name="nothing_to_save">Nichts zu speichern</string>
+    <string name="nothing_to_share">Nichts zu teilen</string>
+    <string name="saved">Gespeichert</string>
+    <string name="save_failed">Speichern fehlgeschlagen</string>
+</resources>

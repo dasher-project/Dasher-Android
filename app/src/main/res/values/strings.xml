@@ -3,4 +3,34 @@
     <string name="app_name">Dasher</string>
     <string name="ime_name">Dasher Keyboard</string>
     <string name="save_default_name">dasher.txt</string>
+
+    <!-- Toolbar (RFC 0002 Lucide icons) -->
+    <string name="toolbar_new">New / clear output</string>
+    <string name="toolbar_open">Open file</string>
+    <string name="toolbar_play">Play</string>
+    <string name="toolbar_pause">Pause</string>
+    <string name="toolbar_copy">Copy all</string>
+    <string name="toolbar_save">Save to file</string>
+    <string name="toolbar_share">Share</string>
+    <string name="toolbar_game">Game mode</string>
+    <string name="toolbar_game_leave">Leave game mode</string>
+    <string name="toolbar_settings">Settings</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_close">Close</string>
+    <string name="settings_advanced">Advanced settings</string>
+
+    <!-- Analytics opt-in (RFC 0001) -->
+    <string name="analytics_title">Help improve Dasher</string>
+    <string name="analytics_body">Anonymous usage analytics help us understand how Dasher is used and fix crashes. No typed text, clipboard contents, or personal information is ever collected. Opt out any time in Settings → Privacy.</string>
+    <string name="analytics_accept">Help improve Dasher</string>
+    <string name="analytics_decline">Not now</string>
+
+    <!-- Output -->
+    <string name="output_placeholder">Touch the canvas to start writing.</string>
+    <string name="nothing_to_save">Nothing to save</string>
+    <string name="nothing_to_share">Nothing to share</string>
+    <string name="saved">Saved</string>
+    <string name="save_failed">Save failed</string>
 </resources>

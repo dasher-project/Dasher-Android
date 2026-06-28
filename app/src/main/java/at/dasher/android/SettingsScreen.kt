@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
@@ -58,13 +59,24 @@ import com.composables.icons.lucide.X
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
+fun SettingsScreen(
+    engine: DasherEngine,
+    onDismiss: () -> Unit,
+    outputFontFamily: String = "",
+    outputFontSize: Float = 16f,
+    onOutputFontChanged: (String, Float) -> Unit = { _, _ -> }
+) {
     var params by remember { mutableStateOf(engine.allParameters()) }
     // Bumped on every change so rows re-read fresh values from the engine.
     var version by remember { mutableIntStateOf(0) }
     val bump: () -> Unit = { version++ }
     // Re-fetch the schema (labels re-translate after a locale change).
     val reload: () -> Unit = { params = engine.allParameters(); version++ }
+
+    // RFC 0006: Simple/Advanced progressive disclosure. The engine exposes a binary
+    // `advanced` flag per parameter; Simple (default) hides advanced params, matching
+    // Apple's tier filter. A 3-tier (common/advanced/expert) needs a future CAPI.
+    var simpleMode by remember { mutableStateOf(true) }
 
     val tabs = remember(params) {
         val order = listOf("Input", "Language", "Customization", "Output", "Game Mode")
@@ -79,16 +91,26 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = { engine.saveSettings(); onDismiss() }) {
-                        Icon(Lucide.X, contentDescription = "Close")
+                        Icon(Lucide.X, contentDescription = stringResource(R.string.settings_close))
                     }
                 }
             )
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // RFC 0006: Simple/Advanced disclosure toggle.
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(stringResource(R.string.settings_advanced), style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f))
+                Switch(checked = !simpleMode, onCheckedChange = { simpleMode = !it })
+            }
             PrimaryScrollableTabRow(
                 selectedTabIndex = selectedTab,
                 edgePadding = 8.dp,
@@ -105,13 +127,15 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                     )
                 }
             }
-            val rows = remember(params, tabGroup) {
+            val rows = remember(params, tabGroup, simpleMode) {
                 params.filter {
                     val g = it.group.ifEmpty { "Input" }
                     g == tabGroup &&
                         // The colour palette param is rendered as the swatch picker in
                         // the Customization tab (AppearanceSection), not as a dropdown.
-                        !(tabGroup == "Customization" && it.name.contains("colour", true) && it.name.contains("palette", true))
+                        !(tabGroup == "Customization" && it.name.contains("colour", true) && it.name.contains("palette", true)) &&
+                        // RFC 0006: hide advanced params in Simple mode.
+                        !(simpleMode && it.advanced != 0)
                 }
             }
             LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -124,6 +148,9 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                     }
                     if (tabGroup == "Customization") {
                         item { AppearanceSection(engine, bump) }
+                    }
+                    if (tabGroup == "Output") {
+                        item { OutputFontSection(outputFontFamily, outputFontSize, onOutputFontChanged) }
                     }
                     items(rows, key = { it.key }) { p ->
                         ParameterRow(engine, p, version, bump)
@@ -175,6 +202,7 @@ private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var current by remember { mutableStateOf(engine.locale()) }
     val label = DASHER_LOCALES.firstOrNull { it.first == current }?.second ?: current
+    val ctx = androidx.compose.ui.platform.LocalContext.current
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -192,7 +220,13 @@ private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
                     DropdownMenuItem(
                         text = { Text(name) },
                         onClick = {
-                            if (engine.setLocale(code)) { current = code; reload() }
+                            if (engine.setLocale(code)) {
+                                current = code
+                                LocaleHelper.setLocale(ctx, code)
+                                reload()
+                                // Recreate so the Compose UI chrome re-localises too (RFC 0003).
+                                (ctx as? android.app.Activity)?.recreate()
+                            }
                             expanded = false
                         }
                     )
@@ -386,6 +420,48 @@ private fun TrainingSection(engine: DasherEngine) {
             dismissButton = {
                 androidx.compose.material3.TextButton(onClick = { showResetConfirm = false }) { Text("Cancel") }
             }
+        )
+    }
+}
+
+/** Output-pane font family + size (frontend-local pref; canvas glyph font is SP_DASHER_FONT). */
+@Composable
+private fun OutputFontSection(
+    family: String,
+    size: Float,
+    onChange: (String, Float) -> Unit
+) {
+    val options = listOf(
+        "" to "System", "sans-serif" to "Sans Serif",
+        "serif" to "Serif", "monospace" to "Monospace"
+    )
+    var expanded by remember { mutableStateOf(false) }
+    val label = options.firstOrNull { it.first == family }?.second ?: "System"
+
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("Output text", style = MaterialTheme.typography.titleMedium)
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Font", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+            Box {
+                OutlinedButton(onClick = { expanded = true }) { Text(label) }
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    options.forEach { (value, name) ->
+                        DropdownMenuItem(
+                            text = { Text(name) },
+                            onClick = { onChange(value, size); expanded = false }
+                        )
+                    }
+                }
+            }
+        }
+        Text("Size: ${size.toInt()}", style = MaterialTheme.typography.bodyLarge)
+        Slider(
+            value = size,
+            onValueChange = { onChange(family, it) },
+            valueRange = 10f..48f,
+            steps = 0
         )
     }
 }
