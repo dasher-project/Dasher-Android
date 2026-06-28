@@ -25,7 +25,7 @@ except ImportError:
     sys.exit("posthog not installed. Run: pip install posthog")
 
 # Same project + host the Android app uses (AnalyticsService.kt).
-POSTHOG_KEY = "phc_ubtNRuCT7Zqo4dVrVWRnJRYE9m9WqGeTyK7zVDKQ968"
+POSTHOG_KEY = "phc_ubtNRuCT7Zqo4dVrVWRnJRYE9m9WqGeTyK7zVDKQ968J"
 POSTHOG_HOST = "https://eu.i.posthog.com"
 
 
