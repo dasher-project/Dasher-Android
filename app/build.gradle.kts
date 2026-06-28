@@ -78,6 +78,13 @@ android {
         jniLibs {
             // DasherCore's CAPI build already produces distinct libs per ABI.
             useLegacyPackaging = false
+            // libdasher is only built for arm64-v8a + x86_64 (see externalNativeBuild
+            // abiFilters above). Some AARs (androidx.graphics.path) ship native libs for
+            // armeabi-v7a/x86 too; if those leak through, a 32-bit emulator/device selects
+            // that ABI (because e.g. libandroidx.graphics.path.so is present) and then
+            // crashes with UnsatisfiedLinkError loading libdasher_jni. Strip the partial ABIs
+            // so the APK only advertises ABIs we fully support.
+            excludes += setOf("**/armeabi-v7a/**", "**/x86/**")
         }
     }
 
