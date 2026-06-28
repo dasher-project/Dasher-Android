@@ -186,22 +186,6 @@ private fun PrivacyContent(context: android.content.Context) {
         OutlinedButton(onClick = { AnalyticsService.resetId(context) }) {
             Text("Reset anonymous ID")
         }
-
-        // Debug-only crash-report verification (RFC 0009). Lets a maintainer exercise
-        // the full $exception path end-to-end without writing code. Debug builds only.
-        if (BuildConfig.DEBUG) {
-            androidx.compose.material3.HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            Text("Diagnostics (debug)", style = MaterialTheme.typography.titleMedium)
-            Text("Send a crash to PostHog Error Tracking to verify the pipeline.",
-                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(
-                    onClick = { AnalyticsService.sendTestException() },
-                    enabled = optedIn
-                ) { Text("Send test exception") }
-                OutlinedButton(onClick = { AnalyticsService.triggerRealCrash() }) { Text("Crash app") }
-            }
-        }
     }
 }
 

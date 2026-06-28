@@ -238,21 +238,6 @@ object AnalyticsService {
         return out
     }
 
-    // ── Debug: end-to-end crash-report verification (debug builds only) ────────
-
-    /** Non-destructive: send a synthetic test exception so it appears in Error Tracking. */
-    fun sendTestException() {
-        if (!initialized) return
-        val t = RuntimeException("Dasher test exception (debug trigger)")
-        PostHog.captureException(t, crashProperties("main", snapshotEngineLog()) + mapOf("test" to true))
-        PostHog.flush()
-    }
-
-    /** Destructive: throw on a worker thread so the real UncaughtExceptionHandler path fires. */
-    fun triggerRealCrash() {
-        Thread({ throw RuntimeException("Dasher real crash (debug trigger)") }, "DasherCrashTest").start()
-    }
-
     private fun anonId(context: Context): String =
         prefs(context).getString(KEY_ANON_ID, null) ?: UUID.randomUUID().toString().also {
             prefs(context).edit().putString(KEY_ANON_ID, it).apply()
