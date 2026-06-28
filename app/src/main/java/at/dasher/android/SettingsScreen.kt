@@ -58,7 +58,13 @@ import com.composables.icons.lucide.X
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
+fun SettingsScreen(
+    engine: DasherEngine,
+    onDismiss: () -> Unit,
+    outputFontFamily: String = "",
+    outputFontSize: Float = 16f,
+    onOutputFontChanged: (String, Float) -> Unit = { _, _ -> }
+) {
     var params by remember { mutableStateOf(engine.allParameters()) }
     // Bumped on every change so rows re-read fresh values from the engine.
     var version by remember { mutableIntStateOf(0) }
@@ -124,6 +130,9 @@ fun SettingsScreen(engine: DasherEngine, onDismiss: () -> Unit) {
                     }
                     if (tabGroup == "Customization") {
                         item { AppearanceSection(engine, bump) }
+                    }
+                    if (tabGroup == "Output") {
+                        item { OutputFontSection(outputFontFamily, outputFontSize, onOutputFontChanged) }
                     }
                     items(rows, key = { it.key }) { p ->
                         ParameterRow(engine, p, version, bump)
@@ -386,6 +395,48 @@ private fun TrainingSection(engine: DasherEngine) {
             dismissButton = {
                 androidx.compose.material3.TextButton(onClick = { showResetConfirm = false }) { Text("Cancel") }
             }
+        )
+    }
+}
+
+/** Output-pane font family + size (frontend-local pref; canvas glyph font is SP_DASHER_FONT). */
+@Composable
+private fun OutputFontSection(
+    family: String,
+    size: Float,
+    onChange: (String, Float) -> Unit
+) {
+    val options = listOf(
+        "" to "System", "sans-serif" to "Sans Serif",
+        "serif" to "Serif", "monospace" to "Monospace"
+    )
+    var expanded by remember { mutableStateOf(false) }
+    val label = options.firstOrNull { it.first == family }?.second ?: "System"
+
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("Output text", style = MaterialTheme.typography.titleMedium)
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Font", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+            Box {
+                OutlinedButton(onClick = { expanded = true }) { Text(label) }
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    options.forEach { (value, name) ->
+                        DropdownMenuItem(
+                            text = { Text(name) },
+                            onClick = { onChange(value, size); expanded = false }
+                        )
+                    }
+                }
+            }
+        }
+        Text("Size: ${size.toInt()}", style = MaterialTheme.typography.bodyLarge)
+        Slider(
+            value = size,
+            onValueChange = { onChange(family, it) },
+            valueRange = 10f..48f,
+            steps = 0
         )
     }
 }

@@ -53,15 +53,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
 import com.composables.icons.lucide.ClipboardCopy
 import com.composables.icons.lucide.Crosshair
 import com.composables.icons.lucide.FilePlus
+import com.composables.icons.lucide.FolderOpen
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Gamepad2
 import com.composables.icons.lucide.Hand
@@ -72,6 +75,7 @@ import com.composables.icons.lucide.Pause
 import com.composables.icons.lucide.Play
 import com.composables.icons.lucide.Save
 import com.composables.icons.lucide.Settings
+import com.composables.icons.lucide.Share2
 import com.composables.icons.lucide.Smartphone
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -89,6 +93,13 @@ class MainActivity : ComponentActivity() {
 
     // Observable UI state.
     private var outputText by mutableStateOf("")
+    /** Text loaded via "Open" — preserved as a prefix the engine appends to (Dasher writes forward). */
+    private var loadedPrefix by mutableStateOf("")
+    /** Combined display text = loaded prefix + engine output since the last reset/open. */
+    private val fullText: String get() = loadedPrefix + outputText
+    // Output-pane font (persisted locally; the canvas glyph font is SP_DASHER_FONT in the engine).
+    private var outputFontFamily by mutableStateOf("")
+    private var outputFontSize by mutableStateOf(16f)
     private var alphabets by mutableStateOf<List<String>>(emptyList())
     private var currentAlphabet by mutableStateOf("")
     private var palettes by mutableStateOf<List<String>>(emptyList())
@@ -117,10 +128,17 @@ class MainActivity : ComponentActivity() {
             if (uri != null) saveOutputTo(uri)
         }
 
+    // SAF launcher: opens a .txt and loads it as the output prefix (DESIGN.md §Toolbar "Open").
+    private val openLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri != null) openOutputFrom(uri)
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AnalyticsService.init(this)
         AnalyticsService.capture("app_launched", mapOf("locale" to java.util.Locale.getDefault().toLanguageTag()))
+        loadOutputFontPrefs()
 
         // Tilt provider forwards normalised coords to the engine on the main thread
         // (the C API context is single-threaded; sensor callbacks arrive elsewhere).
@@ -191,14 +209,14 @@ class MainActivity : ComponentActivity() {
             DasherAndroidTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     AppScreen(
-                        output = outputText,
+                        output = fullText,
                         alphabets = alphabets,
                         currentAlphabet = currentAlphabet,
                         speedPercent = speedPercent,
                         autoSpeed = autoSpeed,
                         isPlaying = isPlaying,
-                        onClear = { engine?.resetOutputText(); outputText = "" },
-                        onCopyAll = { copyToClipboard(outputText) },
+                        onClear = { engine?.resetOutputText(); outputText = ""; loadedPrefix = "" },
+                        onCopyAll = { copyToClipboard(fullText) },
                         onTogglePlay = {
                             val eng = engine ?: return@AppScreen
                             if (isPlaying) { eng.stop(); isPlaying = false }
@@ -216,14 +234,23 @@ class MainActivity : ComponentActivity() {
                             if (autoSpeedKey >= 0) { engine?.setBoolValue(autoSpeedKey, v); engine?.saveSettings() }
                         },
                         onOpenSettings = { showSettings = true },
+                        onOpen = { openOutput() },
                         onSave = { saveOutput() },
+                        onShare = { shareOutput() },
+                        outputFontFamily = outputFontFamily,
+                        outputFontSize = outputFontSize,
                         gameMode = gameMode,
                         gameState = gameState,
                         onToggleGame = { toggleGame() }
                     )
                     if (showSettings) SettingsScreen(
                         engine = engine ?: return@Surface,
-                        onDismiss = { showSettings = false }
+                        onDismiss = { showSettings = false },
+                        outputFontFamily = outputFontFamily,
+                        outputFontSize = outputFontSize,
+                        onOutputFontChanged = { family, size ->
+                            outputFontFamily = family; outputFontSize = size; saveOutputFontPrefs()
+                        }
                     )
                 }
             }
@@ -314,7 +341,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun saveOutput() {
-        if (outputText.isEmpty()) {
+        if (fullText.isEmpty()) {
             Toast.makeText(this, "Nothing to save", Toast.LENGTH_SHORT).show()
             return
         }
@@ -323,11 +350,64 @@ class MainActivity : ComponentActivity() {
 
     private fun saveOutputTo(uri: android.net.Uri) {
         try {
-            contentResolver.openOutputStream(uri)?.use { it.write(outputText.toByteArray()) }
+            contentResolver.openOutputStream(uri)?.use { it.write(fullText.toByteArray()) }
             Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun openOutput() {
+        openLauncher.launch(arrayOf("text/plain"))
+    }
+
+    private fun openOutputFrom(uri: android.net.Uri) {
+        try {
+            val text = contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } ?: return
+            // Load as a prefix the engine appends to. Dasher has no CAPI to seed the edit
+            // buffer (only get/reset output), so the loaded text is kept on the frontend and
+            // combined with the engine's append-since-reset output for display, save, copy.
+            loadedPrefix = text
+            engine?.resetOutputText()
+            outputText = ""
+            Toast.makeText(this, "Loaded ${text.length} chars", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Open failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun shareOutput() {
+        if (fullText.isEmpty()) {
+            Toast.makeText(this, "Nothing to share", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(android.content.Intent.EXTRA_TEXT, fullText)
+        }
+        startActivity(android.content.Intent.createChooser(intent, "Share text"))
+    }
+
+    private fun loadOutputFontPrefs() {
+        val prefs = getSharedPreferences("dasher_output", android.content.Context.MODE_PRIVATE)
+        outputFontFamily = prefs.getString("font_family", "") ?: ""
+        outputFontSize = prefs.getFloat("font_size", 16f)
+    }
+
+    private fun saveOutputFontPrefs() {
+        getSharedPreferences("dasher_output", android.content.Context.MODE_PRIVATE).edit().apply {
+            putString("font_family", outputFontFamily)
+            putFloat("font_size", outputFontSize)
+            apply()
+        }
+    }
+
+
+    private fun outputFontFamilyFor(name: String): FontFamily = when (name) {
+        "serif" -> FontFamily.Serif
+        "monospace" -> FontFamily.Monospace
+        "sans-serif" -> FontFamily.SansSerif
+        else -> FontFamily.Default
     }
 
     @Composable
@@ -345,7 +425,11 @@ class MainActivity : ComponentActivity() {
         onSpeedChanged: (Int) -> Unit,
         onAutoSpeedChanged: (Boolean) -> Unit,
         onOpenSettings: () -> Unit,
+        onOpen: () -> Unit,
         onSave: () -> Unit,
+        onShare: () -> Unit,
+        outputFontFamily: String,
+        outputFontSize: Float,
         gameMode: Boolean,
         gameState: GameState?,
         onToggleGame: () -> Unit
@@ -353,7 +437,7 @@ class MainActivity : ComponentActivity() {
         Scaffold { padding ->
             Column(modifier = Modifier.fillMaxSize().padding(padding)) {
                 TopBar(isPlaying = isPlaying, onClear = onClear, onTogglePlay = onTogglePlay,
-                    onCopyAll = onCopyAll, onSave = onSave,
+                    onCopyAll = onCopyAll, onOpen = onOpen, onSave = onSave, onShare = onShare,
                     gameMode = gameMode, onToggleGame = onToggleGame,
                     onOpenSettings = onOpenSettings)
                 if (gameMode && gameState != null) GameTargetBar(gameState!!)
@@ -363,7 +447,9 @@ class MainActivity : ComponentActivity() {
                     Text(
                         text = output.ifEmpty { "Touch the canvas to start writing." },
                         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(4.dp),
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontFamily = outputFontFamilyFor(outputFontFamily),
+                        fontSize = outputFontSize.sp
                     )
                 }
 
@@ -397,12 +483,14 @@ class MainActivity : ComponentActivity() {
         onClear: () -> Unit,
         onTogglePlay: () -> Unit,
         onCopyAll: () -> Unit,
+        onOpen: () -> Unit,
         onSave: () -> Unit,
+        onShare: () -> Unit,
         gameMode: Boolean,
         onToggleGame: () -> Unit,
         onOpenSettings: () -> Unit
     ) {
-        // DESIGN.md §Top Toolbar: New, Play/Pause, Copy, Save, Game, Prefs — Lucide icons (RFC 0002).
+        // DESIGN.md §Top Toolbar — Lucide icons (RFC 0002). Mirrors Apple/Windows order.
         Surface(color = MaterialTheme.colorScheme.surface) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
@@ -410,10 +498,12 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 ToolbarButton(Lucide.FilePlus, "New / clear output", onClear)
+                ToolbarButton(Lucide.FolderOpen, "Open file", onOpen)
                 ToolbarButton(if (isPlaying) Lucide.Pause else Lucide.Play,
                     if (isPlaying) "Pause" else "Play", onTogglePlay)
                 ToolbarButton(Lucide.ClipboardCopy, "Copy all", onCopyAll)
                 ToolbarButton(Lucide.Save, "Save to file", onSave)
+                ToolbarButton(Lucide.Share2, "Share", onShare)
                 Spacer(Modifier.weight(1f))
                 ToolbarButton(Lucide.Gamepad2, if (gameMode) "Leave game mode" else "Game mode",
                     onToggleGame)
