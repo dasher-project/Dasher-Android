@@ -62,23 +62,23 @@ The UI is Jetpack Compose; the same engine drives both the standalone app
 ```mermaid
 graph LR
     subgraph "Kotlin (Jetpack Compose)"
-        UI[MainActivity / DasherImeService<br/>Compose shell + IME]
-        ENG[DasherEngine.kt<br/>Choreographer frame loop]
-        NB[NativeBridge.kt<br/>external funs, 1:1 with dasher.h]
-        CV[DasherCanvasView<br/>decodes int[6] → Android Canvas]
+        UI["MainActivity / DasherImeService<br/>Compose shell + IME"]
+        ENG["DasherEngine.kt<br/>Choreographer frame loop"]
+        NB["NativeBridge.kt<br/>external funs, 1:1 with dasher.h"]
+        CV["DasherCanvasView<br/>decodes the 6-int command buffer"]
         UI --> ENG
         ENG --> NB
         ENG --> CV
     end
     subgraph "libdasher_jni.so (JNI shim)"
-        JNI[jni_bridge.cpp<br/>pointer + frame buffer + callback trampolines]
+        JNI["jni_bridge.cpp<br/>pointer + frame buffer + callback trampolines"]
     end
     subgraph "libdasher.so (DasherCore CAPI)"
-        API[dasher.h<br/>dasher_frame / dasher_mouse_* / callbacks]
+        API["dasher.h<br/>dasher_frame / dasher_mouse_* / callbacks"]
     end
     NB <-->|JNI| JNI
     JNI <-->|dasher_* C ABI| API
-    API -.->|"int[] [op,a,b,c,d,argb]"| CV
+    API -.->|"draw commands: opcode, a, b, c, d, argb"| CV
     API -.->|clipboard / speak / message / output / log| NB
 ```
 
