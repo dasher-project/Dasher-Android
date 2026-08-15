@@ -96,11 +96,13 @@ android {
     }
 }
 
-// Mirror DasherCore's locale files (strings_*.json) into a Strings/ asset dir,
-// auto-synced from the submodule (no duplicated files to maintain).
+// Mirror DasherCore's locale files (strings_*.json + the canonical locales.json
+// from RFC 0003 / DasherCore #53) into a Strings/ asset dir, auto-synced from the
+// submodule (no duplicated files to maintain). locales.json drives the app's
+// language picker so it can never drift from the shipped translations.
 val syncDasherStrings by tasks.registering(Copy::class) {
     from(layout.projectDirectory.dir("../third_party/DasherCore/Strings"))
-    include("strings_*.json")
+    include("strings_*.json", "locales.json")
     into(layout.buildDirectory.dir("generated/dasher-assets/Strings"))
 }
 tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }

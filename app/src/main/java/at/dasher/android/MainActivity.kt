@@ -43,6 +43,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,6 +80,7 @@ import com.composables.icons.lucide.Settings
 import com.composables.icons.lucide.Share2
 import com.composables.icons.lucide.Smartphone
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import at.dasher.android.ui.DasherCanvasView
@@ -198,6 +200,8 @@ class MainActivity : ComponentActivity() {
             eng.installEngineCallbacks()
             eng.installParameterCallback() // two-way sync (settings <-> toolbar/canvas)
             eng.installLogCallback() // engine diagnostics → logcat
+            // RFC 0009 A2: report the engine's sticky error flag (once per session).
+            eng.onEngineError = { AnalyticsService.captureEngineError("frame loop") }
             // RFC 0007: push the OS dark-mode state into the engine so a SYSTEM
             // appearance-mode user gets the right (derived) palette. Activity is
             // recreated on uiMode change (not in configChanges), so this also covers
@@ -211,9 +215,23 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DasherAndroidTheme {
+                // RFC 0012: typing-rate overlay — CPS + WPM from the engine's rolling
+                // window (dasher_get_cps / dasher_get_wpm), refreshed once a second
+                // while playing. Apple shows the same "X.X cps · N wpm" readout.
+                var typingRate by remember { mutableStateOf("") }
+                LaunchedEffect(isPlaying) {
+                    while (isPlaying) {
+                        engine?.let { e ->
+                            typingRate = getString(R.string.typing_rate, e.cps(), e.wpm().toInt())
+                        }
+                        delay(1000)
+                    }
+                    typingRate = ""
+                }
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     AppScreen(
                         output = fullText,
+                        typingRate = typingRate,
                         alphabets = alphabets,
                         currentAlphabet = currentAlphabet,
                         speedPercent = speedPercent,
@@ -437,6 +455,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun AppScreen(
         output: String,
+        typingRate: String,
         alphabets: List<String>,
         currentAlphabet: String,
         speedPercent: Int,
@@ -477,16 +496,34 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                AndroidView(
-                    factory = { ctx ->
-                        DasherCanvasView(ctx).also { view ->
-                            canvasView = view
-                            view.onSurfaceSizeChanged = { w, h -> engine?.onSurfaceSizeChanged(w, h) }
-                            view.onTouchInput = { action, x, y -> engine?.onTouch(action, x, y) }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().weight(1f)
-                )
+                Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                    AndroidView(
+                        factory = { ctx ->
+                            DasherCanvasView(ctx).also { view ->
+                                canvasView = view
+                                view.onSurfaceSizeChanged = { w, h -> engine?.onSurfaceSizeChanged(w, h) }
+                                view.onTouchInput = { action, x, y -> engine?.onTouch(action, x, y) }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    // RFC 0012: unobtrusive typing-rate chip over the canvas corner.
+                    if (typingRate.isNotEmpty()) {
+                        Text(
+                            text = typingRate,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(6.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                                    MaterialTheme.shapes.small
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
 
                 StatusBar(
                     alphabets = alphabets,

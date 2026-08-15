@@ -121,6 +121,19 @@ object AnalyticsService {
     // events in PostHog Error Tracking (a plain `capture("crash", …)` is invisible
     // to Error Tracking — it only shows in Events/Insights).
 
+    /**
+     * Report a caught (non-fatal) engine error — the sticky error flag from
+     * `dasher_has_engine_error` (RFC 0009 A2) — as an `$exception` event so it
+     * lands in Error Tracking (mirrors DasherApple #21). No-op until opted in.
+     */
+    fun captureEngineError(where: String) {
+        if (!initialized) return
+        PostHog.captureException(
+            RuntimeException("DasherEngineError: sticky error flag set ($where)"),
+            crashProperties("main", snapshotEngineLog())
+        )
+    }
+
     /** Install the uncaught-exception handler. Call once from Application.onCreate. */
     fun installCrashHandler(context: Context) {
         appContext = context.applicationContext

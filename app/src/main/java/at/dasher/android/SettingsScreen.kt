@@ -155,6 +155,7 @@ fun SettingsScreen(
                     items(rows, key = { it.key }) { p ->
                         ParameterRow(engine, p, version, bump)
                     }
+                    item { ResetDefaultsRow(engine, reload) }
                 }
             }
         }
@@ -189,20 +190,36 @@ private fun PrivacyContent(context: android.content.Context) {
     }
 }
 
-// Locale list matching DasherApple / Dasher-Windows (RFC 0003). Translations live
-// in DasherCore/Strings/strings_*.json, bundled via the syncDasherStrings Gradle task.
-private val DASHER_LOCALES = listOf(
-    "en" to "English", "de" to "Deutsch", "es" to "Español", "fr" to "Français",
-    "it" to "Italiano", "pt" to "Português (BR)", "pt-PT" to "Português (PT)",
-    "zh-CN" to "中文", "ar" to "العربية"
-)
+// Locale list from DasherCore's canonical Strings/locales.json (RFC 0003,
+// DasherCore #53) — the single source of truth for every frontend's locale
+// picker. Bundled as an asset by the syncDasherStrings Gradle task; falls back
+// to a small subset if the asset is missing.
+private data class DasherLocale(val code: String, val endonym: String, val rtl: Boolean)
+
+private fun loadDasherLocales(context: android.content.Context): List<DasherLocale> {
+    return try {
+        val json = context.assets.open("Strings/locales.json").bufferedReader().use { it.readText() }
+        val arr = org.json.JSONObject(json).getJSONArray("locales")
+        (0 until arr.length()).map { i ->
+            val o = arr.getJSONObject(i)
+            DasherLocale(o.getString("code"), o.getString("endonym"), o.optBoolean("rtl", false))
+        }
+    } catch (_: Exception) {
+        listOf(
+            DasherLocale("en", "English", false), DasherLocale("de", "Deutsch", false),
+            DasherLocale("es", "Español", false), DasherLocale("fr", "Français", false),
+            DasherLocale("pt", "Português", false), DasherLocale("ar", "العربية", true)
+        )
+    }
+}
 
 @Composable
 private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var current by remember { mutableStateOf(engine.locale()) }
-    val label = DASHER_LOCALES.firstOrNull { it.first == current }?.second ?: current
     val ctx = androidx.compose.ui.platform.LocalContext.current
+    val locales = remember { loadDasherLocales(ctx) }
+    val label = locales.firstOrNull { it.code == current }?.endonym ?: current
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -216,13 +233,13 @@ private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
         Box {
             OutlinedButton(onClick = { expanded = true }) { Text(label) }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                DASHER_LOCALES.forEach { (code, name) ->
+                locales.forEach { loc ->
                     DropdownMenuItem(
-                        text = { Text(name) },
+                        text = { Text(loc.endonym) },
                         onClick = {
-                            if (engine.setLocale(code)) {
-                                current = code
-                                LocaleHelper.setLocale(ctx, code)
+                            if (engine.setLocale(loc.code)) {
+                                current = loc.code
+                                LocaleHelper.setLocale(ctx, loc.code)
                                 reload()
                                 // Recreate so the Compose UI chrome re-localises too (RFC 0003).
                                 (ctx as? android.app.Activity)?.recreate()
@@ -234,6 +251,23 @@ private fun LocaleRow(engine: DasherEngine, reload: () -> Unit) {
             }
         }
     }
+}
+
+// Reset every engine parameter to its compiled-in default (`dasher_reset_settings`,
+// DasherCore v0.1.6+). Mirrors DasherApple's reset-to-defaults (Apple #18).
+@Composable
+private fun ResetDefaultsRow(engine: DasherEngine, reload: () -> Unit) {
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    OutlinedButton(
+        onClick = {
+            engine.resetSettings()
+            reload()
+            android.widget.Toast.makeText(
+                ctx, ctx.getString(R.string.settings_reset_done), android.widget.Toast.LENGTH_SHORT
+            ).show()
+        },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)
+    ) { Text(stringResource(R.string.settings_reset_defaults)) }
 }
 
 // RFC 0007 appearance + palette picker. Mirrors DasherApple DasherSettingsView
