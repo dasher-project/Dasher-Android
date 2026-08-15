@@ -52,6 +52,14 @@ class DasherEngine(
     /** Invoked each frame while game mode is active, with a fresh [GameState]. */
     var onGameUpdate: ((GameState) -> Unit)? = null
 
+    /**
+     * Invoked once when the engine's sticky error flag (RFC 0009 A2) is first
+     * seen. The engine keeps rendering; recovery (destroy + recreate) is the
+     * frontend's decision.
+     */
+    var onEngineError: (() -> Unit)? = null
+    private var engineErrorReported = false
+
     @Volatile
     private var frameConsumer: (IntArray, Array<String>) -> Unit = frameConsumer
 
@@ -191,6 +199,25 @@ class DasherEngine(
     fun resetOutputText() {
         if (destroyed || nativeHandle == 0L) return
         NativeBridge.nativeResetOutputText(nativeHandle)
+        // Also clear the engine's rolling typing-rate window so CPS/WPM don't
+        // briefly show stale values after the reset (RFC 0012; cf. Windows #19).
+        NativeBridge.nativeResetCps(nativeHandle)
+    }
+
+    // ── Typing rate (RFC 0012) ───────────────────────────────────────────────
+
+    /** Characters per second over the engine's rolling window. */
+    fun cps(): Double =
+        if (destroyed || nativeHandle == 0L) 0.0 else NativeBridge.nativeGetCps(nativeHandle)
+
+    /** Words per minute over the engine's rolling window. */
+    fun wpm(): Double =
+        if (destroyed || nativeHandle == 0L) 0.0 else NativeBridge.nativeGetWpm(nativeHandle)
+
+    /** Clears the rolling CPS/WPM window without touching the output text. */
+    fun resetCps() {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeResetCps(nativeHandle)
     }
 
     // ── Status-bar surface (Phase 1) ──────────────────────────────────────────
@@ -341,6 +368,25 @@ class DasherEngine(
     }
 
     /**
+     * Reset every parameter to its compiled-in default and persist the result
+     * (`dasher_reset_settings`, DasherCore v0.1.6+). Mirrors DasherApple's
+     * reset-to-defaults (Apple #18) and Dasher-Windows SettingsPanel.
+     */
+    fun resetSettings() {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeResetSettings(nativeHandle)
+        NativeBridge.nativeSaveSettings(nativeHandle)
+    }
+
+    /**
+     * RFC 0009 A2: sticky engine-error flag. Once set, only destroy + create
+     * clears it — the frontend should report (analytics) and recreate the
+     * session. Checked once per frame in [doFrame] via [onEngineError].
+     */
+    fun hasEngineError(): Boolean =
+        nativeHandle != 0L && NativeBridge.nativeHasEngineError(nativeHandle) != 0
+
+    /**
      * Installs the engine→frontend callbacks (clipboard/speak/message/output/log).
      * Call after the engine is created; the listeners live on [NativeBridge].
      * See DasherCore/docs/CUSTOM_ACTIONS.md and dasher_set_log_callback in dasher.h.
@@ -486,6 +532,11 @@ class DasherEngine(
                         targetLength = NativeBridge.nativeGameGetTargetLength(nativeHandle)
                     )
                 )
+            }
+            // RFC 0009 A2: surface the sticky error flag once per session.
+            if (!engineErrorReported && NativeBridge.nativeHasEngineError(nativeHandle) != 0) {
+                engineErrorReported = true
+                onEngineError?.invoke()
             }
         }
         if (running) {

@@ -616,6 +616,46 @@ Java_at_dasher_android_NativeBridge_nativeSaveSettings(JNIEnv*, jclass, jlong ha
     if (s && s->ctx) dasher_save_settings(s->ctx);
 }
 
+// Reset every parameter to its compiled-in default and persist the result
+// (DasherCore v0.1.6+; RFC 0009 Amendment 2 notes dasher_settings.xml can be
+// deleted for persisted-defaults, but the explicit API is cleaner).
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeResetSettings(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_reset_settings(s->ctx);
+}
+
+// RFC 0009 A2: sticky error flag — set when a C API call failed; cleared only
+// by destroy/create. The frontend checks this each frame and reports/recovers.
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeHasEngineError(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_has_engine_error(s->ctx) : 0;
+}
+
+// ── Typing rate (RFC 0012) ──────────────────────────────────────────────────
+
+JNIEXPORT jdouble JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetCps(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_cps(s->ctx) : 0.0;
+}
+
+JNIEXPORT jdouble JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetWpm(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_wpm(s->ctx) : 0.0;
+}
+
+// Clears the engine's rolling CPS/WPM measurement window (DasherCore v0.1.9+),
+// e.g. when the user clears the output. Without this the stats briefly show
+// stale non-zero values after a reset (see Dasher-Windows #19).
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeResetCps(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_reset_cps(s->ctx);
+}
+
 // ── Parameter schema introspection (manifest-driven settings UI) ────────────
 // dasher_get_parameter_count / _info / enum accessors are NOT context-bound.
 

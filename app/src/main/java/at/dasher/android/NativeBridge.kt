@@ -171,6 +171,27 @@ object NativeBridge {
     /** Flush current settings to dasher_settings.xml in the user dir. */
     @JvmStatic external fun nativeSaveSettings(handle: Long)
 
+    /**
+     * Reset every parameter to its compiled-in default and persist the result.
+     * (DasherCore v0.1.6+ `dasher_reset_settings`.)
+     */
+    @JvmStatic external fun nativeResetSettings(handle: Long)
+
+    // ── Engine error state (RFC 0009 A2) ──
+    /**
+     * Sticky error flag: 1 once any C API call has failed. Only a destroy +
+     * create clears it ([nativeDestroy] then [nativeCreate]).
+     */
+    @JvmStatic external fun nativeHasEngineError(handle: Long): Int
+
+    // ── Typing rate (RFC 0012) ──
+    /** Characters per second over the engine's rolling window. */
+    @JvmStatic external fun nativeGetCps(handle: Long): Double
+    /** Words per minute over the engine's rolling window. */
+    @JvmStatic external fun nativeGetWpm(handle: Long): Double
+    /** Clears the rolling CPS/WPM window (call when the user clears output). */
+    @JvmStatic external fun nativeResetCps(handle: Long)
+
     // ── Parameter schema introspection (manifest-driven settings UI) ──
     /** Number of parameters in the engine schema (not context-bound). */
     @JvmStatic external fun nativeGetParameterCount(): Int

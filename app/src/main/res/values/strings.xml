@@ -33,4 +33,11 @@
     <string name="nothing_to_share">Nothing to share</string>
     <string name="saved">Saved</string>
     <string name="save_failed">Save failed</string>
+
+    <!-- Typing rate (RFC 0012) -->
+    <string name="typing_rate">%1$.1f cps · %2$d wpm</string>
+
+    <!-- Settings: reset to defaults -->
+    <string name="settings_reset_defaults">Reset all settings to defaults</string>
+    <string name="settings_reset_done">Settings reset</string>
 </resources>
