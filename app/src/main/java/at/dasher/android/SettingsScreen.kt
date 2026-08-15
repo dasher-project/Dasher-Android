@@ -62,6 +62,9 @@ import com.composables.icons.lucide.X
 fun SettingsScreen(
     engine: DasherEngine,
     onDismiss: () -> Unit,
+    inputMode: InputMode = InputMode.TOUCH,
+    inputModesAvailable: List<InputMode> = listOf(InputMode.TOUCH),
+    onInputModeSelected: (InputMode) -> Unit = {},
     outputFontFamily: String = "",
     outputFontSize: Float = 16f,
     onOutputFontChanged: (String, Float) -> Unit = { _, _ -> }
@@ -146,6 +149,18 @@ fun SettingsScreen(
                         item { LocaleRow(engine, reload) }
                         item { TrainingSection(engine) }
                     }
+                    if (tabGroup == "Input") {
+                        // RFC 0010 settings IA: the steering-method control lives in
+                        // Settings → Input (same place Apple's Access settings and
+                        // Windows' SettingsPanel put it), not in the toolbar.
+                        item {
+                            InputMethodRow(
+                                current = inputMode,
+                                available = inputModesAvailable,
+                                onSelect = onInputModeSelected
+                            )
+                        }
+                    }
                     if (tabGroup == "Customization") {
                         item { AppearanceSection(engine, bump) }
                     }
@@ -186,6 +201,67 @@ private fun PrivacyContent(context: android.content.Context) {
         }
         OutlinedButton(onClick = { AnalyticsService.resetId(context) }) {
             Text("Reset anonymous ID")
+        }
+    }
+}
+
+/**
+ * RFC 0010 settings IA: steering-method picker in Settings → Input. Only the
+ * modes the hardware supports are offered (touch always; tilt with a rotation
+ * sensor; joystick with a connected gamepad), mirroring Apple's Access settings
+ * compatibility filter.
+ */
+@Composable
+private fun InputMethodRow(
+    current: InputMode,
+    available: List<InputMode>,
+    onSelect: (InputMode) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val label = when (current) {
+        InputMode.TOUCH -> stringResource(R.string.input_method_touch)
+        InputMode.TILT -> stringResource(R.string.input_method_tilt)
+        InputMode.JOYSTICK -> stringResource(R.string.input_method_joystick)
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(stringResource(R.string.input_method_title), style = MaterialTheme.typography.bodyLarge)
+            Text("How you steer the Dasher pointer. Other modes appear when the hardware supports them.",
+                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Box {
+            OutlinedButton(onClick = { expanded = true }) {
+                Text(
+                    when (current) {
+                        InputMode.TOUCH -> "Touch"
+                        InputMode.TILT -> "Tilt"
+                        InputMode.JOYSTICK -> "Joystick"
+                    }
+                )
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                available.forEach { mode ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                when (mode) {
+                                    InputMode.TOUCH -> stringResource(R.string.input_method_touch)
+                                    InputMode.TILT -> stringResource(R.string.input_method_tilt)
+                                    InputMode.JOYSTICK -> stringResource(R.string.input_method_joystick)
+                                }
+                            )
+                        },
+                        onClick = {
+                            onSelect(mode)
+                            expanded = false
+                        }
+                    )
+                }
+            }
         }
     }
 }

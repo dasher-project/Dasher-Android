@@ -15,10 +15,10 @@
     <string name="toolbar_game">Game mode</string>
     <string name="toolbar_game_leave">Leave game mode</string>
     <string name="toolbar_settings">Settings</string>
-    <string name="toolbar_input_touch">Touch input</string>
-    <string name="toolbar_input_tilt">Tilt input</string>
-    <string name="toolbar_input_joystick">Joystick input</string>
-    <string name="toolbar_input_switch">tap to switch input method</string>
+    <string name="input_method_title">Input method</string>
+    <string name="input_method_touch">Touch (drag on the canvas)</string>
+    <string name="input_method_tilt">Tilt (hold the device, tilt to steer)</string>
+    <string name="input_method_joystick">Joystick / gamepad (deflect a stick to steer)</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
