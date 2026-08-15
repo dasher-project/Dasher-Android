@@ -110,6 +110,8 @@ class MainActivity : ComponentActivity() {
     private var speedPercent by mutableStateOf(100)
     private var inputMode by mutableStateOf(InputMode.TOUCH)
     private var tiltAvailable by mutableStateOf(false)
+    private var joystickAvailable by mutableStateOf(false)
+    private var joystickProvider: JoystickInputProvider? = null
     private var showSettings by mutableStateOf(false)
     private var showAnalyticsPrompt by mutableStateOf(false)
     private var isPlaying by mutableStateOf(true)
@@ -152,6 +154,20 @@ class MainActivity : ComponentActivity() {
             mainHandler.post { engine?.onTiltNormalized(nx, ny) }
         }
         tiltAvailable = tiltProvider?.hasSensor() == true
+
+        // Joystick provider (issue #6): generic-motion callbacks arrive on the main
+        // thread already, but route through the handler to keep one code path.
+        // A spring-centred stick maps to press/release semantics: deflected = held
+        // pointer steering the zoom; exactly centred (the provider snaps to
+        // (0.5, 0.5) once the axes enter the dead zone) = mouse-up so Dasher
+        // pauses — a parked held pointer would otherwise keep zooming.
+        joystickProvider = JoystickInputProvider { nx, ny ->
+            mainHandler.post {
+                if (nx == 0.5f && ny == 0.5f) engine?.clearJoystickInput()
+                else engine?.onJoystickNormalized(nx, ny)
+            }
+        }
+        joystickAvailable = JoystickInputProvider.hasJoystick()
 
         // Android TTS for the engine's speak callback (speak-on-stop, speak control nodes).
         tts = TextToSpeech(this) { status ->
@@ -300,21 +316,41 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun toggleInputMode() {
-        val newMode = if (inputMode == InputMode.TOUCH) InputMode.TILT else InputMode.TOUCH
-        when (newMode) {
+        // Cycle TOUCH → TILT (if sensor) → JOYSTICK (if device) → TOUCH.
+        val next: InputMode? = when (inputMode) {
+            InputMode.TOUCH -> when {
+                tiltAvailable -> InputMode.TILT
+                joystickAvailable -> InputMode.JOYSTICK
+                else -> null
+            }
+            InputMode.TILT -> if (joystickAvailable) InputMode.JOYSTICK else InputMode.TOUCH
+            InputMode.JOYSTICK -> InputMode.TOUCH
+        }
+        if (next == null || next == inputMode) return
+        when (next) {
             InputMode.TILT -> {
                 engine?.setInputMode(InputMode.TILT)
                 tiltProvider?.register()
             }
+            InputMode.JOYSTICK -> {
+                tiltProvider?.unregister()
+                engine?.clearTiltInput()
+                engine?.setInputMode(InputMode.JOYSTICK)
+            }
             InputMode.TOUCH -> {
                 tiltProvider?.unregister()
                 engine?.clearTiltInput()
+                engine?.clearJoystickInput()
                 engine?.setInputMode(InputMode.TOUCH)
             }
         }
-        inputMode = newMode
+        inputMode = next
         AnalyticsService.capture("input_method_changed",
-            mapOf("method" to if (newMode == InputMode.TILT) "tilt" else "touch"))
+            mapOf("method" to when (next) {
+                InputMode.TILT -> "tilt"
+                InputMode.JOYSTICK -> "joystick"
+                InputMode.TOUCH -> "touch"
+            }))
     }
 
     private fun toggleGame() {
@@ -567,6 +603,21 @@ class MainActivity : ComponentActivity() {
                 ToolbarButton(Lucide.Save, stringResource(R.string.toolbar_save), onSave)
                 ToolbarButton(Lucide.Share2, stringResource(R.string.toolbar_share), onShare)
                 Spacer(Modifier.weight(1f))
+                ToolbarButton(
+                    when (inputMode) {
+                        InputMode.TOUCH -> Lucide.Crosshair
+                        InputMode.TILT -> Lucide.Smartphone
+                        InputMode.JOYSTICK -> Lucide.Gamepad2
+                    },
+                    stringResource(
+                        when (inputMode) {
+                            InputMode.TOUCH -> R.string.toolbar_input_touch
+                            InputMode.TILT -> R.string.toolbar_input_tilt
+                            InputMode.JOYSTICK -> R.string.toolbar_input_joystick
+                        }
+                    ) + " — " + stringResource(R.string.toolbar_input_switch),
+                    ::toggleInputMode
+                )
                 ToolbarButton(Lucide.Gamepad2,
                     stringResource(if (gameMode) R.string.toolbar_game_leave else R.string.toolbar_game),
                     onToggleGame)
@@ -698,17 +749,32 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Joystick/gamepad axis events (issue #6). Only consumed in JOYSTICK mode so
+     * touch and tilt behaviour is untouched; everything else falls through to the
+     * default dispatch (e.g. hover/scroll from a mouse).
+     */
+    override fun dispatchGenericMotionEvent(event: android.view.MotionEvent): Boolean {
+        if (inputMode == InputMode.JOYSTICK && joystickProvider?.onGenericMotionEvent(event) == true) {
+            return true
+        }
+        return super.dispatchGenericMotionEvent(event)
+    }
+
     override fun onResume() {
         super.onResume()
         installAppListeners() // re-own callbacks after the IME released them
         engine?.start()
         if (inputMode == InputMode.TILT) tiltProvider?.register()
+        // A USB controller may have been plugged in while backgrounded.
+        joystickAvailable = JoystickInputProvider.hasJoystick()
     }
 
     override fun onPause() {
         super.onPause()
         tiltProvider?.unregister()
         engine?.clearTiltInput()
+        engine?.clearJoystickInput()
         engine?.stop()
     }
 

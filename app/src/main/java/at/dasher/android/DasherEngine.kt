@@ -4,7 +4,7 @@ import android.util.Log
 import android.view.Choreographer
 
 /** Physical input mechanism driving the Dasher cursor. */
-enum class InputMode { TOUCH, TILT }
+enum class InputMode { TOUCH, TILT, JOYSTICK }
 
 /** Per-frame game-mode snapshot for the target bar. */
 data class GameState(
@@ -44,7 +44,7 @@ class DasherEngine(
     private var isPaused = true
     private var isTouching = false
     private var inputMode = InputMode.TOUCH
-    private var tiltActive = false
+    private var stickActive = false
 
     /** Invoked on the main thread whenever the accumulated output text changes. */
     var onTextUpdate: ((String) -> Unit)? = null
@@ -103,18 +103,18 @@ class DasherEngine(
         NativeBridge.nativeSetLowMemoryMode(nativeHandle, if (enabled) 1 else 0)
     }
 
-    /** Active input mode (touch or tilt). */
+    /** Active input mode (touch, tilt or joystick). */
     fun getInputMode(): InputMode = inputMode
 
     /**
-     * Switches input mode. When leaving tilt the active tilt pointer is released.
-     * The caller is responsible for registering/unregistering the tilt sensor.
+     * Switches input mode. When leaving tilt/joystick the active held pointer is
+     * released. The caller is responsible for (un)registering the tilt sensor.
      */
     fun setInputMode(mode: InputMode) {
         if (inputMode == mode) return
-        if (inputMode == InputMode.TILT && tiltActive) {
+        if (inputMode != InputMode.TOUCH && stickActive) {
             NativeBridge.nativeMouseUp(nativeHandle)
-            tiltActive = false
+            stickActive = false
         }
         inputMode = mode
     }
@@ -127,23 +127,42 @@ class DasherEngine(
     fun onTiltNormalized(normalizedX: Float, normalizedY: Float) {
         if (destroyed || nativeHandle == 0L) return
         if (inputMode != InputMode.TILT || !hasSurface) return
+        driveContinuousPointer(normalizedX, normalizedY)
+    }
+
+    /**
+     * Delivers a normalised joystick position `(0..1, 0..1)` with `(0.5, 0.5)`
+     * spring-centred. Drives a continuously-pressed pointer in JOYSTICK mode —
+     * centring the stick pauses Dasher, deflecting it steers the zoom (issue #6).
+     */
+    fun onJoystickNormalized(normalizedX: Float, normalizedY: Float) {
+        if (destroyed || nativeHandle == 0L) return
+        if (inputMode != InputMode.JOYSTICK || !hasSurface) return
+        driveContinuousPointer(normalizedX, normalizedY)
+    }
+
+    /** Shared held-pointer path for TILT and JOYSTICK modes. */
+    private fun driveContinuousPointer(normalizedX: Float, normalizedY: Float) {
         val x = normalizedX.coerceIn(0f, 1f) * surfaceWidth
         val y = normalizedY.coerceIn(0f, 1f) * surfaceHeight
         NativeBridge.nativeMouseMove(nativeHandle, x, y)
-        if (!tiltActive) {
+        if (!stickActive) {
             NativeBridge.nativeMouseDown(nativeHandle)
-            tiltActive = true
+            stickActive = true
             isPaused = false
         }
     }
 
     /** Releases an active tilt pointer (call when unregistering the sensor). */
     fun clearTiltInput() {
-        if (destroyed || nativeHandle == 0L || !tiltActive) return
+        if (destroyed || nativeHandle == 0L || !stickActive) return
         NativeBridge.nativeMouseUp(nativeHandle)
-        tiltActive = false
+        stickActive = false
         isPaused = true
     }
+
+    /** Releases an active joystick pointer (call when leaving JOYSTICK mode). */
+    fun clearJoystickInput() = clearTiltInput()
 
     /**
      * Forwards a touch event to DasherCore.
