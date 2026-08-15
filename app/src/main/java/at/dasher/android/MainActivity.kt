@@ -64,7 +64,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
 import com.composables.icons.lucide.ClipboardCopy
-import com.composables.icons.lucide.Crosshair
 import com.composables.icons.lucide.FilePlus
 import com.composables.icons.lucide.FolderOpen
 import com.composables.icons.lucide.Gauge
@@ -78,7 +77,6 @@ import com.composables.icons.lucide.Play
 import com.composables.icons.lucide.Save
 import com.composables.icons.lucide.Settings
 import com.composables.icons.lucide.Share2
-import com.composables.icons.lucide.Smartphone
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,6 +85,12 @@ import at.dasher.android.ui.DasherCanvasView
 import at.dasher.android.ui.theme.DasherAndroidTheme
 
 class MainActivity : ComponentActivity() {
+
+    private companion object {
+        const val TAG = "MainActivity"
+        const val PREFS_INPUT = "dasher_input"
+        const val KEY_INPUT_MODE = "input_mode"
+    }
 
     private var engine: DasherEngine? = null
     private var canvasView: DasherCanvasView? = null
@@ -227,6 +231,14 @@ class MainActivity : ComponentActivity() {
             eng.setSystemAppearance(nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES)
             applyCanvasFont(eng)
             installAppListeners()
+            // Restore the persisted input method (RFC 0010: access config is
+            // frontend state). Falls back to TOUCH if its hardware vanished
+            // (e.g. the gamepad unplugged while the app was stopped).
+            when (getSharedPreferences(PREFS_INPUT, android.content.Context.MODE_PRIVATE)
+                    .getString(KEY_INPUT_MODE, InputMode.TOUCH.name)) {
+                InputMode.TILT.name -> if (tiltAvailable) applyInputMode(InputMode.TILT)
+                InputMode.JOYSTICK.name -> if (joystickAvailable) applyInputMode(InputMode.JOYSTICK)
+            }
         }
 
         setContent {
@@ -284,6 +296,13 @@ class MainActivity : ComponentActivity() {
                     if (showSettings) SettingsScreen(
                         engine = engine ?: return@Surface,
                         onDismiss = { showSettings = false },
+                        inputMode = inputMode,
+                        inputModesAvailable = buildList {
+                            add(InputMode.TOUCH)
+                            if (tiltAvailable) add(InputMode.TILT)
+                            if (joystickAvailable) add(InputMode.JOYSTICK)
+                        },
+                        onInputModeSelected = { applyInputMode(it) },
                         outputFontFamily = outputFontFamily,
                         outputFontSize = outputFontSize,
                         onOutputFontChanged = { family, size ->
@@ -315,19 +334,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun toggleInputMode() {
-        // Cycle TOUCH → TILT (if sensor) → JOYSTICK (if device) → TOUCH.
-        val next: InputMode? = when (inputMode) {
-            InputMode.TOUCH -> when {
-                tiltAvailable -> InputMode.TILT
-                joystickAvailable -> InputMode.JOYSTICK
-                else -> null
-            }
-            InputMode.TILT -> if (joystickAvailable) InputMode.JOYSTICK else InputMode.TOUCH
-            InputMode.JOYSTICK -> InputMode.TOUCH
-        }
-        if (next == null || next == inputMode) return
-        when (next) {
+    /**
+     * Switches the active input method (RFC 0010 settings IA — the control lives
+     * in Settings → Input, not the toolbar). Registers/releases the providers
+     * and releases any held pointer on behalf of the previous mode.
+     */
+    private fun applyInputMode(mode: InputMode) {
+        if (mode == inputMode) return
+        when (mode) {
             InputMode.TILT -> {
                 engine?.setInputMode(InputMode.TILT)
                 tiltProvider?.register()
@@ -344,9 +358,13 @@ class MainActivity : ComponentActivity() {
                 engine?.setInputMode(InputMode.TOUCH)
             }
         }
-        inputMode = next
+        inputMode = mode
+        // Persist so the choice survives activity recreation (rotation, uiMode
+        // change) and app restarts — RFC 0010's access config is frontend state.
+        getSharedPreferences(PREFS_INPUT, android.content.Context.MODE_PRIVATE).edit()
+            .putString(KEY_INPUT_MODE, mode.name).apply()
         AnalyticsService.capture("input_method_changed",
-            mapOf("method" to when (next) {
+            mapOf("method" to when (mode) {
                 InputMode.TILT -> "tilt"
                 InputMode.JOYSTICK -> "joystick"
                 InputMode.TOUCH -> "touch"
@@ -603,21 +621,6 @@ class MainActivity : ComponentActivity() {
                 ToolbarButton(Lucide.Save, stringResource(R.string.toolbar_save), onSave)
                 ToolbarButton(Lucide.Share2, stringResource(R.string.toolbar_share), onShare)
                 Spacer(Modifier.weight(1f))
-                ToolbarButton(
-                    when (inputMode) {
-                        InputMode.TOUCH -> Lucide.Crosshair
-                        InputMode.TILT -> Lucide.Smartphone
-                        InputMode.JOYSTICK -> Lucide.Gamepad2
-                    },
-                    stringResource(
-                        when (inputMode) {
-                            InputMode.TOUCH -> R.string.toolbar_input_touch
-                            InputMode.TILT -> R.string.toolbar_input_tilt
-                            InputMode.JOYSTICK -> R.string.toolbar_input_joystick
-                        }
-                    ) + " — " + stringResource(R.string.toolbar_input_switch),
-                    ::toggleInputMode
-                )
                 ToolbarButton(Lucide.Gamepad2,
                     stringResource(if (gameMode) R.string.toolbar_game_leave else R.string.toolbar_game),
                     onToggleGame)
@@ -791,9 +794,5 @@ class MainActivity : ComponentActivity() {
         engine = null
         canvasView = null
         super.onDestroy()
-    }
-
-    private companion object {
-        const val TAG = "MainActivity"
     }
 }
