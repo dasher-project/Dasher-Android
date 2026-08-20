@@ -83,7 +83,11 @@ object AnalyticsService {
             "platform" to "android",
             "app_variant" to "dasher-android",
             "app_version" to appVersion(),
-            "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})"
+            "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})",
+            // RFC 0001 promises no location data. PostHog Cloud derives $geoip_* (city,
+            // postal code, lat/lon) from the client IP even with project IP
+            // anonymisation on — this per-event flag is the only way to stop it.
+            "\$geoip_disable" to true
         )
         PostHog.capture(event, properties = defaults + properties)
     }
@@ -183,6 +187,7 @@ object AnalyticsService {
                 val engineTail = parts.getOrNull(1) ?: ""
                 if (engineTail.isNotBlank()) props["engine_log_tail"] = engineTail
                 props["deferred"] = true
+                props["\$geoip_disable"] = true // RFC 0001: no location on any event path
                 val synthetic = DeferredCrashException(originalType)
                 synthetic.stackTrace = parseStackTrace(stackStr)
                 PostHog.captureException(synthetic, props)
@@ -198,7 +203,9 @@ object AnalyticsService {
             "thread" to thread,
             "app_version" to appVersion(),
             "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})",
-            "locale" to (appContext?.let { LocaleHelper.currentLanguageTag(it) } ?: "system")
+            "locale" to (appContext?.let { LocaleHelper.currentLanguageTag(it) } ?: "system"),
+            // crash reports bypass capture()'s defaults — carry the flag here too (RFC 0001)
+            "\$geoip_disable" to true
         )
         if (engineLogTail.isNotBlank()) props["engine_log_tail"] = engineLogTail
         return props

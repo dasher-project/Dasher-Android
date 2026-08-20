@@ -8,7 +8,8 @@
       "platform": { "type": "string", "examples": ["windows", "macos", "ios", "visionos", "linux"] },
       "app_variant": { "type": "string", "examples": ["dasher-windows", "dasher-mac", "dasher-ios", "dasher-gtk"] },
       "app_version": { "type": "string", "example": "0.1.0-preview9" },
-      "os_version": { "type": "string", "example": "Microsoft Windows 10.0.19045" }
+      "os_version": { "type": "string", "example": "Microsoft Windows 10.0.19045" },
+      "$geoip_disable": { "type": "boolean", "const": true, "description": "Sent on every event (including crashes): PostHog Cloud must not derive location from the client IP (RFC 0001: no location data)." }
     }
   },
   "events": {
