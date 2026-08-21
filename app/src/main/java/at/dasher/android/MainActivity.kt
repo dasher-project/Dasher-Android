@@ -112,6 +112,9 @@ class MainActivity : ComponentActivity() {
     private var palettes by mutableStateOf<List<String>>(emptyList())
     private var currentPalette by mutableStateOf("")
     private var speedPercent by mutableStateOf(100)
+    // Bounds come from the engine manifest (see DasherEngine.speedRangePercent);
+    // the historic fixed 20–400 cap cut off Dasher v5's top speeds.
+    private var speedRange by mutableStateOf(20..400)
     private var inputMode by mutableStateOf(InputMode.TOUCH)
     private var tiltAvailable by mutableStateOf(false)
     private var joystickAvailable by mutableStateOf(false)
@@ -207,6 +210,7 @@ class MainActivity : ComponentActivity() {
             palettes = eng.getPaletteNames()
             currentPalette = eng.getCurrentPalette()
             speedPercent = eng.getSpeedPercent()
+            speedRange = eng.speedRangePercent()
             autoSpeed = if (autoSpeedKey >= 0) eng.boolValue(autoSpeedKey) else false
             learning = if (learningKey >= 0) eng.boolValue(learningKey) else false
             // Set default game text from the bundled DasherCore gamemode file.
@@ -701,14 +705,14 @@ class MainActivity : ComponentActivity() {
                 Text("Speed", style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 IconButton(onClick = {
-                    onSpeedChanged((speedPercent - 10).coerceIn(20, 400))
+                    onSpeedChanged((speedPercent - 10).coerceIn(speedRange.first, speedRange.last))
                 }, modifier = Modifier.size(36.dp)) {
                     Text("−", style = MaterialTheme.typography.titleMedium)
                 }
                 Text("$speedPercent%", style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.width(48.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                 IconButton(onClick = {
-                    onSpeedChanged((speedPercent + 10).coerceIn(20, 400))
+                    onSpeedChanged((speedPercent + 10).coerceIn(speedRange.first, speedRange.last))
                 }, modifier = Modifier.size(36.dp)) {
                     Text("+", style = MaterialTheme.typography.titleMedium)
                 }
