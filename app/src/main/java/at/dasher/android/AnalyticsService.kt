@@ -82,7 +82,7 @@ object AnalyticsService {
         val defaults: Map<String, Any> = mapOf(
             "platform" to "android",
             "app_variant" to "dasher-android",
-            "app_version" to appVersion(),
+            "app_version" to appVersion,
             "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})",
             // RFC 0001 promises no location data. PostHog Cloud derives $geoip_* (city,
             // postal code, lat/lon) from the client IP even with project IP
@@ -201,7 +201,7 @@ object AnalyticsService {
     private fun crashProperties(thread: String, engineLogTail: String): Map<String, Any> {
         val props = mutableMapOf<String, Any>(
             "thread" to thread,
-            "app_version" to appVersion(),
+            "app_version" to appVersion,
             "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})",
             "locale" to (appContext?.let { LocaleHelper.currentLanguageTag(it) } ?: "system"),
             // crash reports bypass capture()'s defaults — carry the flag here too (RFC 0001)
@@ -219,7 +219,7 @@ object AnalyticsService {
         val header = buildString {
             append("exception_type=").append(t::class.java.name).append('\n')
             append("thread=").append(threadName).append('\n')
-            append("app_version=").append(appVersion()).append('\n')
+            append("app_version=").append(appVersion).append('\n')
             append("os_version=Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})\n")
         }
         val body = if (engineTail.isNotBlank()) "$stack\n--- engine log ---\n$engineTail" else stack
@@ -263,8 +263,9 @@ object AnalyticsService {
             prefs(context).edit().putString(KEY_ANON_ID, it).apply()
         }
 
-    private fun appVersion(): String =
-        try { BuildConfig.VERSION_NAME } catch (_: Throwable) { "unknown" }
+    /** App version for analytics and display (RFC 0016) — one source of truth. */
+    val appVersion: String
+        get() = try { BuildConfig.VERSION_NAME } catch (_: Throwable) { "unknown" }
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
