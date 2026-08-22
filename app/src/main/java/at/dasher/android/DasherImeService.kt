@@ -212,6 +212,17 @@ class DasherImeService : InputMethodService() {
         }
         eng.setLowMemoryMode(true)
         eng.installEngineCallbacks()
+        // Real label metrics (DasherCore v0.2.4 / upstream #56), measured with
+        // THIS keyboard's canvas paint. NativeBridge listeners are static, so
+        // the IME must reinstall its own on every engine creation rather than
+        // inherit the (possibly stale) app Activity's.
+        canvasView?.onGlyphFontChanged = { eng.textMetricsChanged() }
+        eng.installTextSizeCallback { text, fontSize, out ->
+            val dims = canvasView?.measureGlyphText(text, fontSize) ?: return@installTextSizeCallback false
+            out[0] = dims.first
+            out[1] = dims.second
+            true
+        }
         // RFC 0007: push the OS dark-mode state so a SYSTEM-mode user gets the right
         // derived palette (mirrors MainActivity; settings/appearance persist on disk
         // and are read at engine creation).

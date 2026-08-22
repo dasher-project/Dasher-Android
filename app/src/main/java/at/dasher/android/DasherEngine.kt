@@ -557,6 +557,26 @@ class DasherEngine(
         NativeBridge.nativeSetLogCallback(nativeHandle)
     }
 
+    /**
+     * Installs the text-measurement callback (DasherCore v0.2.4 / upstream
+     * #56) so the engine lays labels out with real glyph advances from the
+     * canvas's Paint instead of its codepoints×size/2 estimate, whose error
+     * compounds down the label chain and jumbles deep-zoom text.
+     * [measure] must use the same paint + size transform the canvas draws
+     * opcode-5 text with (see DasherCanvasView.measureGlyphText).
+     */
+    fun installTextSizeCallback(measure: (text: String, fontSize: Int, out: FloatArray) -> Boolean) {
+        if (nativeHandle == 0L) return
+        NativeBridge.onTextSizeListener = measure
+        NativeBridge.nativeSetTextSizeCallback(nativeHandle)
+    }
+
+    /** Invalidate cached label measurements (canvas font changed). */
+    fun textMetricsChanged() {
+        if (nativeHandle == 0L) return
+        NativeBridge.nativeTextMetricsChanged(nativeHandle)
+    }
+
     /** [Choreographer.FrameCallback] — one render step per vsync. */
     override fun doFrame(frameTimeNanos: Long) {
         if (!running) return

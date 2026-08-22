@@ -55,8 +55,35 @@ class DasherCanvasView @JvmOverloads constructor(
         set(value) {
             field = value
             textPaint.typeface = typefaceFor(value)
+            // Label measurements are font-relative; the engine must re-measure
+            // with the new face (DasherCore v0.2.4).
+            onGlyphFontChanged?.invoke()
             postInvalidateOnAnimation()
         }
+
+    /**
+     * Fired by [glyphFontName]'s setter so the owner can call
+     * NativeBridge.nativeTextMetricsChanged — kept as a callback because the
+     * view doesn't own the engine handle.
+     */
+    var onGlyphFontChanged: (() -> Unit)? = null
+
+    /**
+     * Measure text with the SAME paint and size transform the canvas uses for
+     * opcode-5 text (DasherCore v0.2.4 / upstream #56): the engine's font-size
+     * value is treated as a radius and scaled exactly like onDraw does
+     * (×2.5, floored at 8). Measuring with a plain fontSize would desynchronise
+     * label layout from drawing. Returns null when not measurable; callers
+     * fall back to the engine's estimate.
+     */
+    fun measureGlyphText(text: String, engineFontSize: Int): Pair<Float, Float>? {
+        if (text.isEmpty() || engineFontSize <= 0) return null
+        val size = (engineFontSize * 2.5f).coerceAtLeast(8f)
+        textPaint.textSize = size
+        val width = textPaint.measureText(text)
+        val fm = textPaint.fontMetrics
+        return Pair(width, fm.bottom - fm.top)
+    }
 
     private fun typefaceFor(name: String): Typeface =
         if (name.isEmpty()) Typeface.DEFAULT_BOLD
