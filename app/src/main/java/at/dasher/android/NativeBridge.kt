@@ -215,6 +215,12 @@ object NativeBridge {
     // ── Parameter-change callback (two-way sync: settings <-> toolbar) ──
     @JvmStatic external fun nativeSetParameterCallback(handle: Long)
 
+    /** Install the engine text-measurement callback (see [onTextSizeListener]). */
+    @JvmStatic external fun nativeSetTextSizeCallback(handle: Long)
+
+    /** Invalidate cached text measurements after the canvas font changed. */
+    @JvmStatic external fun nativeTextMetricsChanged(handle: Long)
+
     // ── Game mode ──
     @JvmStatic external fun nativeEnterGameMode(handle: Long): Int
     @JvmStatic external fun nativeLeaveGameMode(handle: Long)
@@ -256,6 +262,16 @@ object NativeBridge {
     @JvmStatic var onOutputListener: ((type: Int, text: String) -> Unit)? = null
     @JvmStatic var onParameterChangedListener: ((key: Int) -> Unit)? = null
 
+    /**
+     * Real text measurement for the engine's label layout (DasherCore v0.2.4 /
+     * upstream #56). Implementations must measure with the SAME Paint the
+     * canvas draws opcode-5 text with. Receives (text, engine font size);
+     * fills out[0]=width, out[1]=height in px and returns true, or returns
+     * false to let the engine fall back to its estimate. Fires on the thread
+     * that calls nativeFrame (main).
+     */
+    @JvmStatic var onTextSizeListener: ((text: String, fontSize: Int, out: FloatArray) -> Boolean)? = null
+
     @JvmStatic fun onClipboard(text: String) { onClipboardListener?.invoke(text) }
     @JvmStatic fun onSpeak(text: String, interrupt: Int) {
         onSpeakListener?.invoke(text, interrupt != 0)
@@ -264,4 +280,9 @@ object NativeBridge {
     @JvmStatic fun onLog(level: Int, text: String) { onLogListener?.invoke(level, text) }
     @JvmStatic fun onOutput(type: Int, text: String) { onOutputListener?.invoke(type, text) }
     @JvmStatic fun onParameterChanged(key: Int) { onParameterChangedListener?.invoke(key) }
+
+    /** Called from JNI (textSizeCallback); signature must match the cached method ID. */
+    @JvmStatic fun onTextSize(text: String, fontSize: Int, out: FloatArray): Boolean {
+        return onTextSizeListener?.invoke(text, fontSize, out) ?: false
+    }
 }
