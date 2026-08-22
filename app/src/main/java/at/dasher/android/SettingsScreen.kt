@@ -202,6 +202,17 @@ private fun PrivacyContent(context: android.content.Context) {
         OutlinedButton(onClick = { AnalyticsService.resetId(context) }) {
             Text("Reset anonymous ID")
         }
+
+        // RFC 0016: the app version, so support can start from "which build
+        // are you on?". Same constant analytics already reports, so UI and
+        // telemetry cannot disagree. Interim home: bottom of the Privacy tab,
+        // pending the About section (RFC 0006).
+        Text(
+            "Dasher ${AnalyticsService.appVersion}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 16.dp)
+        )
     }
 }
 
