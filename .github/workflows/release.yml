@@ -40,6 +40,24 @@ jobs:
       - name: Build release APK
         run: ./gradlew :app:assembleRelease --no-daemon --stacktrace
 
+      # The APK's versionName is git-derived (app/build.gradle.kts), so a
+      # mismatch here means the checkout wasn't at the tag (workflow_dispatch
+      # on a moving branch, or describe picked an older tag). Fail before the
+      # release is published rather than ship a mislabelled APK.
+      - name: Verify APK version matches the tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          set -e
+          tag="${GITHUB_REF_NAME#v}"
+          aapt="$(ls $ANDROID_HOME/build-tools/*/aapt2 | sort -V | tail -1)"
+          apk="$(ls app/build/outputs/apk/release/*.apk | head -1)"
+          apk_version="$("$aapt" dump badging "$apk" | sed -n "s/^package:.*versionName='\([^']*\)'.*/\1/p" | head -1)"
+          echo "tag: $tag   apk: $apk_version"
+          if [ "$apk_version" != "$tag" ]; then
+            echo "::error::APK versionName ($apk_version) does not match the tag being released (v$tag)"
+            exit 1
+          fi
+
       - name: Rename APK with tag
         run: |
           tag="${GITHUB_REF_NAME:-untagged}"

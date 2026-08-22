@@ -1,5 +1,32 @@
 import org.gradle.api.tasks.Copy
 
+// ── Version from the v* tag (single source of truth) ────────────────────────
+// versionName = the most recent v* tag (via git describe); versionCode = the
+// number of commits since the tag began, plus a base, so it is deterministic
+// and strictly monotonic across builds without manual bumping — versionName
+// sat at "0.1.0" for eight releases because nothing forced the bump.
+// Tarball/no-git builds fall back to the constants below; keep them at the
+// last released values.
+fun gitVersionName(fallback: String): String {
+    val describe = try {
+        val p = ProcessBuilder("git", "describe", "--tags", "--match", "v*")
+            .directory(rootDir).redirectErrorStream(true).start()
+        p.inputStream.bufferedReader().readText().trim().also { p.waitFor() }
+    } catch (_: Exception) { "" }
+    return if (describe.startsWith("v")) describe.removePrefix("v") else fallback
+}
+
+fun gitVersionCode(base: Int, fallback: Int): Int {
+    // Count commits since the first commit reachable from HEAD; the base keeps
+    // historical codes (0.1.8 shipped as 8) below any git-derived value.
+    val count = try {
+        val p = ProcessBuilder("git", "rev-list", "--count", "HEAD")
+            .directory(rootDir).redirectErrorStream(true).start()
+        p.inputStream.bufferedReader().readText().trim().toIntOrNull().also { p.waitFor() }
+    } catch (_: Exception) { null }
+    return base + (count ?: (fallback - base))
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,8 +42,8 @@ android {
         applicationId = "at.dasher.android"
         minSdk = 24
         targetSdk = 35
-        versionCode = 8
-        versionName = "0.1.8"
+        versionCode = gitVersionCode(base = 1000, fallback = 8)
+        versionName = gitVersionName(fallback = "0.1.8")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
