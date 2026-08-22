@@ -99,7 +99,9 @@ object NativeBridge {
     /** Switches language model. */
     @JvmStatic external fun nativeSetLanguageModelId(handle: Long, id: Int)
 
-    /** Movement-speed percentage (100 = default, clamped to 20–400 by the engine). */
+    /** Movement-speed percentage (100 = raw LP_MAX_BITRATE 160). Clamped to the
+     *  engine's declared LP_MAX_BITRATE range (DasherCore v0.2.3+; previously a
+     *  fixed 20–400). See [DasherEngine.speedRangePercent] for UI bounds. */
     @JvmStatic external fun nativeGetSpeedPercent(handle: Long): Int
 
     /** Sets the movement-speed percentage. */

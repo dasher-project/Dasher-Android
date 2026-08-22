@@ -246,6 +246,32 @@ class DasherEngine(
         return NativeBridge.nativeGetSpeedPercent(nativeHandle)
     }
 
+    /**
+     * The speed range the engine accepts, as percentages (100 = raw
+     * LP_MAX_BITRATE 160). Derived from the parameter manifest rather than
+     * hardcoded: DasherCore v0.2.3+ clamps to the declared LP_MAX_BITRATE
+     * range (raw 1–1000 → ~1–625 %), which restores Dasher v5's top speeds
+     * (v5 allowed raw 10–800, up to 500 %). Falls back to the historic
+     * 20–400 % only if the manifest is unavailable.
+     */
+    fun speedRangePercent(): IntRange {
+        val key = NativeBridge.nativeFindParameterKey("LP_MAX_BITRATE")
+        if (key >= 0) {
+            val count = NativeBridge.nativeGetParameterCount()
+            for (i in 0 until count) {
+                val info = NativeBridge.nativeGetParameterInfo(i) ?: continue
+                if (info.key != key) continue
+                if (info.max > 0) {
+                    val minPct = Math.round(info.min * 100.0 / 160.0).toInt()
+                    val maxPct = Math.round(info.max * 100.0 / 160.0).toInt()
+                    if (maxPct > minPct) return minPct..maxPct
+                }
+                break
+            }
+        }
+        return 20..400
+    }
+
     /** Display name of the currently active alphabet. */
     fun getCurrentAlphabet(): String {
         if (destroyed || nativeHandle == 0L) return ""
