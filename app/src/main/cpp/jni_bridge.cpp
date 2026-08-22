@@ -98,6 +98,7 @@ static jmethodID g_onMessage = nullptr;
 static jmethodID g_onOutput = nullptr;
 static jmethodID g_onParameterChanged = nullptr;
 static jmethodID g_onLog = nullptr;
+static jmethodID g_onTextSize = nullptr;
 
 // Returns an env for the current thread, attaching it if necessary.
 // [attached] is set true when the caller must DetachCurrentThread afterwards.
@@ -187,9 +188,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     g_onOutput = env->GetStaticMethodID(g_nbClass, "onOutput", "(ILjava/lang/String;)V");
     g_onParameterChanged = env->GetStaticMethodID(g_nbClass, "onParameterChanged", "(I)V");
     g_onLog = env->GetStaticMethodID(g_nbClass, "onLog", "(ILjava/lang/String;)V");
-    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p param=%p log=%p)",
+    g_onTextSize = env->GetStaticMethodID(g_nbClass, "onTextSize", "(Ljava/lang/String;I[F)Z");
+    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p param=%p log=%p textSize=%p)",
          (void*)g_onClipboard, (void*)g_onSpeak, (void*)g_onMessage, (void*)g_onOutput,
-         (void*)g_onParameterChanged, (void*)g_onLog);
+         (void*)g_onParameterChanged, (void*)g_onLog, (void*)g_onTextSize);
     return JNI_VERSION_1_6;
 }
 
@@ -755,6 +757,54 @@ JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSetParameterCallback(JNIEnv*, jclass, jlong handle) {
     auto* s = fromHandle(handle);
     if (s && s->ctx) dasher_set_parameter_callback(s->ctx, parameterCallback, nullptr);
+}
+
+// ── Text measurement (DasherCore v0.2.4 / upstream #56) ────────────────────
+// The engine's label layout needs real glyph advances for the font the canvas
+// draws opcode-5 text with. Only Kotlin knows that font (a Paint with a
+// Typeface), so the C wrapper marshals the request into
+// NativeBridge.onTextSize(text, fontSize, out[2]); Kotlin fills the array and
+// returns true. Fires on the dasher_frame() thread (the main thread here).
+
+static int textSizeCallback(const char* text, int font_size, int* out_width, int* out_height, void*) {
+    if (!g_nbClass || !g_onTextSize || !text) return 1;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return 1;
+
+    jstring jtext = env->NewStringUTF(text);
+    jfloatArray out = env->NewFloatArray(2);
+    int ok = 1;
+    if (jtext && out) {
+        const jboolean measured =
+            env->CallStaticBooleanMethod(g_nbClass, g_onTextSize, jtext, static_cast<jint>(font_size), out);
+        if (measured) {
+            jfloat dims[2] = {0, 0};
+            env->GetFloatArrayRegion(out, 0, 2, dims);
+            if (dims[0] >= 0 && dims[1] >= 0) {
+                *out_width = static_cast<int>(dims[0]);
+                *out_height = static_cast<int>(dims[1]);
+                ok = 0;
+            }
+        }
+    }
+    if (env->ExceptionCheck()) env->ExceptionClear();
+    if (out) env->DeleteLocalRef(out);
+    if (jtext) env->DeleteLocalRef(jtext);
+    if (attached) g_jvm->DetachCurrentThread();
+    return ok;
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetTextSizeCallback(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_set_text_size_callback(s->ctx, textSizeCallback, nullptr);
+}
+
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeTextMetricsChanged(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_text_metrics_changed(s->ctx);
 }
 
 // ── Engine callbacks (see DasherCore/docs/CUSTOM_ACTIONS.md) ────────────────

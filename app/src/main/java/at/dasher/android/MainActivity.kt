@@ -224,6 +224,7 @@ class MainActivity : ComponentActivity() {
             eng.installEngineCallbacks()
             eng.installParameterCallback() // two-way sync (settings <-> toolbar/canvas)
             eng.installLogCallback() // engine diagnostics → logcat
+            installTextMeasurement(eng) // real label metrics (DasherCore v0.2.4 / upstream #56)
             // RFC 0009 A2: report the engine's sticky error flag (once per session).
             eng.onEngineError = { AnalyticsService.captureEngineError("frame loop") }
             // RFC 0007: push the OS dark-mode state into the engine so a SYSTEM
@@ -438,6 +439,17 @@ class MainActivity : ComponentActivity() {
 
     private fun applyCanvasFont(eng: DasherEngine) {
         canvasView?.glyphFontName = eng.stringValue(dasherFontKey)
+    }
+
+    /** Wires real label measurement into the engine (DasherCore v0.2.4 / #56). */
+    private fun installTextMeasurement(eng: DasherEngine) {
+        canvasView?.onGlyphFontChanged = { eng.textMetricsChanged() }
+        eng.installTextSizeCallback { text, fontSize, out ->
+            val dims = canvasView?.measureGlyphText(text, fontSize) ?: return@installTextSizeCallback false
+            out[0] = dims.first
+            out[1] = dims.second
+            true
+        }
     }
 
     private fun saveOutput() {
