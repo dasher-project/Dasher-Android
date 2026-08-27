@@ -180,6 +180,7 @@ fun SettingsScreen(
 @Composable
 private fun PrivacyContent(context: android.content.Context) {
     var optedIn by remember { mutableStateOf(AnalyticsService.optedIn(context)) }
+    var updateChecks by remember { mutableStateOf(UpdateChecker.isEnabled(context)) }
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("Privacy-preserving analytics", style = MaterialTheme.typography.titleLarge)
         Text(
@@ -199,6 +200,25 @@ private fun PrivacyContent(context: android.content.Context) {
                 AnalyticsService.setOptedIn(context, v); optedIn = v
             })
         }
+        // RFC 0017: update check opt-out (self-managed APK builds only —
+        // a future Play Store flavour removes this entirely)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Check for updates", style = MaterialTheme.typography.bodyLarge)
+            Switch(checked = updateChecks, onCheckedChange = { v ->
+                UpdateChecker.setEnabled(context, v); updateChecks = v
+            })
+        }
+        Text(
+            "Check GitHub for new Dasher releases when the app starts (at most weekly). " +
+                "Shows a notification with a link — never downloads or installs anything.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
         OutlinedButton(onClick = { AnalyticsService.resetId(context) }) {
             Text("Reset anonymous ID")
         }

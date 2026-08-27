@@ -787,6 +787,31 @@ class MainActivity : ComponentActivity() {
         if (inputMode == InputMode.TILT) tiltProvider?.register()
         // A USB controller may have been plugged in while backgrounded.
         joystickAvailable = JoystickInputProvider.hasJoystick()
+        maybeCheckForUpdates()
+    }
+
+    /**
+     * RFC 0017: passive update check for self-managed (direct APK) builds.
+     * At most weekly; opt-out in Settings → Privacy. On a newer release,
+     * shows a notification with a link — never a download or modal dialog.
+     */
+    private fun maybeCheckForUpdates() {
+        if (!UpdateChecker.shouldCheck(this)) return
+        val currentVersion = BuildConfig.VERSION_NAME
+        lifecycleScope.launch {
+            val info = UpdateChecker.check(currentVersion)
+            UpdateChecker.recordCheck(this@MainActivity)
+            if (!info.available) return@launch
+            val skipped = UpdateChecker.getSkippedVersion(this@MainActivity)
+            if (skipped == info.latestTag) return@launch // user dismissed this version
+            runOnUiThread {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Dasher ${info.latestTag} available — ${info.releaseUrl}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
 
     override fun onPause() {
