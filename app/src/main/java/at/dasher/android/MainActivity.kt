@@ -454,7 +454,7 @@ class MainActivity : ComponentActivity() {
 
     private fun saveOutput() {
         if (fullText.isEmpty()) {
-            Toast.makeText(this, "Nothing to save", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.nothing_to_save), Toast.LENGTH_SHORT).show()
             return
         }
         saveLauncher.launch(getString(R.string.save_default_name))
@@ -463,9 +463,9 @@ class MainActivity : ComponentActivity() {
     private fun saveOutputTo(uri: android.net.Uri) {
         try {
             contentResolver.openOutputStream(uri)?.use { it.write(fullText.toByteArray()) }
-            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -484,7 +484,7 @@ class MainActivity : ComponentActivity() {
             outputText = ""
             Toast.makeText(this, "Loaded ${text.length} chars", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(this, "Open failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -497,7 +497,7 @@ class MainActivity : ComponentActivity() {
             type = "text/plain"
             putExtra(android.content.Intent.EXTRA_TEXT, fullText)
         }
-        startActivity(android.content.Intent.createChooser(intent, "Share text"))
+        startActivity(android.content.Intent.createChooser(intent, getString(R.string.share_text)))
     }
 
     private fun loadOutputFontPrefs() {
@@ -714,7 +714,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.weight(1f)
                 )
                 // Speed stepper (− value +) — matches Dasher-Windows.
-                Text("Speed", style = MaterialTheme.typography.labelMedium,
+                Text(stringResource(R.string.toolbar_speed), style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 IconButton(onClick = {
                     onSpeedChanged((speedPercent - 10).coerceIn(speedRange.first, speedRange.last))
@@ -729,7 +729,7 @@ class MainActivity : ComponentActivity() {
                     Text("+", style = MaterialTheme.typography.titleMedium)
                 }
                 // Auto speed toggle.
-                Text("Auto", style = MaterialTheme.typography.labelMedium,
+                Text(stringResource(R.string.toolbar_auto), style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Switch(checked = autoSpeed, onCheckedChange = onAutoSpeedChanged)
             }
