@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dasher</string>
+    <string name="ime_name">Clavier Dasher</string>
+    <string name="save_default_name">dasher.txt</string>
+
+    <!-- Toolbar (RFC 0002 Lucide icons) -->
+    <string name="toolbar_new">Nouveau / effacer la sortie</string>
+    <string name="toolbar_open">Ouvrir un fichier</string>
+    <string name="toolbar_play">Jouer</string>
+    <string name="toolbar_pause">Pause</string>
+    <string name="toolbar_copy">Tout copier</string>
+    <string name="toolbar_save">Enregistrer dans un fichier</string>
+    <string name="toolbar_share">Partager</string>
+    <string name="toolbar_game">Mode jeu</string>
+    <string name="toolbar_game_leave">Quitter le mode jeu</string>
+    <string name="toolbar_settings">Paramètres</string>
+    <string name="toolbar_speed">Vitesse</string>
+    <string name="toolbar_auto">Auto</string>
+    <string name="input_method_title">Méthode de saisie</string>
+    <string name="input_method_touch">Tactile (glisser sur le canevas)</string>
+    <string name="input_method_tilt">Inclinaison (tenir l\'appareil, incliner pour diriger)</string>
+    <string name="input_method_joystick">Joystick / manette (incliner le stick pour diriger)</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_close">Fermer</string>
+    <string name="settings_advanced">Paramètres avancés</string>
+
+    <!-- Analytics opt-in (RFC 0001) -->
+    <string name="analytics_title">Aider à améliorer Dasher</string>
+    <string name="analytics_body">Les statistiques anonymes nous aident à comprendre comment Dasher est utilisé et à corriger les plantages. Aucun texte saisi, aucun contenu du presse-papiers et aucune information personnelle n\'est collecté. Désactivez à tout moment dans Paramètres → Confidentialité.</string>
+    <string name="analytics_accept">Aider à améliorer Dasher</string>
+    <string name="analytics_decline">Pas maintenant</string>
+
+    <!-- Output -->
+    <string name="output_placeholder">Touchez le canevas pour commencer à écrire.</string>
+    <string name="nothing_to_save">Rien à enregistrer</string>
+    <string name="nothing_to_share">Rien à partager</string>
+    <string name="saved">Enregistré</string>
+    <string name="save_failed">Échec de l\'enregistrement</string>
+    <string name="open_failed">Échec de l\'ouverture</string>
+    <string name="share_text">Partager le texte</string>
+
+    <!-- Typing rate (RFC 0012) -->
+    <string name="typing_rate">%1$.1f cps · %2$d mots/min</string>
+
+    <!-- Settings: reset to defaults -->
+    <string name="settings_reset_defaults">Réinitialiser tous les paramètres</string>
+    <string name="settings_reset_done">Paramètres réinitialisés</string>
+</resources>

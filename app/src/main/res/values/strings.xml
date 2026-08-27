@@ -44,4 +44,8 @@
     <!-- Settings: reset to defaults -->
     <string name="settings_reset_defaults">Reset all settings to defaults</string>
     <string name="settings_reset_done">Settings reset</string>
+    <string name="toolbar_speed">Speed</string>
+    <string name="toolbar_auto">Auto</string>
+    <string name="share_text">Share text</string>
+    <string name="open_failed">Open failed</string>
 </resources>
