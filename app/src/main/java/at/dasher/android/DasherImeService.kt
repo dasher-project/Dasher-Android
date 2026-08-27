@@ -203,7 +203,10 @@ class DasherImeService : InputMethodService() {
 
     private fun createEngine() {
         val dataDir = DataInstaller.ensureInstalled(this)
-        val eng = DasherEngine.create(dataDir, dataDir) { commands, strings ->
+        // User state (settings, training) lives outside the data dir so a
+        // data re-extraction can never wipe it.
+        val userDir = DataInstaller.userDir(this).apply { mkdirs() }
+        val eng = DasherEngine.create(dataDir, userDir.absolutePath) { commands, strings ->
             canvasView?.submitFrame(commands, strings)
         }
         if (eng == null) {

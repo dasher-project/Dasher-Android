@@ -31,12 +31,23 @@ object DataInstaller {
     private const val DATA_VERSION = 1
 
     /**
+     * The user-writable directory the engine keeps its own state in
+     * (`dasher_settings.xml`, user training deltas). Deliberately OUTSIDE
+     * [dataDir] so a data-version re-extraction can never delete user
+     * settings — DasherCore's CAPI contract keeps the read-only data
+     * directory and the user directory distinct.
+     */
+    fun userDir(context: Context): File = File(context.filesDir, "dasher_user")
+
+    /**
      * Ensures assets are extracted into [outDir] (normally `context.filesDir`).
      *
-     * @return the absolute path of [outDir], suitable for passing as `data_dir` /
-     *   `user_dir` to [NativeBridge.nativeCreate].
+     * @return the absolute path of [outDir], suitable for passing as `data_dir`
+     *   to [NativeBridge.nativeCreate] — pass [userDir] as the user dir.
      */
     fun ensureInstalled(context: Context, outDir: File = File(context.filesDir, "dasher_data")): String {
+        migrateUserArtifacts(outDir, userDir(context))
+
         val marker = File(outDir, ".installed_v$DATA_VERSION")
         if (marker.exists()) {
             Log.d(TAG, "Data already installed at ${outDir.absolutePath}")
@@ -55,6 +66,31 @@ object DataInstaller {
         marker.writeText("DasherCore data version $DATA_VERSION")
         Log.i(TAG, "Installed Dasher data to ${outDir.absolutePath}")
         return outDir.absolutePath
+    }
+
+    /**
+     * One-time migration for builds that shared data + user state in one
+     * directory: any DATA_VERSION bump wiped that directory wholesale,
+     * destroying `dasher_settings.xml` (input filter, speed, alphabet…)
+     * on every app update. Copies the engine-written artifacts out to
+     * [userDir] so they survive future re-extractions. Context-free on
+     * purpose — pure file shuffling, unit-testable without Robolectric.
+     */
+    fun migrateUserArtifacts(sharedDir: File, userDir: File) {
+        if (!sharedDir.isDirectory) return
+        val settings = File(sharedDir, "dasher_settings.xml")
+        val userTraining = sharedDir.listFiles()
+            ?.filter { it.isFile && it.name.startsWith("training_") }
+            ?: emptyList()
+        if (!settings.exists() && userTraining.isEmpty()) return
+
+        userDir.mkdirs()
+        if (settings.exists()) {
+            settings.copyTo(File(userDir, settings.name), overwrite = true)
+        }
+        userTraining.forEach { f ->
+            f.copyTo(File(userDir, f.name), overwrite = true)
+        }
     }
 
     private fun copyAssetDir(assetManager: android.content.res.AssetManager,
