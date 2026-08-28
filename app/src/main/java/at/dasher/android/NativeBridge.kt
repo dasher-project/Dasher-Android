@@ -174,6 +174,15 @@ object NativeBridge {
     @JvmStatic external fun nativeSaveSettings(handle: Long)
 
     /**
+     * Re-read dasher_settings.xml and apply changed parameters through the
+     * normal parameter path (DasherCore v0.2.11 `dasher_reload_settings`).
+     * The IME and main app share a user dir; each side calls this when it
+     * becomes active to pick up what the other wrote. Preserves the edit
+     * buffer; corrupt/partial files keep current values.
+     */
+    @JvmStatic external fun nativeReloadSettings(handle: Long)
+
+    /**
      * Reset every parameter to its compiled-in default and persist the result.
      * (DasherCore v0.1.6+ `dasher_reset_settings`.)
      */

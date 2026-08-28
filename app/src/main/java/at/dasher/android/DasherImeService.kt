@@ -252,6 +252,12 @@ class DasherImeService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        // The main app's engine writes to the shared dasher_settings.xml
+        // while the IME engine holds its own in-memory copy — reload on
+        // every show so speed, alphabet, palette etc. match what the user
+        // last set (dasher_reload_settings, DasherCore v0.2.11). Cheap:
+        // one file read + diff, only changed parameters fire callbacks.
+        if (restarting) engine?.reloadSettings()
         engine?.start()
     }
 

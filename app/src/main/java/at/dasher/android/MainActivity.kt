@@ -783,6 +783,11 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         installAppListeners() // re-own callbacks after the IME released them
+        // The IME's engine writes to the shared dasher_settings.xml while
+        // this engine holds its own in-memory copy — reload on resume so
+        // any changes made on the keyboard side appear here
+        // (dasher_reload_settings, DasherCore v0.2.11).
+        engine?.reloadSettings()
         engine?.start()
         if (inputMode == InputMode.TILT) tiltProvider?.register()
         // A USB controller may have been plugged in while backgrounded.

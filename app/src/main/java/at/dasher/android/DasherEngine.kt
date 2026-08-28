@@ -413,6 +413,19 @@ class DasherEngine(
     }
 
     /**
+     * Re-read dasher_settings.xml and apply changed parameters through the
+     * normal parameter path (`dasher_reload_settings`, DasherCore v0.2.11).
+     * The IME and main app share a user dir; each side calls this when it
+     * becomes active to pick up settings the other wrote. Only changed
+     * values are applied, the edit buffer survives, and a corrupt or
+     * partially-written file keeps current values (DasherCore #67).
+     */
+    fun reloadSettings() {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeReloadSettings(nativeHandle)
+    }
+
+    /**
      * Reset every parameter to its compiled-in default and persist the result
      * (`dasher_reset_settings`, DasherCore v0.1.6+). Mirrors DasherApple's
      * reset-to-defaults (Apple #18) and Dasher-Windows SettingsPanel.
