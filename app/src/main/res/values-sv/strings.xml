@@ -75,6 +75,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">För att lossa tangentbordet, tillåt Dasher att visas över andra appar och tryck på Float igen.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">Fullständig åtkomst låter Dasher läsa upp det du skriver och komma ihåg din träning. Tangentbordet fungerar fortfarande för grundläggande inmatning utan den.</string>
     <string name="game_mode">Spelläge</string>
     <string name="game_mode_2">Spelläge</string>
@@ -144,6 +145,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="pointer_hover_input">Pekare/Hover-inmatning</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Preferenser</string>
+    <string name="preparing_dasher">Förbereder Dasher…</string>
     <string name="privacy">Privatliv</string>
     <string name="privacy_2">&lt;b&gt;Integritet&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Importera om från Dasher 5</string>

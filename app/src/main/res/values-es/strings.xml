@@ -75,6 +75,7 @@ Puedes cambiar esta configuración en cualquier momento en Ajustes &gt; Privacid
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Para flotar el teclado, permite que Dasher se muestre sobre otras apps y toca Float de nuevo.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">El acceso completo permite que Dasher lea en voz alta lo que escribes y recuerde tu entrenamiento. El teclado sigue funcionando para la entrada básica sin esta función.</string>
     <string name="game_mode">Modo de juego</string>
     <string name="game_mode_2">Modo de juego</string>
@@ -144,6 +145,7 @@ Puedes cambiar esta configuración en cualquier momento en Ajustes &gt; Privacid
     <string name="pointer_hover_input">Entrada al pasar el puntero</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Preferencias</string>
+    <string name="preparing_dasher">Preparando Dasher…</string>
     <string name="privacy">Privacidad</string>
     <string name="privacy_2">&lt;B&gt;PRIVACIDAD:&lt;/B&gt;</string>
     <string name="re_import_from_dasher_5">Reimportar desde Dasher 5</string>

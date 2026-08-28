@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -93,6 +94,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private var engine: DasherEngine? = null
+    // Drives the first-launch loading screen: true once the engine AND its
+    // full setup (listeners, measurement, input mode) are done. Plain field
+    // above is written from a coroutine; this state is what Compose reacts to.
+    private var engineReady by mutableStateOf(false)
     private var canvasView: DasherCanvasView? = null
     private var tiltProvider: TiltInputProvider? = null
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -244,6 +249,8 @@ class MainActivity : ComponentActivity() {
                 InputMode.TILT.name -> if (tiltAvailable) applyInputMode(InputMode.TILT)
                 InputMode.JOYSTICK.name -> if (joystickAvailable) applyInputMode(InputMode.JOYSTICK)
             }
+            // Everything is wired — swap the loading screen for the real UI.
+            engineReady = true
         }
 
         setContent {
@@ -262,6 +269,23 @@ class MainActivity : ComponentActivity() {
                     typingRate = ""
                 }
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    // First launch: DataInstaller extracts the bundled alphabets /
+                    // training data and the engine is created only afterwards — a
+                    // window of several seconds (much longer on slow storage)
+                    // during which the canvas has no frames and the screen showed
+                    // as dead black (Heide's report). Show a loading state instead.
+                    if (!engineReady) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(Modifier.height(16.dp))
+                            Text(stringResource(R.string.preparing_dasher))
+                        }
+                        return@Surface
+                    }
                     AppScreen(
                         output = fullText,
                         typingRate = typingRate,
@@ -573,6 +597,10 @@ class MainActivity : ComponentActivity() {
                                 canvasView = view
                                 view.onSurfaceSizeChanged = { w, h -> engine?.onSurfaceSizeChanged(w, h) }
                                 view.onTouchInput = { action, x, y -> engine?.onTouch(action, x, y) }
+                                // The canvas now composes AFTER engine setup (loading
+                                // screen first), so applyCanvasFont's early write may
+                                // have been lost — re-apply at creation.
+                                engine?.let { e -> if (dasherFontKey >= 0) view.glyphFontName = e.stringValue(dasherFontKey) }
                             }
                         },
                         modifier = Modifier.fillMaxSize()

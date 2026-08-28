@@ -75,6 +75,7 @@ Możesz to zmienić w dowolnym momencie w Ustawieniach &gt; Prywatność.</strin
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Aby oddokować klawiaturę, zezwól Dasherowi na wyświetlanie nad innymi aplikacjami, a następnie ponownie dotknij Float.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">Pełny dostęp pozwala Dasherowi czytać to, co piszesz, i zapamiętywać trening. Klawiatura nadal działa bez niego, umożliwiając podstawowe wprowadzanie danych.</string>
     <string name="game_mode">Tryb gry</string>
     <string name="game_mode_2">Tryb gry</string>
@@ -144,6 +145,7 @@ Możesz to zmienić w dowolnym momencie w Ustawieniach &gt; Prywatność.</strin
     <string name="pointer_hover_input">Wprowadzanie za pomocą najechania kursorem</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Preferencje</string>
+    <string name="preparing_dasher">Przygotowywanie Dasher…</string>
     <string name="privacy">Prywatność</string>
     <string name="privacy_2">&lt;b&gt;Prywatność&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Ponowny import z Dasher 5</string>

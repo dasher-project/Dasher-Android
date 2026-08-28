@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">కీబోర్డ్‌ను ఫ్లోట్ చేయడానికి, Dasher ను ఇతర యాప్‌ల పైన చూపించడానికి అనుమతించం, ఆపై Float ను మళ్లీ ట్యాప్ చేయం.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">ఫుల్ యాక్సెస్‌తో, మీరు రాసేదాన్ని డాషర్ చదవగలదు మరియు మీ శిక్షణను గుర్తుంచుకోగలదు. అది లేకుండా కూడా కీబోర్డ్ ప్రాథమిక ఎంట్రీ కోసం పనిచేస్తుంది.</string>
     <string name="game_mode">గేమ్ మోడ్</string>
     <string name="game_mode_2">గేమ్ మోడ్</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">పాయింటర్ హోవర్ ఇన్‌పుట్</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">ప్రాధాన్యతలు</string>
+    <string name="preparing_dasher">Dasher సిద్ధమవుతోంది…</string>
     <string name="privacy">గోప్యత</string>
     <string name="privacy_2">&lt;b&gt;గోప్యత&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">డాషర్ 5 నుండి తిరిగి దిగుమతి చేసుకోండి</string>

@@ -75,6 +75,7 @@ Puoi modificare questa impostazione in qualsiasi momento in Impostazioni &gt; Pr
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Per rendere fluttuante la tastiera, consenti a Dasher di essere visualizzato sopra altre app, quindi tocca di nuovo Float.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">L\'accesso completo consente a Dasher di parlare ciò che scrivi e di ricordare la tua formazione. La tastiera funziona ancora per l\'immissione di base senza di essa.</string>
     <string name="game_mode">Modalità di gioco</string>
     <string name="game_mode_2">Modalità di gioco</string>
@@ -144,6 +145,7 @@ Puoi modificare questa impostazione in qualsiasi momento in Impostazioni &gt; Pr
     <string name="pointer_hover_input">Ingresso al passaggio del puntatore</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Preferenze</string>
+    <string name="preparing_dasher">Preparazione di Dasher…</string>
     <string name="privacy">Privacy</string>
     <string name="privacy_2">&lt;b&gt;Privacy&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Reimportare da Dasher 5</string>

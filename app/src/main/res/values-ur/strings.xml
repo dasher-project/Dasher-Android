@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">کی بورڈ کو فلوٹ کرنے کے لیے، Dasher کو دوسرے ایپس کے اوپر دکھنے کی اجازت دیں، پھر دوبارہ Float پر ٹیپ کریں۔</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">مکمل رسائی ڈیشر کو وہ بولنے دیتا ہے جو آپ لکھتے ہیں اور اپنی تربیت کو یاد رکھتے ہیں۔ کی بورڈ اب بھی اس کے بغیر بنیادی اندراج کے لیے کام کرتا ہے۔</string>
     <string name="game_mode">گیم موڈ</string>
     <string name="game_mode_2">گیم موڈ</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">پوائنٹر ہوور ان پٹ</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Prefs</string>
+    <string name="preparing_dasher">ڈیشر تیار ہو رہا ہے…</string>
     <string name="privacy">رازداری</string>
     <string name="privacy_2">&lt;b&gt;رازداری&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Dasher 5 سے دوبارہ درآمد کریں۔</string>

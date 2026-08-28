@@ -75,6 +75,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Om het toetsenbord te laten zweven, geef je Dasher toestemming om over andere apps te verschijnen en tik je opnieuw op Float.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">Met Full Access kan Dasher uitspreken wat je typt en je training onthouden. Het toetsenbord werkt nog steeds voor eenvoudige invoer, ook zonder Full Access.</string>
     <string name="game_mode">Spelmodus</string>
     <string name="game_mode_2">Spelmodus</string>
@@ -144,6 +145,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="pointer_hover_input">Invoer voor muisovergang</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Voorkeuren</string>
+    <string name="preparing_dasher">Dasher wordt voorbereid…</string>
     <string name="privacy">Privacy</string>
     <string name="privacy_2">&lt;b&gt;Privacy&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Opnieuw importeren vanuit Dasher 5</string>
