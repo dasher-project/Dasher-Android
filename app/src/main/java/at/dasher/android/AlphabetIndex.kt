@@ -38,6 +38,9 @@ data class AlphabetInfo(
 
 object AlphabetIndex {
 
+    /** The engine's historical default — preferred within its tier for locale-follow. */
+    const val ENGINE_DEFAULT_ALPHABET = "English with limited punctuation"
+
     @Volatile
     private var cached: List<AlphabetInfo>? = null
 
@@ -79,13 +82,23 @@ object AlphabetIndex {
 
     /**
      * Best alphabet for a BCP-47 locale tag ("ar", "pt-BR", "zh-Hans-CN").
-     * Match order: exact lang code, then language prefix ("pt-BR" → "pt"),
-     * then language+script ("zh-Hans" → an alphabet with lang zh-Hans).
-     * Within a tier: maintained > worldalphabets > legacy, then more
-     * symbols (a fuller alphabet is a better default).
+     * Match order: exact lang code, then language+script ("zh-Hans" → an
+     * alphabet with lang zh-Hans), then language prefix. Ranking within the
+     * matched set: maintained > worldalphabets > legacy, the engine's
+     * historical default alphabet ("English with limited punctuation")
+     * first within its tier, then fuller alphabets.
+     *
+     * The tier order matters more than it looks: the autoconverted
+     * WorldAlphabets files have a pre-existing engine bug where their trees
+     * barely expand (DasherCore issue TBD) — defaulting onto one renders a
+     * flat, unweighted-looking canvas. Defaults must land on maintained
+     * alphabets; WA stays a deliberate choice.
      */
-    fun suggestForLocale(context: Context, localeTag: String): AlphabetInfo? {
-        val list = get(context)
+    fun suggestForLocale(context: Context, localeTag: String): AlphabetInfo? =
+        suggestFrom(get(context), localeTag)
+
+    /** Pure form of [suggestForLocale] (unit-testable, no Context). */
+    fun suggestFrom(list: List<AlphabetInfo>, localeTag: String): AlphabetInfo? {
         if (list.isEmpty()) return null
 
         val tag = localeTag.replace('_', '-')
@@ -99,19 +112,29 @@ object AlphabetIndex {
             else -> 2
         }
 
-        val candidates = list.filter { it.lang != null }
+        // Score: better (lower) tier dominates; within a tier the engine
+        // default wins, then the fuller alphabet. The previous version
+        // multiplied the tier INTO the score (tier 1 beat tier 0) — every
+        // locale followed onto a WorldAlphabets variant.
+        fun score(a: AlphabetInfo): Long {
+            val tierRank = 2L - tier(a) // maintained (tier 0) → highest rank
+            val defaultBonus = if (a.id == ENGINE_DEFAULT_ALPHABET) 1L else 0L
+            return tierRank * 1_000_000L + defaultBonus * 500_000L + a.chars.coerceAtMost(499_999)
+        }
+
+        val candidates = list.filter { !it.lang.isNullOrEmpty() }
         // 1. exact lang code (covers "zh-Hans" style entries directly)
         candidates.filter { it.lang!!.equals(tag, ignoreCase = true) }
-            .maxByOrNull { tier(it) * 1_000_000 + it.chars }
+            .maxByOrNull { score(it) }
             ?.let { return it }
         // 2. language + script ("zh-Hans-CN" → lang "zh-Hans")
         if (script != null) {
             candidates.filter { it.lang == "$language-$script" }
-                .maxByOrNull { tier(it) * 1_000_000 + it.chars }
+                .maxByOrNull { score(it) }
                 ?.let { return it }
         }
         // 3. language prefix
-        return candidates.filter { it.lang!!.startsWith("$language") }
-            .maxByOrNull { tier(it) * 1_000_000 + it.chars }
+        return candidates.filter { it.lang!!.startsWith(language) }
+            .maxByOrNull { score(it) }
     }
 }
