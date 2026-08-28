@@ -298,15 +298,34 @@ class MainActivity : ComponentActivity() {
                     // window of several seconds (much longer on slow storage)
                     // during which the canvas has no frames and the screen showed
                     // as dead black (Heide's report). Show a loading state instead.
+                    //
+                    // Flash avoidance (RFC 0018): with lazy alphabets
+                    // (DasherCore #68) a warm start reaches engineReady in
+                    // well under a second — most of it process + Compose
+                    // startup, which looks the same with or without the
+                    // engine. The spinner only appears if the wait exceeds
+                    // 300ms, so warm starts never flash it; first launches
+                    // (extraction) still get full coverage.
+                    var loaderVisible by remember { mutableStateOf(false) }
+                    LaunchedEffect(engineReady) {
+                        if (!engineReady) {
+                            delay(300)
+                            loaderVisible = true
+                        } else {
+                            loaderVisible = false
+                        }
+                    }
                     if (!engineReady) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(Modifier.height(16.dp))
-                            Text(stringResource(R.string.preparing_dasher))
+                        if (loaderVisible) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                            ) {
+                                CircularProgressIndicator()
+                                Spacer(Modifier.height(16.dp))
+                                Text(stringResource(R.string.preparing_dasher))
+                            }
                         }
                         return@Surface
                     }
