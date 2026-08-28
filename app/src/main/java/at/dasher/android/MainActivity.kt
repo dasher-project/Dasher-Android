@@ -113,6 +113,10 @@ class MainActivity : ComponentActivity() {
     private var outputFontFamily by mutableStateOf("")
     private var outputFontSize by mutableStateOf(16f)
     private var alphabets by mutableStateOf<List<String>>(emptyList())
+    /** Alphabet metadata by name (AlphabetIndex); empty until first load. */
+    private val alphabetIndexInfo: Map<String, AlphabetInfo> by lazy {
+        AlphabetIndex.get(this).associateBy { it.id }
+    }
     private var currentAlphabet by mutableStateOf("")
     private var palettes by mutableStateOf<List<String>>(emptyList())
     private var currentPalette by mutableStateOf("")
@@ -212,6 +216,26 @@ class MainActivity : ComponentActivity() {
             }
             alphabets = eng.getAlphabetNames()
             currentAlphabet = eng.getCurrentAlphabet()
+            // Locale-follow default (alphabet index): while the user hasn't
+            // explicitly picked an alphabet, follow the device locale — an
+            // Arabic-locale phone starts on the Arabic alphabet, etc. The
+            // first explicit pick (onAlphabetSelected) pins the choice.
+            if (alphabetFollowsLocale()) {
+                // Activity resources (NOT Resources.getSystem()) so per-app
+                // locale overrides are respected on Android 13+. Verified on
+                // emulator: per-app locale ar → Arabic (WorldAlphabets) on a
+                // cold start.
+                AlphabetIndex.suggestForLocale(
+                    this@MainActivity,
+                    resources.configuration.locales[0].toLanguageTag()
+                )?.let { suggested ->
+                    if (suggested.id != currentAlphabet) {
+                        eng.setAlphabet(suggested.id)
+                        eng.saveSettings()
+                        currentAlphabet = eng.getCurrentAlphabet()
+                    }
+                }
+            }
             palettes = eng.getPaletteNames()
             currentPalette = eng.getCurrentPalette()
             speedPercent = eng.getSpeedPercent()
@@ -303,6 +327,7 @@ class MainActivity : ComponentActivity() {
                         },
                         onAlphabetSelected = { name ->
                             engine?.setAlphabet(name); currentAlphabet = name; engine?.saveSettings()
+                            pinAlphabetChoice() // explicit pick: stop following the locale
                             AnalyticsService.capture("alphabet_selected", mapOf("alphabet_id" to name))
                         },
                         onSpeedChanged = { pct ->
@@ -361,6 +386,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /** True until the user explicitly picks an alphabet (locale-follow). */
+    private fun alphabetFollowsLocale(): Boolean =
+        getSharedPreferences(AlphabetPrefs.PREFS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(AlphabetPrefs.KEY_FOLLOWS_LOCALE, true)
+
+    /** Called on the first explicit alphabet selection — pins the choice. */
+    private fun pinAlphabetChoice() {
+        getSharedPreferences(AlphabetPrefs.PREFS, android.content.Context.MODE_PRIVATE).edit()
+            .putBoolean(AlphabetPrefs.KEY_FOLLOWS_LOCALE, false).apply()
     }
 
     /**
@@ -739,7 +775,16 @@ class MainActivity : ComponentActivity() {
                     options = alphabets,
                     selected = currentAlphabet.ifEmpty { "English" },
                     onSelect = onAlphabetSelected,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    // Alphabet index metadata badges (script · direction).
+                    optionMeta = { name ->
+                        alphabetIndexInfo[name]?.let { info ->
+                            listOfNotNull(
+                                info.scriptName ?: info.script,
+                                if (info.rtl) "RTL" else null
+                            ).joinToString(" · ").ifEmpty { null }
+                        }
+                    }
                 )
                 // Speed stepper (− value +) — matches Dasher-Windows.
                 Text(stringResource(R.string.toolbar_speed), style = MaterialTheme.typography.labelMedium,
@@ -772,7 +817,8 @@ class MainActivity : ComponentActivity() {
         selected: String,
         onSelect: (String) -> Unit,
         modifier: Modifier = Modifier,
-        leadingIcon: ImageVector? = null
+        leadingIcon: ImageVector? = null,
+        optionMeta: (String) -> String? = { null }
     ) {
         var expanded by remember { mutableStateOf(false) }
         Box(modifier) {
@@ -787,7 +833,18 @@ class MainActivity : ComponentActivity() {
                 Column(modifier = Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
                     options.forEach { opt ->
                         DropdownMenuItem(
-                            text = { Text(opt, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            text = {
+                                Column {
+                                    Text(opt, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    optionMeta(opt)?.let { meta ->
+                                        Text(
+                                            meta,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            },
                             onClick = { onSelect(opt); expanded = false }
                         )
                     }
