@@ -107,7 +107,11 @@ class DasherImeService : InputMethodService() {
         }
         root.addView(top, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         root.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
-        root.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, imeHeight)
+        // The root is the IME window's content view — its parent is the
+        // window's FrameLayout-based decor. LinearLayout.LayoutParams here
+        // survives until a re-measure casts them and crashes (Float's
+        // docked-shrink relayout did exactly that).
+        root.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, imeHeight)
         root.minimumHeight = imeHeight
         dockedRoot = root
 
@@ -200,7 +204,9 @@ class DasherImeService : InputMethodService() {
         this.floating = true
 
         // Shrink the docked view so the system doesn't reserve full keyboard space.
-        dockedRoot?.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, dp(40, density))
+        // FrameLayout.LayoutParams: the docked root's parent is the window's
+        // FrameLayout decor — LinearLayout.LayoutParams crash on re-measure.
+        dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, dp(40, density))
         floatBtn.text = "Dock"
         floatBtn.setOnClickListener { exitFloatingMode(floatBtn) }
 
