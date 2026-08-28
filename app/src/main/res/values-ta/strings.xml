@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">விசைப்பலகையை மிதக்கச் செய்ய, Dasher ஐ பிற பயன்பாடுகளின் மேல் காட்ட அனுமதித்து, பின்னர் Float ஐ மீண்டும் தட்டவும்.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">முழு அணுகல் வசதி, நீங்கள் எழுதுவதை டேஷர் பேசவும், உங்கள் பயிற்சியை நினைவில் கொள்ளவும் அனுமதிக்கிறது. அது இல்லாமலேயே, அடிப்படை உள்ளீட்டிற்கு விசைப்பலகை தொடர்ந்து செயல்படும்.</string>
     <string name="game_mode">விளையாட்டு முறை</string>
     <string name="game_mode_2">விளையாட்டு முறை</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">சுட்டி வட்டமிடல் உள்ளீடு</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">விருப்பத்தேர்வுகள்</string>
+    <string name="preparing_dasher">Dasher தய்யாறாகிறது…</string>
     <string name="privacy">தனியுரிமை</string>
     <string name="privacy_2">&lt;b&gt;தனியுரிமை&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">டேஷர் 5 இலிருந்து மீண்டும் இறக்குமதி செய்யவும்</string>

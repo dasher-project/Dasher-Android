@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">要悬浮键盘，请允许 Dasher 在其他应用上方显示，然后再次点击“悬浮”。</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">完全访问权限可让 Dasher 说出您所写的内容并记住您的训练。没有它，键盘仍然可以进行基本输入。</string>
     <string name="game_mode">游戏模式</string>
     <string name="game_mode_2">游戏模式</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">指针悬停输入</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">偏好</string>
+    <string name="preparing_dasher">正在准备 Dasher…</string>
     <string name="privacy">隐私</string>
     <string name="privacy_2">&lt;b&gt;隐私&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">从 Dasher 5 重新导入</string>

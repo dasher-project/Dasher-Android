@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">कीबोर्ड फ्लोट करण्यासाठी, Dasher ला इतर अ‍ॅप्ंवर दर्शवण्याची परवानगी द्या, नंतर पुन्हा Float टॅप करा.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">फुल ॲक्सेसमुळे डॅशर तुम्ही जे लिहिता ते बोलू शकतो आणि तुमचे प्रशिक्षण लक्षात ठेवतो. त्याशिवायही, मूलभूत नोंदीसाठी कीबोर्ड काम करतो.</string>
     <string name="game_mode">गेम मोड</string>
     <string name="game_mode_2">गेम मोड</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">पॉइंटर होव्हर इनपुट</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">प्राधान्ये</string>
+    <string name="preparing_dasher">Dasher सज्ज होत आहे…</string>
     <string name="privacy">गोपनीयता</string>
     <string name="privacy_2">&lt;b&gt;गोपनीयता&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">डॅशर ५ मधून पुन्हा आयात करा</string>

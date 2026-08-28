@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">ಕೀಬೋರ್ಡ್ ಅನ್ನು ತೇಲುವಂತೆ ಮಾಡಲು, Dasher ಅನ್ನು ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಮೇಲೆ ತೋರಿಸಲು ಅನುಮತಿಸಿ, ನಂತರ Float ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಟ್ಯಾಪ್ ಮಾಡಿ.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">ಪೂರ್ಣ ಪ್ರವೇಶವು ಡ್ಯಾಶರ್‌ಗೆ ನೀವು ಬರೆಯುವುದನ್ನು ಮಾತನಾಡಲು ಮತ್ತು ನಿಮ್ಮ ತರಬೇತಿಯನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ಅನುಮತಿಸುತ್ತದೆ. ಕೀಬೋರ್ಡ್ ಇಲ್ಲದೆಯೂ ಸಹ ಮೂಲಭೂತ ಪ್ರವೇಶಕ್ಕಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</string>
     <string name="game_mode">ಆಟದ ಮೋಡ್</string>
     <string name="game_mode_2">ಗೇಮ್ ಮೋಡ್</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">ಪಾಯಿಂಟರ್ ಹೋವರ್ ಇನ್‌ಪುಟ್</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">ಪೂರ್ವಭಾವಿಗಳು</string>
+    <string name="preparing_dasher">Dasher ಸಿದ್ಧವಾಗುತ್ತಿದೆ…</string>
     <string name="privacy">ಗೌಪ್ಯತೆ</string>
     <string name="privacy_2">&lt;b&gt;ಗೌಪ್ಯತೆ&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">ಡ್ಯಾಷರ್ 5 ರಿಂದ ಮರು-ಆಮದು ಮಾಡಿ</string>
