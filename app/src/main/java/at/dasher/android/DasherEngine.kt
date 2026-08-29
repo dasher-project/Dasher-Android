@@ -662,7 +662,16 @@ class DasherEngine(
                 Log.e(TAG, "nativeCreate returned 0 — dataDir=$dataDir")
                 return null
             }
-            return DasherEngine(handle, userDir, frameConsumer)
+            val eng = DasherEngine(handle, userDir, frameConsumer)
+            // Realize the engine immediately with a provisional screen size.
+            // Realize() builds the alphabet name index (474 entries) and loads
+            // the selected alphabet — without this, queries made before the
+            // canvas lays out (getAlphabetNames, locale-follow, etc.) see an
+            // unrealized engine with an empty index: the alphabet picker
+            // showed one entry and locale-follow had nothing to match against.
+            // The canvas corrects the size when it actually lays out.
+            NativeBridge.nativeSetScreenSize(handle, 800, 600)
+            return eng
         }
     }
 }
