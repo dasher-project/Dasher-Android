@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">ਕੀਬੋਰਡ ਨੂੰ ਫਲੋਟ ਕਰਨ ਲਈ, Dasher ਨੂੰ ਹੋਰ ਐਪਾਂ ਉੱਤੇ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ, ਫਿਰ ਦੁਬਾਰਾ Float ਤੇ ਟੈਪ ਕਰੋ।</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">ਪੂਰੀ ਪਹੁੰਚ ਡੈਸ਼ਰ ਨੂੰ ਤੁਹਾਡੇ ਦੁਆਰਾ ਲਿਖੀਆਂ ਗਈਆਂ ਗੱਲਾਂ ਕਹਿਣ ਅਤੇ ਤੁਹਾਡੀ ਸਿਖਲਾਈ ਨੂੰ ਯਾਦ ਰੱਖਣ ਦਿੰਦੀ ਹੈ। ਕੀਬੋਰਡ ਅਜੇ ਵੀ ਇਸ ਤੋਂ ਬਿਨਾਂ ਮੁੱਢਲੀ ਐਂਟਰੀ ਲਈ ਕੰਮ ਕਰਦਾ ਹੈ।</string>
     <string name="game_mode">ਗੇਮ ਮੋਡ</string>
     <string name="game_mode_2">ਗੇਮ ਮੋਡ</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">ਪੁਆਇੰਟਰ ਹੋਵਰ ਇਨਪੁੱਟ</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">ਪ੍ਰੀਫੈਕਸ਼ਨ</string>
+    <string name="preparing_dasher">Dasher ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ…</string>
     <string name="privacy">ਗੋਪਨੀਯਤਾ</string>
     <string name="privacy_2">&lt;b&gt;ਗੋਪਨੀਯਤਾ&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">ਡੈਸ਼ਰ 5 ਤੋਂ ਮੁੜ-ਆਯਾਤ ਕਰੋ</string>

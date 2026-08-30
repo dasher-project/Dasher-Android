@@ -618,6 +618,18 @@ Java_at_dasher_android_NativeBridge_nativeSaveSettings(JNIEnv*, jclass, jlong ha
     if (s && s->ctx) dasher_save_settings(s->ctx);
 }
 
+// Re-read dasher_settings.xml and apply changed parameters through the
+// normal SetParameter path (DasherCore v0.2.11). The IME and the main
+// app share a user dir, so each side reloads when it becomes active to
+// pick up settings the other wrote. Preserves the edit buffer; fires
+// parameter-change callbacks so derived state (palette, alphabet)
+// rebuilds; corrupt/partial files keep current values.
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeReloadSettings(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_reload_settings(s->ctx);
+}
+
 // Reset every parameter to its compiled-in default and persist the result
 // (DasherCore v0.1.6+; RFC 0009 Amendment 2 notes dasher_settings.xml can be
 // deleted for persisted-defaults, but the explicit API is cleaner).

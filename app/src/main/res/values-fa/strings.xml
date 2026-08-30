@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">برای شناور کردن صفحه‌کلید، به Dasher اجازه دهید روی برنامه‌های دیگر نمایش داده شود، سپس دوباره Float را بزنید.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">دسترسی کامل به Dasher اجازه می‌دهد آنچه را که شما می‌نویسید، بخواند و آموزش‌های شما را به خاطر بسپارد. صفحه کلید بدون آن نیز برای ورود اولیه کار می‌کند.</string>
     <string name="game_mode">حالت بازی</string>
     <string name="game_mode_2">حالت بازی</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">ورودی نشانگر موس</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">مقدماتی</string>
+    <string name="preparing_dasher">در حال آماده‌سازی Dasher…</string>
     <string name="privacy">حریم خصوصی</string>
     <string name="privacy_2">&lt;b&gt;حریم خصوصی&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">دوباره از Dasher 5 وارد کنید</string>

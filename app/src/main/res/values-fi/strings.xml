@@ -75,6 +75,7 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Vapauta näppäimistö kellumaan sallimalla Dasherin näkyä muiden sovellusten päällä ja napauta sitten Float uudelleen.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">Täysi käyttöoikeus antaa Dasherille mahdollisuuden puhua kirjoittamasi ja muistaa koulutuksesi. Näppäimistö toimii perussyötöissä ilman sitäkin.</string>
     <string name="game_mode">Pelitila</string>
     <string name="game_mode_2">pelitila</string>
@@ -144,6 +145,7 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="pointer_hover_input">Osoittimen leijutussyöttö</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Prefs</string>
+    <string name="preparing_dasher">Valmistellaan Dasheria…</string>
     <string name="privacy">Tietosuoja</string>
     <string name="privacy_2">&lt;b&gt;Yksityisyys&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Tuo uudelleen Dasher 5:stä</string>

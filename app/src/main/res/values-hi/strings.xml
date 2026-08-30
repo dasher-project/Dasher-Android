@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">कीबोर्ड को फ़्लोट करने के लिए, Dasher को अन्य ऐप्स के ऊपर दिखाने की अनुमति दें, फिर Float पर फिर से टैप करें।</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">फुल एक्सेस की मदद से डैशर आपके लिखे हुए को बोल सकता है और आपकी ट्रेनिंग को याद रख सकता है। इसके बिना भी बेसिक एंट्री के लिए कीबोर्ड काम करता है।</string>
     <string name="game_mode">खेल मोड</string>
     <string name="game_mode_2">खेल मोड:</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">पॉइंटर होवर इनपुट</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">पसंद</string>
+    <string name="preparing_dasher">Dasher तैयार हो रहा है…</string>
     <string name="privacy">गोपनीयता</string>
     <string name="privacy_2">&lt;b&gt;निजता&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">डैशर 5 से पुनः आयात करें</string>

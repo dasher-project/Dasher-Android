@@ -75,6 +75,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Um die Tastatur schweben zu lassen, erlauben Sie Dasher, über anderen Apps anzuzeigen, und tippen Sie dann erneut auf Float.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">Mit Vollzugriff kann Dasher sprechen, was Sie schreiben, und sich an Ihr Training erinnern. Die Tastatur funktioniert auch ohne sie weiterhin für die einfache Eingabe.</string>
     <string name="game_mode">Spielmodus</string>
     <string name="game_mode_2">Spielmodus</string>
@@ -144,6 +145,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="pointer_hover_input">Zeiger-Hover-Eingabe</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Prefs</string>
+    <string name="preparing_dasher">Dasher wird vorbereitet…</string>
     <string name="privacy">Privatsphäre</string>
     <string name="privacy_2">&lt;b&gt;Datenschutz&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Reimport aus Dasher 5</string>

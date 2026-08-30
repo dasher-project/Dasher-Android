@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- IME floating mode (TYPE_APPLICATION_OVERLAY). Special app access:
+         the user grants it via Settings; the IME checks canDrawOverlays()
+         before entering floating mode and points there if missing. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
         android:name=".DasherApp"
         android:allowBackup="true"

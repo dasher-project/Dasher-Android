@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Για να αιωρήσετε το πληκτρολόγιο, επιτρέψτε στο Dasher να εμφανίζεται πάνω από άλλες εφαρμογές και πατήστε ξανά Float.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">Η πλήρης πρόσβαση επιτρέπει στον Dasher να εκφωνεί ό,τι γράφετε και να θυμάται την εκπαίδευσή σας. Το πληκτρολόγιο εξακολουθεί να λειτουργεί για βασική εισαγωγή χωρίς αυτήν.</string>
     <string name="game_mode">Λειτουργία παιχνιδιού</string>
     <string name="game_mode_2">Λειτουργία παιχνιδιού</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">Είσοδος δείκτη με αιώρηση</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Προτιμήσεις</string>
+    <string name="preparing_dasher">Προετοιμασία του Dasher…</string>
     <string name="privacy">Μυστικότητα</string>
     <string name="privacy_2">&lt;b&gt;Απόρρητο&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Επανεισαγωγή από το Dasher 5</string>

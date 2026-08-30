@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">কীবোর্ড ভাসমান করতে Dasher-কে অন্য অ্যাপের উপরে দেখানোর অনুমতি দিন, তারপর আবার Float ট্যাপ করুন।</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">ফুল অ্যাক্সেস ড্যাশারকে আপনার লেখা কথা বলতে এবং আপনার প্রশিক্ষণ মনে রাখতে সাহায্য করে। এটি ছাড়াও, সাধারণ এন্ট্রির জন্য কিবোর্ড কাজ করে।</string>
     <string name="game_mode">গেম মোড</string>
     <string name="game_mode_2">গেম মোড</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">পয়েন্টার হোভার ইনপুট</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Prefs</string>
+    <string name="preparing_dasher">Dasher প্রস্তুত হচ্ছে…</string>
     <string name="privacy">গোপনীয়তা</string>
     <string name="privacy_2">&lt;b&gt;গোপনীয়তা&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">ড্যাশার ৫ থেকে পুনরায় আমদানি করুন</string>

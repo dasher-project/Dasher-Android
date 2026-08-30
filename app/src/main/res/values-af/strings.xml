@@ -75,6 +75,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Om die sleutelbord te laat dryf, laat Dasher toe om oor ander apps te vertoon en tik dan Float weer.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">Volle Toegang laat Dasher toe om te praat wat jy skryf en jou opleiding te onthou. Die sleutelbord werk steeds vir basiese invoer daarsonder.</string>
     <string name="game_mode">Spelmodus</string>
     <string name="game_mode_2">one</string>
@@ -144,6 +145,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="pointer_hover_input">Wyser Sweef Invoer</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Voorkeure</string>
+    <string name="preparing_dasher">Dasher word voorberei…</string>
     <string name="privacy">Privaatheid</string>
     <string name="privacy_2">&lt;b&gt;Privaatheid&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Herinvoer vanaf Dasher 5</string>

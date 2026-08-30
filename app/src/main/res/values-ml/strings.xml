@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">കീബോർഡ് ഫ്ലോട്ട് ചെയ്യാൻ, Dasher-ന് മറ്റ് ആപ്പുകൾക്ക് മുകളിൽ കാണിക്കാൻ അനുവദിക്കുക, തുടർന്ന് Float വീണ്ടും ടാപ്പ് ചെയ്യുക.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">പൂർണ്ണ ആക്‌സസ് ഡാഷറിനെ നിങ്ങൾ എഴുതുന്നത് സംസാരിക്കാനും നിങ്ങളുടെ പരിശീലനം ഓർമ്മിക്കാനും അനുവദിക്കുന്നു. കീബോർഡ് ഇല്ലാതെ തന്നെ അടിസ്ഥാന എൻട്രിക്ക് ഇപ്പോഴും പ്രവർത്തിക്കുന്നു.</string>
     <string name="game_mode">ഗെയിം മോഡ്</string>
     <string name="game_mode_2">ഗെയിം മോഡ്</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">പോയിന്റർ ഹോവർ ഇൻപുട്ട്</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">മുൻഗണനകൾ</string>
+    <string name="preparing_dasher">Dasher തയ്യാറാകുകയാണ്…</string>
     <string name="privacy">സ്വകാര്യത</string>
     <string name="privacy_2">&lt;b&gt;സ്വകാര്യത&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">ഡാഷർ 5-ൽ നിന്ന് വീണ്ടും ഇറക്കുമതി ചെയ്യുക</string>

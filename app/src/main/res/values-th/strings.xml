@@ -75,6 +75,7 @@
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">หากต้องการลอยคีย์บอร์ด ให้อนุญาต Dasher แสดงเหนือแอปอื่น แล้วแตะ Float อีกครั้ง</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">การเข้าถึงแบบเต็มรูปแบบช่วยให้ Dasher สามารถอ่านสิ่งที่คุณเขียนและจดจำการฝึกฝนของคุณได้ แป้นพิมพ์ยังคงใช้งานได้สำหรับการป้อนข้อมูลพื้นฐานโดยไม่ต้องใช้ฟังก์ชันนี้</string>
     <string name="game_mode">โหมดเกม</string>
     <string name="game_mode_2">โหมดเกม</string>
@@ -144,6 +145,7 @@
     <string name="pointer_hover_input">อินพุตเมื่อวางเมาส์เหนือตัวชี้</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">การตั้งค่า</string>
+    <string name="preparing_dasher">กำลังเตรียม Dasher…</string>
     <string name="privacy">ความเป็นส่วนตัว</string>
     <string name="privacy_2">&lt;b&gt;ความเป็นส่วนตัว&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">นำเข้าใหม่จาก Dasher 5</string>

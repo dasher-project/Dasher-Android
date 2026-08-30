@@ -3,10 +3,12 @@ package at.dasher.android
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -33,7 +35,9 @@ class DasherImeService : InputMethodService() {
 
     private var engine: DasherEngine? = null
     private var canvasView: DasherCanvasView? = null
+    private var canvasHost: android.widget.FrameLayout? = null
     private var dockedRoot: LinearLayout? = null
+    private var loadingOverlay: android.widget.FrameLayout? = null
 
     // Floating mode
     private var floating = false
@@ -55,6 +59,34 @@ class DasherImeService : InputMethodService() {
         }
         canvasView = canvas
 
+        // Loading overlay: on first-ever show (user enabled the keyboard
+        // before opening the app) DataInstaller must extract the bundled
+        // data before the engine can render — without this the keyboard
+        // area sits black/empty for seconds (Heide's report).
+        val loading = android.widget.FrameLayout(this).apply {
+            setBackgroundColor(bg)
+            val spinner = android.widget.ProgressBar(this@DasherImeService)
+            val label = android.widget.TextView(this@DasherImeService).apply {
+                text = getText(R.string.preparing_dasher)
+                setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14f)
+                setPadding(0, dp(8, density), 0, 0)
+            }
+            val inner = LinearLayout(this@DasherImeService).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+            }
+            inner.addView(spinner)
+            inner.addView(label)
+            addView(inner, android.widget.FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.CENTER))
+        }
+        loadingOverlay = loading
+
+        val canvasHost = android.widget.FrameLayout(this).apply {
+            addView(canvas, android.widget.FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT))
+            addView(loading, android.widget.FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT))
+        }
+        this.canvasHost = canvasHost
+
         // Top bar (shared look): Hide + Float toggle.
         val top = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -74,8 +106,12 @@ class DasherImeService : InputMethodService() {
             setBackgroundColor(bg)
         }
         root.addView(top, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
-        root.addView(canvas, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
-        root.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, imeHeight)
+        root.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
+        // The root is the IME window's content view — its parent is the
+        // window's FrameLayout-based decor. LinearLayout.LayoutParams here
+        // survives until a re-measure casts them and crashes (Float's
+        // docked-shrink relayout did exactly that).
+        root.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, imeHeight)
         root.minimumHeight = imeHeight
         dockedRoot = root
 
@@ -89,6 +125,23 @@ class DasherImeService : InputMethodService() {
 
     private fun enterFloatingMode(floatBtn: Button) {
         if (floating) return
+        // Floating mode draws over other apps (TYPE_APPLICATION_OVERLAY) —
+        // a special-app-access permission the user must grant. Without it
+        // addView throws BadTokenException and the tap silently did nothing.
+        // Point the user at the grant screen instead.
+        if (!android.provider.Settings.canDrawOverlays(this)) {
+            Toast.makeText(
+                this,
+                getString(R.string.float_needs_permission),
+                Toast.LENGTH_LONG
+            ).show()
+            val intent = Intent(
+                android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            try { startActivity(intent) } catch (_: Exception) {}
+            return
+        }
         val density = resources.displayMetrics.density
         val nightMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
@@ -119,9 +172,9 @@ class DasherImeService : InputMethodService() {
             setPadding(dp(2, density), dp(2, density), dp(2, density), dp(2, density))
         }
         floating.addView(dragBar, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
-        // Reparent the canvas from docked to floating.
-        (canvasView?.parent as? ViewGroup)?.removeView(canvasView)
-        floating.addView(canvasView, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
+        // Reparent the canvas (host carries the loading overlay) from docked to floating.
+        (canvasHost?.parent as? ViewGroup)?.removeView(canvasHost)
+        floating.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
 
         val params = WindowManager.LayoutParams(
             floatW, floatH,
@@ -141,8 +194,8 @@ class DasherImeService : InputMethodService() {
         } catch (e: Exception) {
             Log.e(TAG, "Floating overlay failed: ${e.message}")
             // Fall back: put canvas back in docked
-            floating.removeView(canvasView)
-            dockedRoot?.addView(canvasView, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
+            floating.removeView(canvasHost)
+            dockedRoot?.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
             return
         }
 
@@ -151,7 +204,9 @@ class DasherImeService : InputMethodService() {
         this.floating = true
 
         // Shrink the docked view so the system doesn't reserve full keyboard space.
-        dockedRoot?.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, dp(40, density))
+        // FrameLayout.LayoutParams: the docked root's parent is the window's
+        // FrameLayout decor — LinearLayout.LayoutParams crash on re-measure.
+        dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, dp(40, density))
         floatBtn.text = "Dock"
         floatBtn.setOnClickListener { exitFloatingMode(floatBtn) }
 
@@ -186,8 +241,8 @@ class DasherImeService : InputMethodService() {
         val fp = floatingParams ?: return
         try { windowManager.removeView(fv) } catch (_: Exception) {}
         // Reparent canvas back to docked.
-        (canvasView?.parent as? ViewGroup)?.removeView(canvasView)
-        dockedRoot?.addView(canvasView, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
+        (canvasHost?.parent as? ViewGroup)?.removeView(canvasHost)
+        dockedRoot?.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
         // Restore docked height.
         val imeHeight = (resources.displayMetrics.heightPixels * 0.42f).toInt()
         dockedRoot?.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, imeHeight)
@@ -248,6 +303,16 @@ class DasherImeService : InputMethodService() {
         }
         NativeBridge.onSpeakListener = null
         engine = eng
+        // The canvas laid out during onCreateInputView — BEFORE this handler
+        // posted — so its size callback hit a null engine and was dropped.
+        // Without a screen size the engine never realizes and renders
+        // nothing (the black-keyboard bug). Push the size explicitly, the
+        // same way MainActivity does after engine creation.
+        canvasView?.let { v ->
+            if (v.width > 0 && v.height > 0) eng.onSurfaceSizeChanged(v.width, v.height)
+        }
+        // Engine is live and rendering — drop the first-show loading overlay.
+        loadingOverlay?.visibility = View.GONE
         eng.start()
     }
 
@@ -255,6 +320,12 @@ class DasherImeService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        // The main app's engine writes to the shared dasher_settings.xml
+        // while the IME engine holds its own in-memory copy — reload on
+        // every show so speed, alphabet, palette etc. match what the user
+        // last set (dasher_reload_settings, DasherCore v0.2.11). Cheap:
+        // one file read + diff, only changed parameters fire callbacks.
+        if (restarting) engine?.reloadSettings()
         engine?.start()
     }
 
@@ -274,6 +345,8 @@ class DasherImeService : InputMethodService() {
         engine?.destroy()
         engine = null
         canvasView = null
+        canvasHost = null
+        loadingOverlay = null
         dockedRoot = null
         super.onDestroy()
     }

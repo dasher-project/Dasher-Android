@@ -75,6 +75,7 @@ Você pode alterar isso a qualquer momento em Configurações &gt; Privacidade.<
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
+    <string name="float_needs_permission">Para flutuar o teclado, permita que o Dasher seja mostrado sobre outras aplicações e toque novamente em Float.</string>
     <string name="full_access_lets_dasher_speak_what_you_write_and_remember_yo">O Acesso Total permite que o Dasher leia o que você escreve e memorize seu treinamento. O teclado ainda funciona para digitação básica sem ele.</string>
     <string name="game_mode">Modo de jogo</string>
     <string name="game_mode_2">Modo de jogo</string>
@@ -144,6 +145,7 @@ Você pode alterar isso a qualquer momento em Configurações &gt; Privacidade.<
     <string name="pointer_hover_input">Entrada de ponteiro ao passar o cursor</string>
     <string name="preferences">Preferences</string>
     <string name="prefs">Preferências</string>
+    <string name="preparing_dasher">A preparar o Dasher…</string>
     <string name="privacy">Privacidade</string>
     <string name="privacy_2">&lt;b&gt;Privacidade&lt;/b&gt;</string>
     <string name="re_import_from_dasher_5">Reimportar do Dasher 5</string>

@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -93,6 +94,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private var engine: DasherEngine? = null
+    // Drives the first-launch loading screen: true once the engine AND its
+    // full setup (listeners, measurement, input mode) are done. Plain field
+    // above is written from a coroutine; this state is what Compose reacts to.
+    private var engineReady by mutableStateOf(false)
     private var canvasView: DasherCanvasView? = null
     private var tiltProvider: TiltInputProvider? = null
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -108,6 +113,10 @@ class MainActivity : ComponentActivity() {
     private var outputFontFamily by mutableStateOf("")
     private var outputFontSize by mutableStateOf(16f)
     private var alphabets by mutableStateOf<List<String>>(emptyList())
+    /** Alphabet metadata by name (AlphabetIndex); empty until first load. */
+    private val alphabetIndexInfo: Map<String, AlphabetInfo> by lazy {
+        AlphabetIndex.get(this).associateBy { it.id }
+    }
     private var currentAlphabet by mutableStateOf("")
     private var palettes by mutableStateOf<List<String>>(emptyList())
     private var currentPalette by mutableStateOf("")
@@ -210,6 +219,26 @@ class MainActivity : ComponentActivity() {
             }
             alphabets = eng.getAlphabetNames()
             currentAlphabet = eng.getCurrentAlphabet()
+            // Locale-follow default (alphabet index): while the user hasn't
+            // explicitly picked an alphabet, follow the device locale — an
+            // Arabic-locale phone starts on the Arabic alphabet, etc. The
+            // first explicit pick (onAlphabetSelected) pins the choice.
+            if (alphabetFollowsLocale()) {
+                // Activity resources (NOT Resources.getSystem()) so per-app
+                // locale overrides are respected on Android 13+. Verified on
+                // emulator: per-app locale ar → Arabic (WorldAlphabets) on a
+                // cold start.
+                AlphabetIndex.suggestForLocale(
+                    this@MainActivity,
+                    resources.configuration.locales[0].toLanguageTag()
+                )?.let { suggested ->
+                    if (suggested.id != currentAlphabet) {
+                        eng.setAlphabet(suggested.id)
+                        eng.saveSettings()
+                        currentAlphabet = eng.getCurrentAlphabet()
+                    }
+                }
+            }
             palettes = eng.getPaletteNames()
             currentPalette = eng.getCurrentPalette()
             speedPercent = eng.getSpeedPercent()
@@ -247,6 +276,8 @@ class MainActivity : ComponentActivity() {
                 InputMode.TILT.name -> if (tiltAvailable) applyInputMode(InputMode.TILT)
                 InputMode.JOYSTICK.name -> if (joystickAvailable) applyInputMode(InputMode.JOYSTICK)
             }
+            // Everything is wired — swap the loading screen for the real UI.
+            engineReady = true
         }
 
         setContent {
@@ -265,6 +296,42 @@ class MainActivity : ComponentActivity() {
                     typingRate = ""
                 }
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    // First launch: DataInstaller extracts the bundled alphabets /
+                    // training data and the engine is created only afterwards — a
+                    // window of several seconds (much longer on slow storage)
+                    // during which the canvas has no frames and the screen showed
+                    // as dead black (Heide's report). Show a loading state instead.
+                    //
+                    // Flash avoidance (RFC 0018): with lazy alphabets
+                    // (DasherCore #68) a warm start reaches engineReady in
+                    // well under a second — most of it process + Compose
+                    // startup, which looks the same with or without the
+                    // engine. The spinner only appears if the wait exceeds
+                    // 300ms, so warm starts never flash it; first launches
+                    // (extraction) still get full coverage.
+                    var loaderVisible by remember { mutableStateOf(false) }
+                    LaunchedEffect(engineReady) {
+                        if (!engineReady) {
+                            delay(300)
+                            loaderVisible = true
+                        } else {
+                            loaderVisible = false
+                        }
+                    }
+                    if (!engineReady) {
+                        if (loaderVisible) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                            ) {
+                                CircularProgressIndicator()
+                                Spacer(Modifier.height(16.dp))
+                                Text(stringResource(R.string.preparing_dasher))
+                            }
+                        }
+                        return@Surface
+                    }
                     AppScreen(
                         output = fullText,
                         typingRate = typingRate,
@@ -282,6 +349,7 @@ class MainActivity : ComponentActivity() {
                         },
                         onAlphabetSelected = { name ->
                             engine?.setAlphabet(name); currentAlphabet = name; engine?.saveSettings()
+                            pinAlphabetChoice() // explicit pick: stop following the locale
                             AnalyticsService.capture("alphabet_selected", mapOf("alphabet_id" to name))
                         },
                         onSpeedChanged = { pct ->
@@ -340,6 +408,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /** True until the user explicitly picks an alphabet (locale-follow). */
+    private fun alphabetFollowsLocale(): Boolean =
+        getSharedPreferences(AlphabetPrefs.PREFS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(AlphabetPrefs.KEY_FOLLOWS_LOCALE, true)
+
+    /** Called on the first explicit alphabet selection — pins the choice. */
+    private fun pinAlphabetChoice() {
+        getSharedPreferences(AlphabetPrefs.PREFS, android.content.Context.MODE_PRIVATE).edit()
+            .putBoolean(AlphabetPrefs.KEY_FOLLOWS_LOCALE, false).apply()
     }
 
     /**
@@ -576,6 +655,10 @@ class MainActivity : ComponentActivity() {
                                 canvasView = view
                                 view.onSurfaceSizeChanged = { w, h -> engine?.onSurfaceSizeChanged(w, h) }
                                 view.onTouchInput = { action, x, y -> engine?.onTouch(action, x, y) }
+                                // The canvas now composes AFTER engine setup (loading
+                                // screen first), so applyCanvasFont's early write may
+                                // have been lost — re-apply at creation.
+                                engine?.let { e -> if (dasherFontKey >= 0) view.glyphFontName = e.stringValue(dasherFontKey) }
                             }
                         },
                         modifier = Modifier.fillMaxSize()
@@ -714,7 +797,16 @@ class MainActivity : ComponentActivity() {
                     options = alphabets,
                     selected = currentAlphabet.ifEmpty { "English" },
                     onSelect = onAlphabetSelected,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    // Alphabet index metadata badges (script · direction).
+                    optionMeta = { name ->
+                        alphabetIndexInfo[name]?.let { info ->
+                            listOfNotNull(
+                                info.scriptName ?: info.script,
+                                if (info.rtl) "RTL" else null
+                            ).joinToString(" · ").ifEmpty { null }
+                        }
+                    }
                 )
                 // Speed stepper (− value +) — matches Dasher-Windows.
                 Text(stringResource(R.string.toolbar_speed), style = MaterialTheme.typography.labelMedium,
@@ -747,7 +839,8 @@ class MainActivity : ComponentActivity() {
         selected: String,
         onSelect: (String) -> Unit,
         modifier: Modifier = Modifier,
-        leadingIcon: ImageVector? = null
+        leadingIcon: ImageVector? = null,
+        optionMeta: (String) -> String? = { null }
     ) {
         var expanded by remember { mutableStateOf(false) }
         Box(modifier) {
@@ -762,7 +855,18 @@ class MainActivity : ComponentActivity() {
                 Column(modifier = Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
                     options.forEach { opt ->
                         DropdownMenuItem(
-                            text = { Text(opt, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            text = {
+                                Column {
+                                    Text(opt, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    optionMeta(opt)?.let { meta ->
+                                        Text(
+                                            meta,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            },
                             onClick = { onSelect(opt); expanded = false }
                         )
                     }
@@ -786,6 +890,11 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         installAppListeners() // re-own callbacks after the IME released them
+        // The IME's engine writes to the shared dasher_settings.xml while
+        // this engine holds its own in-memory copy — reload on resume so
+        // any changes made on the keyboard side appear here
+        // (dasher_reload_settings, DasherCore v0.2.11).
+        engine?.reloadSettings()
         engine?.start()
         if (inputMode == InputMode.TILT) tiltProvider?.register()
         // A USB controller may have been plugged in while backgrounded.
