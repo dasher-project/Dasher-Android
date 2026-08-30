@@ -368,6 +368,10 @@ private fun ResetDefaultsRow(engine: DasherEngine, reload: () -> Unit) {
     OutlinedButton(
         onClick = {
             engine.resetSettings()
+            // Reset re-enables locale-follow: the default alphabet tracks the
+            // device locale again until the next explicit pick.
+            ctx.getSharedPreferences(AlphabetPrefs.PREFS, android.content.Context.MODE_PRIVATE)
+                .edit().putBoolean(AlphabetPrefs.KEY_FOLLOWS_LOCALE, true).apply()
             reload()
             android.widget.Toast.makeText(
                 ctx, ctx.getString(R.string.settings_reset_done), android.widget.Toast.LENGTH_SHORT
