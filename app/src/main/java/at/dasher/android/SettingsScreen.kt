@@ -163,8 +163,11 @@ fun SettingsScreen(
                     }
                     if (tabGroup == "Customization") {
                         item { AppearanceSection(engine, bump) }
-                    }
-                    if (tabGroup == "Output") {
+                        // Output-pane font lives with the other appearance
+                        // controls (issue #34: users looked for it in
+                        // Customization, not Output; RFC 0006 puts
+                        // appearance there and that's where GTK/Windows
+                        // keep their font settings).
                         item { OutputFontSection(outputFontFamily, outputFontSize, onOutputFontChanged) }
                     }
                     items(rows, key = { it.key }) { p ->
