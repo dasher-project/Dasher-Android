@@ -331,6 +331,58 @@ Java_at_dasher_android_NativeBridge_nativeResetOutputText(JNIEnv*, jclass, jlong
     if (s && s->ctx) dasher_reset_output_text(s->ctx);
 }
 
+// ── Editor contract (RFC 0019) ──────────────────────────────────────────────
+
+// Re-anchor the model at a UTF-8 BYTE position in the buffer (v5's
+// click-to-retarget). 0 ok / -1 fail.
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeSetOffset(JNIEnv*, jclass, jlong handle, jint offset) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_set_offset(s->ctx, offset) : -1;
+}
+
+// Replace the edit buffer with user-edited text anchored at caret_offset
+// (UTF-8 bytes). Predictions continue from the caret.
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeSeedBuffer(JNIEnv* env, jclass, jlong handle,
+                                                     jstring jText, jint caretOffset) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx || !jText) return -1;
+    const char* text = env->GetStringUTFChars(jText, nullptr);
+    if (!text) return -1;
+    int rc = dasher_seed_buffer(s->ctx, text, caretOffset);
+    env->ReleaseStringUTFChars(jText, text);
+    return rc;
+}
+
+// Current engine offset (UTF-8 bytes); -1 if not realized.
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetOffset(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    return (s && s->ctx) ? dasher_get_offset(s->ctx) : -1;
+}
+
+// Kotlin/Java strings count UTF-16 code units (the engine counts UTF-8
+// bytes): convert a widget caret to the engine's unit.
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeByteOffsetFromUtf16(JNIEnv* env, jclass,
+                                                              jstring jText, jint utf16Offset) {
+    if (!jText) return -1;
+    const char* text = env->GetStringUTFChars(jText, nullptr);
+    if (!text) return -1;
+    int rc = dasher_byte_offset_from_utf16(text, utf16Offset);
+    env->ReleaseStringUTFChars(jText, text);
+    return rc;
+}
+
+// RFC 0019 clause 5 — New: clear the buffer AND drop the model context AND
+// the rate window. reset_output_text alone would resume mid-sentence.
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeResetEngine(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (s && s->ctx) dasher_reset(s->ctx);
+}
+
 JNIEXPORT jstring JNICALL
 Java_at_dasher_android_NativeBridge_nativeGetAlphabetId(JNIEnv* env, jclass, jlong handle) {
     auto* s = fromHandle(handle);

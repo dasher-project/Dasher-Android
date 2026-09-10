@@ -104,11 +104,10 @@ class MainActivity : ComponentActivity() {
     private var tts: TextToSpeech? = null
 
     // Observable UI state.
-    private var outputText by mutableStateOf("")
-    /** Text loaded via "Open" — preserved as a prefix the engine appends to (Dasher writes forward). */
-    private var loadedPrefix by mutableStateOf("")
-    /** Combined display text = loaded prefix + engine output since the last reset/open. */
-    private val fullText: String get() = loadedPrefix + outputText
+    /** RFC 0019: the output field is editable and synced with the engine. */
+    private var outputField by mutableStateOf(androidx.compose.ui.text.input.TextFieldValue(""))
+    private var lastPushedText = ""
+    private val fullText: String get() = outputField.text
     // Output-pane font (persisted locally; the canvas glyph font is SP_DASHER_FONT in the engine).
     private var outputFontFamily by mutableStateOf("")
     private var outputFontSize by mutableStateOf(16f)
@@ -204,7 +203,20 @@ class MainActivity : ComponentActivity() {
                 Log.e(TAG, "Dasher engine creation failed (dataDir=$dataDir)")
                 return@launch
             }
-            eng.onTextUpdate = { text -> outputText = text }
+            eng.onTextUpdate = { text ->
+                // RFC 0019 clause 4: engine pushes apply with caret
+                // preservation (at end follows growth, else clamped) and are
+                // loop-guarded — lastPushedText is what the field must match
+                // for a change to count as USER-origin on the way back.
+                if (text != lastPushedText) {
+                    lastPushedText = text
+                    val old = outputField
+                    val caret = if (old.selection.end >= old.text.length) text.length
+                    else minOf(old.selection.end, text.length)
+                    outputField = androidx.compose.ui.text.input.TextFieldValue(
+                        text, androidx.compose.ui.text.TextRange(caret))
+                }
+            }
             eng.onGameUpdate = { gameState = it }
             engine = eng
             dasherFontKey = NativeBridge.nativeFindParameterKey("SP_DASHER_FONT")
@@ -333,14 +345,20 @@ class MainActivity : ComponentActivity() {
                         return@Surface
                     }
                     AppScreen(
-                        output = fullText,
+                        output = outputField,
+                        onOutputChange = { value -> applyEditorSync(value) },
                         typingRate = typingRate,
                         alphabets = alphabets,
                         currentAlphabet = currentAlphabet,
                         speedPercent = speedPercent,
                         autoSpeed = autoSpeed,
                         isPlaying = isPlaying,
-                        onClear = { engine?.resetOutputText(); outputText = ""; loadedPrefix = "" },
+                        // RFC 0019 clause 5 — New: full reset (buffer + context
+                        // + rate window); resetOutputText alone resumed
+                        // mid-sentence.
+                        onClear = {
+                            engine?.newSession()
+                        },
                         onCopyAll = { copyToClipboard(fullText) },
                         onTogglePlay = {
                             val eng = engine ?: return@AppScreen
@@ -558,15 +576,49 @@ class MainActivity : ComponentActivity() {
     private fun openOutputFrom(uri: android.net.Uri) {
         try {
             val text = contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } ?: return
-            // Load as a prefix the engine appends to. Dasher has no CAPI to seed the edit
-            // buffer (only get/reset output), so the loaded text is kept on the frontend and
-            // combined with the engine's append-since-reset output for display, save, copy.
-            loadedPrefix = text
-            engine?.resetOutputText()
-            outputText = ""
+            // RFC 0019 clause 2: an opened file must reach the ENGINE, anchored
+            // at its end (continue-writing is the point of Open) — the old
+            // loadedPrefix workaround kept the text on the frontend because
+            // dasher_seed_buffer did not exist yet; the poll then pushes the
+            // seeded buffer into the field like any engine state.
+            engine?.let {
+                it.resetOutputText()
+                it.seedBuffer(text, text.length)
+            }
             Toast.makeText(this, "Loaded ${text.length} chars", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * RFC 0019 clauses 2-3 — decide + apply the sync action for a field change
+     * (see [editorSyncAction] for the decision rules; [EditorSyncTest] pins
+     * them). Composition defers seeding to commit per clause 2.
+     */
+    private fun applyEditorSync(value: androidx.compose.ui.text.input.TextFieldValue) {
+        val eng = engine
+        val engineText = eng?.getOutputText()
+        val action = editorSyncAction(
+            textChanged = value.text != outputField.text,
+            selectionChanged = value.selection != outputField.selection,
+            fieldMatchesEngine = engineText != null && editorTextEquals(value.text, engineText),
+            composing = value.composition != null,
+            engineTextEmpty = engineText.isNullOrEmpty(),
+            text = value.text,
+            caretUtf16 = value.selection.end,
+        )
+        outputField = value
+        when (action) {
+            is EditorSyncAction.Seed -> {
+                eng?.seedBuffer(action.text, action.caretUtf16)
+                lastPushedText = action.text
+            }
+            is EditorSyncAction.Reanchor -> {
+                val bytes = NativeBridge.nativeByteOffsetFromUtf16(value.text, action.caretUtf16)
+                if (bytes >= 0 && eng != null && bytes != eng.getOffset()) eng.setOffset(bytes)
+            }
+            EditorSyncAction.None -> {}
         }
     }
 
@@ -606,7 +658,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun AppScreen(
-        output: String,
+        output: androidx.compose.ui.text.input.TextFieldValue,
+        onOutputChange: (androidx.compose.ui.text.input.TextFieldValue) -> Unit,
         typingRate: String,
         alphabets: List<String>,
         currentAlphabet: String,
@@ -639,12 +692,33 @@ class MainActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = 8.dp)
                 ) {
-                    Text(
-                        text = output.ifEmpty { stringResource(R.string.output_placeholder) },
+                    // RFC 0019: the output pane is an editable field synced with
+                    // the engine (user edits seed; pure caret moves re-anchor —
+                    // see applyEditorSync). Placeholder when empty.
+                    androidx.compose.foundation.text.BasicTextField(
+                        value = output,
+                        onValueChange = onOutputChange,
                         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(4.dp),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontFamily = outputFontFamilyFor(outputFontFamily),
-                        fontSize = outputFontSize.sp
+                        textStyle = androidx.compose.ui.text.TextStyle(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontFamily = outputFontFamilyFor(outputFontFamily),
+                            fontSize = outputFontSize.sp
+                        ),
+                        decorationBox = { inner ->
+                            if (output.text.isEmpty()) {
+                                androidx.compose.foundation.layout.Column {
+                                    Text(
+                                        text = stringResource(R.string.output_placeholder),
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                                        fontFamily = outputFontFamilyFor(outputFontFamily),
+                                        fontSize = outputFontSize.sp
+                                    )
+                                    inner()
+                                }
+                            } else {
+                                inner()
+                            }
+                        }
                     )
                 }
 

@@ -223,6 +223,43 @@ class DasherEngine(
         NativeBridge.nativeResetCps(nativeHandle)
     }
 
+    /** Current engine buffer text (RFC 0019: the pane-vs-engine sync compares against this). */
+    fun getOutputText(): String {
+        if (destroyed || nativeHandle == 0L) return ""
+        return NativeBridge.nativeGetOutputText(nativeHandle)
+    }
+
+    // ── Editor contract (RFC 0019) ───────────────────────────────────────────
+
+    /** Re-anchor the model at a UTF-8 BYTE offset in the buffer. 0 ok / -1 fail. */
+    fun setOffset(offset: Int): Int {
+        if (destroyed || nativeHandle == 0L) return -1
+        return NativeBridge.nativeSetOffset(nativeHandle, offset)
+    }
+
+    /** Replace the edit buffer with user-edited text anchored at [caretUtf16] (Kotlin caret; converted internally). */
+    fun seedBuffer(text: String, caretUtf16: Int): Int {
+        if (destroyed || nativeHandle == 0L) return -1
+        val bytes = NativeBridge.nativeByteOffsetFromUtf16(text, caretUtf16)
+        if (bytes < 0) return -1
+        return NativeBridge.nativeSeedBuffer(nativeHandle, text, bytes)
+    }
+
+    /** Current engine offset (UTF-8 bytes); -1 if not realized. */
+    fun getOffset(): Int {
+        if (destroyed || nativeHandle == 0L) return -1
+        return NativeBridge.nativeGetOffset(nativeHandle)
+    }
+
+    /**
+     * RFC 0019 clause 5 — New: clear the buffer AND drop the model context
+     * AND the rate window. [resetOutputText] alone would resume mid-sentence.
+     */
+    fun newSession() {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.nativeResetEngine(nativeHandle)
+    }
+
     // ── Typing rate (RFC 0012) ───────────────────────────────────────────────
 
     /** Characters per second over the engine's rolling window. */
