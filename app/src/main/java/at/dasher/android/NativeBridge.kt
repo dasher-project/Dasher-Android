@@ -87,6 +87,22 @@ object NativeBridge {
     /** Clears the output text buffer. */
     @JvmStatic external fun nativeResetOutputText(handle: Long)
 
+    // ── Editor contract (RFC 0019) ──
+    /** Re-anchor the model at a UTF-8 BYTE offset (v5's click-to-retarget). 0 ok / -1 fail. */
+    @JvmStatic external fun nativeSetOffset(handle: Long, offset: Int): Int
+
+    /** Replace the edit buffer with user-edited text, anchored at caret_offset (UTF-8 bytes). */
+    @JvmStatic external fun nativeSeedBuffer(handle: Long, text: String, caretOffset: Int): Int
+
+    /** Current engine offset (UTF-8 bytes); -1 if not realized. */
+    @JvmStatic external fun nativeGetOffset(handle: Long): Int
+
+    /** Convert a Kotlin (UTF-16 code-unit) caret into the engine's UTF-8 byte offset. */
+    @JvmStatic external fun nativeByteOffsetFromUtf16(text: String, utf16Offset: Int): Int
+
+    /** RFC 0019 clause 5 — New: buffer + model context + rate window (reset_output_text resumes mid-sentence). */
+    @JvmStatic external fun nativeResetEngine(handle: Long)
+
     /** Current alphabet identifier (e.g. "English with limited punctuation"). */
     @JvmStatic external fun nativeGetAlphabetId(handle: Long): String
 

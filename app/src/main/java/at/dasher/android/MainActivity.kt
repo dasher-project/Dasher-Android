@@ -104,11 +104,10 @@ class MainActivity : ComponentActivity() {
     private var tts: TextToSpeech? = null
 
     // Observable UI state.
-    private var outputText by mutableStateOf("")
-    /** Text loaded via "Open" — preserved as a prefix the engine appends to (Dasher writes forward). */
-    private var loadedPrefix by mutableStateOf("")
-    /** Combined display text = loaded prefix + engine output since the last reset/open. */
-    private val fullText: String get() = loadedPrefix + outputText
+    /** RFC 0019: the output field is editable and synced with the engine. */
+    private var outputField by mutableStateOf(androidx.compose.ui.text.input.TextFieldValue(""))
+    private var lastPushedText = ""
+    private val fullText: String get() = outputField.text
     // Output-pane font (persisted locally; the canvas glyph font is SP_DASHER_FONT in the engine).
     private var outputFontFamily by mutableStateOf("")
     private var outputFontSize by mutableStateOf(16f)
@@ -204,7 +203,21 @@ class MainActivity : ComponentActivity() {
                 Log.e(TAG, "Dasher engine creation failed (dataDir=$dataDir)")
                 return@launch
             }
-            eng.onTextUpdate = { text -> outputText = text }
+            eng.onTextUpdate = { raw ->
+                // RFC 0019 clause 4: engine pushes apply with caret
+                // preservation and are loop-guarded — lastPushedText is what
+                // the field must match for a change to count as USER-origin
+                // on the way back. CR is stripped at this boundary so the
+                // field (and every comparison/coordinate) is LF-only. A push
+                // landing mid-IME-composition is skipped entirely (clause 2):
+                // replacing the field state would abort the composition; the
+                // poll re-fires every frame, so it lands right after commit.
+                val text = raw.replace("\r", "")
+                if (text != lastPushedText && outputField.composition == null) {
+                    lastPushedText = text
+                    outputField = mergeEnginePush(outputField, text)
+                }
+            }
             eng.onGameUpdate = { gameState = it }
             engine = eng
             dasherFontKey = NativeBridge.nativeFindParameterKey("SP_DASHER_FONT")
@@ -333,14 +346,25 @@ class MainActivity : ComponentActivity() {
                         return@Surface
                     }
                     AppScreen(
-                        output = fullText,
+                        output = outputField,
+                        onOutputChange = { value -> applyEditorSync(value) },
                         typingRate = typingRate,
                         alphabets = alphabets,
                         currentAlphabet = currentAlphabet,
                         speedPercent = speedPercent,
                         autoSpeed = autoSpeed,
                         isPlaying = isPlaying,
-                        onClear = { engine?.resetOutputText(); outputText = ""; loadedPrefix = "" },
+                        // RFC 0019 clause 5 — New: full reset (buffer + context
+                        // + rate window); resetOutputText alone resumed
+                        // mid-sentence. The field is cleared directly too:
+                        // while the engine is stopped (paused / play off) the
+                        // frame poll doesn't run to do it for us — the old
+                        // code cleared synchronously and users saw stale text.
+                        onClear = {
+                            engine?.newSession()
+                            lastPushedText = ""
+                            outputField = androidx.compose.ui.text.input.TextFieldValue("")
+                        },
                         onCopyAll = { copyToClipboard(fullText) },
                         onTogglePlay = {
                             val eng = engine ?: return@AppScreen
@@ -558,15 +582,65 @@ class MainActivity : ComponentActivity() {
     private fun openOutputFrom(uri: android.net.Uri) {
         try {
             val text = contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } ?: return
-            // Load as a prefix the engine appends to. Dasher has no CAPI to seed the edit
-            // buffer (only get/reset output), so the loaded text is kept on the frontend and
-            // combined with the engine's append-since-reset output for display, save, copy.
-            loadedPrefix = text
-            engine?.resetOutputText()
-            outputText = ""
+            // RFC 0019 clause 2: an opened file must reach the ENGINE, anchored
+            // at its end (continue-writing is the point of Open) — the old
+            // loadedPrefix workaround kept the text on the frontend because
+            // dasher_seed_buffer did not exist yet. The field is set directly
+            // too: while the engine is stopped the poll doesn't run to display
+            // it (review-loop 1 C1). No engine → report failure rather than
+            // falling through to a false success toast.
+            val eng = engine ?: run {
+                Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
+                return
+            }
+            if (eng.seedBuffer(text, text.length) != 0) {
+                Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
+                return
+            }
+            lastPushedText = text.replace("\r", "")
+            outputField = androidx.compose.ui.text.input.TextFieldValue(
+                lastPushedText, androidx.compose.ui.text.TextRange(lastPushedText.length))
             Toast.makeText(this, "Loaded ${text.length} chars", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * RFC 0019 clauses 2-3 — decide + apply the sync action for a field change
+     * (see [editorSyncAction] for the decision rules; [EditorSyncTest] pins
+     * them). Composition defers seeding to commit per clause 2. The engine
+     * text is CR-stripped here so equality and offset conversion share the
+     * field's LF coordinate system.
+     */
+    private fun applyEditorSync(value: androidx.compose.ui.text.input.TextFieldValue) {
+        val eng = engine
+        val engineLf = eng?.getOutputText()?.replace("\r", "")
+        val action = editorSyncAction(
+            textChanged = value.text != outputField.text,
+            selectionChanged = value.selection != outputField.selection,
+            fieldMatchesEngine = engineLf != null && value.text == engineLf,
+            composing = value.composition != null,
+            engineTextEmpty = engineLf.isNullOrEmpty(),
+            text = value.text,
+            caretUtf16 = value.selection.end,
+        )
+        outputField = value
+        when (action) {
+            is EditorSyncAction.Seed -> {
+                // Only advance the loop-guard on SUCCESS: on failure the guard
+                // stays at the engine's text, the mismatch stays visible, and
+                // the next user edit retries the seed — a failed seed silently
+                // recorded would let the next push revert the edit (loop-1 C2).
+                if (eng != null && eng.seedBuffer(action.text, action.caretUtf16) == 0) {
+                    lastPushedText = action.text
+                }
+            }
+            is EditorSyncAction.Reanchor -> {
+                val bytes = NativeBridge.nativeByteOffsetFromUtf16(value.text, action.caretUtf16)
+                if (bytes >= 0 && eng != null && bytes != eng.getOffset()) eng.setOffset(bytes)
+            }
+            EditorSyncAction.None -> {}
         }
     }
 
@@ -606,7 +680,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun AppScreen(
-        output: String,
+        output: androidx.compose.ui.text.input.TextFieldValue,
+        onOutputChange: (androidx.compose.ui.text.input.TextFieldValue) -> Unit,
         typingRate: String,
         alphabets: List<String>,
         currentAlphabet: String,
@@ -639,12 +714,37 @@ class MainActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = 8.dp)
                 ) {
-                    Text(
-                        text = output.ifEmpty { stringResource(R.string.output_placeholder) },
-                        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(4.dp),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontFamily = outputFontFamilyFor(outputFontFamily),
-                        fontSize = outputFontSize.sp
+                    // RFC 0019: the output pane is an editable field synced with
+                    // the engine (user edits seed; pure caret moves re-anchor —
+                    // see applyEditorSync). No verticalScroll on the field
+                    // itself: the field scrolls internally to follow the caret;
+                    // an outer scroll modifier defeats that (loop-1 I2).
+                    // Placeholder when empty.
+                    androidx.compose.foundation.text.BasicTextField(
+                        value = output,
+                        onValueChange = onOutputChange,
+                        modifier = Modifier.fillMaxSize().padding(4.dp),
+                        textStyle = androidx.compose.ui.text.TextStyle(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontFamily = outputFontFamilyFor(outputFontFamily),
+                            fontSize = outputFontSize.sp
+                        ),
+                        decorationBox = { inner ->
+                            // Overlay pattern: the placeholder sits on top of
+                            // the (empty) field — no layout jump when it
+                            // disappears, and taps pass through to focus.
+                            androidx.compose.foundation.layout.Box {
+                                inner()
+                                if (output.text.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.output_placeholder),
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                                        fontFamily = outputFontFamilyFor(outputFontFamily),
+                                        fontSize = outputFontSize.sp
+                                    )
+                                }
+                            }
+                        }
                     )
                 }
 
