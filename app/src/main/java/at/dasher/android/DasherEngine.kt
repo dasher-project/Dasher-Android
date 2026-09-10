@@ -370,39 +370,54 @@ class DasherEngine(
     }
 
     /**
-     * Directory holding per-alphabet training files (`training_*.txt`) under the
-     * engine's user dir. Matches DasherCore's `<userDir>/training/` layout and the
-     * Apple/Windows frontends.
+     * The engine-owned training file for the CURRENT alphabet — the single
+     * file adaptive learning appends to and the Settings UI reads/exports/
+     * resets (DasherCore#84/#85: resolved by the engine against this
+     * context's user dir, `<userDir>/training_<alphabet>.txt` at the ROOT).
+     * Replaces the pre-#37 helpers that managed a `training/` subdirectory
+     * the engine never read or wrote. Null when the engine cannot report a
+     * path (unrealized or no training file for the alphabet).
      */
-    fun userTrainingDir(): java.io.File = java.io.File(userDir, "training")
-
-    /** The first `training_*.txt` in the user training dir, or null if none yet. */
-    fun userTrainingFile(): java.io.File? =
-        userTrainingDir().listFiles()?.firstOrNull { it.name.startsWith("training_") && it.extension.equals("txt", true) }
+    fun userTrainingFile(): java.io.File? {
+        if (destroyed || nativeHandle == 0L) return null
+        val path = try {
+            NativeBridge.nativeGetTrainingPath(nativeHandle)
+        } catch (e: Exception) {
+            null
+        } ?: return null
+        if (path.isBlank()) return null
+        return java.io.File(path)
+    }
 
     /** Total bytes of accumulated user training data (0 if none). */
     fun userTrainingSize(): Long = userTrainingFile()?.length() ?: 0L
 
-    /** Delete every `training_*.txt` in the user training dir. Returns the count removed. */
-    fun resetTrainingData(): Int {
-        val dir = userTrainingDir()
-        val files = dir.listFiles()?.filter { it.name.startsWith("training_") && it.extension.equals("txt", true) }
-            ?: return 0
-        var n = 0
-        for (f in files) if (f.delete()) n++
-        return n
-    }
-
-    /** Append [text] to the user's training file, creating the dir/file if needed. */
+    /** Append [text] to the engine-owned training file (the engine's own layout). */
     fun appendTrainingFile(text: String) {
         try {
-            val dir = userTrainingDir()
-            if (!dir.exists()) dir.mkdirs()
-            val target = userTrainingFile() ?: java.io.File(dir, "training_english_GB.txt")
-            target.appendText(text)
+            val target = userTrainingFile() ?: return
+            target.parentFile?.mkdirs()
+            target.appendText(text + "\n")
         } catch (e: Exception) {
             Log.w(TAG, "appendTrainingFile failed: ${e.message}")
         }
+    }
+
+    /**
+     * Delete user training data: the engine-owned `training_*.txt` files at
+     * the user-dir root (current alphabet first) plus any legacy `training/`
+     * copies. Returns the count removed.
+     */
+    fun resetTrainingData(): Int {
+        var n = 0
+        val current = userTrainingFile()
+        if (current != null && current.exists() && current.delete()) n++
+        for (dir in listOf(java.io.File(userDir), java.io.File(userDir, "training"))) {
+            dir.listFiles()
+                ?.filter { it.isFile && it.name.startsWith("training_") && it.extension.equals("txt", true) }
+                ?.forEach { if (it.delete()) n++ }
+        }
+        return n
     }
 
 
@@ -649,6 +664,42 @@ class DasherEngine(
         private const val TAG = "DasherEngine"
 
         /**
+         * Merge legacy `<userDir>/training/training_*.txt` copies (the
+         * pre-#37 import target, which the engine never loaded) into the
+         * engine-owned root file, then drop them. Idempotent by content: a
+         * root file already containing a legacy corpus deletes it without
+         * re-appending. Pure file shuffling — unit-testable without an
+         * engine (DataInstaller-style).
+         */
+        fun migrateLegacyTrainingDir(userDir: java.io.File) {
+            val legacyDir = java.io.File(userDir, "training")
+            val legacy = legacyDir.listFiles()
+                ?.filter { it.isFile && it.name.startsWith("training_") }
+                ?: return
+            if (legacy.isEmpty()) return
+            for (f in legacy) {
+                try {
+                    val dest = java.io.File(userDir, f.name)
+                    when {
+                        !dest.exists() -> if (!f.renameTo(dest)) {
+                            // Cross-volume or locked: fall back to copy + delete
+                            f.copyTo(dest, overwrite = false); f.delete()
+                        }
+                        else -> {
+                            val text = f.readText()
+                            if (!dest.readText().contains(text)) dest.appendText(text + "\n")
+                            f.delete()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "legacy training migration skipped for ${f.name}: ${e.message}")
+                }
+            }
+            if (legacyDir.listFiles().isNullOrEmpty()) legacyDir.delete()
+        }
+
+
+        /**
          * Convenience factory: ensures the native library is loaded, extracts data,
          * and creates the engine session.
          *
@@ -671,6 +722,25 @@ class DasherEngine(
             // showed one entry and locale-follow had nothing to match against.
             // The canvas corrects the size when it actually lays out.
             NativeBridge.nativeSetScreenSize(handle, 800, 600)
+            // One-time merge of pre-#37 `training/` copies into the
+            // engine-owned root file (idempotent).
+            migrateLegacyTrainingDir(java.io.File(userDir))
+            // Stopgap for cores older than CAPI 1 (DasherCore#86): the
+            // startup scan never loaded user-dir training, so feed it back
+            // through the import API. Version-gated — at >= 1 the engine
+            // already loaded it and a re-import would count every word twice.
+            if (NativeBridge.nativeCapiVersion() < 1) {
+                java.io.File(userDir).listFiles()
+                    ?.filter { it.isFile && it.name.startsWith("training_") && it.extension.equals("txt", true) }
+                    ?.forEach { f ->
+                        try {
+                            val text = f.readText()
+                            if (text.isNotBlank()) NativeBridge.nativeImportTrainingText(handle, text)
+                        } catch (e: Exception) {
+                            Log.w(TAG, "training re-import failed for ${f.name}: ${e.message}")
+                        }
+                    }
+            }
             return eng
         }
     }

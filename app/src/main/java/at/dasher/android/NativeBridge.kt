@@ -169,6 +169,20 @@ object NativeBridge {
     /** Feed text into the live language model. Returns 0 on success, -1 on failure. */
     @JvmStatic external fun nativeImportTrainingText(handle: Long, text: String): Int
 
+    /**
+     * Absolute path of the current alphabet's engine-owned training file — the
+     * single file adaptive learning appends to and the UI reads/exports/resets
+     * (DasherCore#84/#85). Null before the engine realizes or when unavailable.
+     */
+    @JvmStatic external fun nativeGetTrainingPath(handle: Long): String?
+
+    /**
+     * DasherCore C API version. 1 = the startup training load already scans
+     * the user dir (DasherCore#86) — stopgap post-create re-imports must be
+     * skipped at >= 1 or the text would be counted twice.
+     */
+    @JvmStatic external fun nativeCapiVersion(): Int
+
     // ── Persistence ──
     /** Flush current settings to dasher_settings.xml in the user dir. */
     @JvmStatic external fun nativeSaveSettings(handle: Long)

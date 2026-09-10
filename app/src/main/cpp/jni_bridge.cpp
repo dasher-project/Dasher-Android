@@ -609,6 +609,26 @@ Java_at_dasher_android_NativeBridge_nativeImportTrainingText(JNIEnv* env, jclass
     return rc;
 }
 
+// Absolute path of the current alphabet's engine-owned training file — the
+// single file adaptive learning appends to (DasherCore#84/#85). Valid right
+// after nativeSetScreenSize realizes the engine; empty string before that
+// or when the alphabet declares no training file.
+JNIEXPORT jstring JNICALL
+Java_at_dasher_android_NativeBridge_nativeGetTrainingPath(JNIEnv* env, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return nullptr;
+    const char* path = dasher_get_training_path(s->ctx);
+    if (!path || !*path) return nullptr;
+    return env->NewStringUTF(path);
+}
+
+// C API version (DasherCore#86): 1 = the startup training load already
+// scans the user dir, so frontends must NOT re-import training after create.
+JNIEXPORT jint JNICALL
+Java_at_dasher_android_NativeBridge_nativeCapiVersion(JNIEnv*, jclass) {
+    return dasher_capi_version();
+}
+
 
 // ── Persistence ─────────────────────────────────────────────────────────────
 
