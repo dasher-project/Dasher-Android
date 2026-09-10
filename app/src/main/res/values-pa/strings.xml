@@ -40,6 +40,12 @@
     <string name="copy_all">ਸਭ ਕਾਪੀ ਕਰੋ</string>
     <string name="copy_all_2">ਸਭ ਕਾਪੀ ਕਰੋ</string>
     <string name="copy_commands">ਕਮਾਂਡਾਂ ਕਾਪੀ ਕਰੋ</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">ਮੌਜੂਦਾ ਕੈਲੀਬ੍ਰੇਸ਼ਨ</string>
     <string name="customization">ਅਨੁਕੂਲਤਾ</string>
     <string name="dark">ਹਨੇਰਾ</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">ਖੋਲ੍ਹਣ ਵਿੱਚ ਅਸਫਲ:</string>
     <string name="failed_to_save">ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ:</string>
     <string name="fast">ਤੇਜ਼</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">ਡੈਸ਼ਰ 5 ਤੋਂ ਆਯਾਤ ਕਰੋ</string>
     <string name="import_settings">ਸੈਟਿੰਗਾਂ ਆਯਾਤ ਕਰੋ</string>
     <string name="import_training_text">ਸਿਖਲਾਈ ਟੈਕਸਟ ਆਯਾਤ ਕਰੋ</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">ਗਤੀ ਵਧਾਓ</string>
     <string name="input">ਇਨਪੁੱਟ</string>
     <string name="input_method_joystick">ਜੋਇਸਟਿਕ / ਗੇਮਪੈਡ (ਸਟੀਅਰ ਕਰਨ ਲਈ ਇੱਕ ਸਟਿੱਕ ਨੂੰ ਮੋੜੋ)</string>
@@ -112,6 +121,7 @@
     <string name="learning">ਸਿੱਖਣਾ</string>
     <string name="leave_game_mode">ਗੇਮ ਮੋਡ ਛੱਡੋ</string>
     <string name="light">ਰੋਸ਼ਨੀ</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">ਭਾਸ਼ਾ</string>
     <string name="locale_2">ਲੋਕੇਲ</string>
     <string name="migration">ਮਾਈਗ੍ਰੇਸ਼ਨ</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">ਇਸ ਮੈਕ \'ਤੇ ਕੋਈ ਡੈਸ਼ਰ 5 ਡਾਟਾ ਨਹੀਂ ਮਿਲਿਆ।</string>
     <string name="no_settings_available_for_this_section">ਇਸ ਭਾਗ ਲਈ ਕੋਈ ਸੈਟਿੰਗਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">ਬਚਾਉਣ ਲਈ ਕੁਝ ਨਹੀਂ</string>
     <string name="nothing_to_share">ਸਾਂਝਾ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ</string>
     <string name="ok">ਠੀਕ ਹੈ</string>
@@ -196,8 +208,12 @@
     <string name="system">ਸਿਸਟਮ</string>
     <string name="text">ਟੈਕਸਟ</string>
     <string name="text_files">ਟੈਕਸਟ ਫਾਈਲਾਂ</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">ਡੀਬੱਗ ਓਵਰਲੇ ਕੈਨਵਸ ਦੇ ਉੱਪਰ-ਖੱਬੇ ਪਾਸੇ ਇੱਕ ਹਰਾ ਪੈਨਲ ਖਿੱਚਦਾ ਹੈ ਜੋ ਲਾਈਵ ਟੱਚ ਇਵੈਂਟ ਗਿਣਤੀਆਂ ਅਤੇ ਆਖਰੀ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ (x, y) ਦਿਖਾਉਂਦਾ ਹੈ। ਜਦੋਂ ਤੁਸੀਂ ਚੂੰਢੀ ਭਰ ਕੇ ਫੜਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ touch.began ਅਤੇ ਫਿਰ touch.moved ਦਿਖਾਈ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ ਜਿਵੇਂ ਹੀ ਤੁਸੀਂ ਆਲੇ-ਦੁਆਲੇ ਦੇਖਦੇ ਹੋ, ਬਦਲਦੇ ਕੋਆਰਡੀਨੇਟਸ ਦੇ ਨਾਲ।</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">ਇਹ ਤੁਹਾਡੇ ਇਕੱਠੇ ਕੀਤੇ ਸਿਖਲਾਈ ਡੇਟਾ ਨੂੰ ਮਿਟਾ ਦਿੰਦਾ ਹੈ। ਭਾਸ਼ਾ ਮਾਡਲ ਅਗਲੇ ਲਾਂਚ \'ਤੇ ਬਿਲਟ-ਇਨ ਡਿਫੌਲਟ \'ਤੇ ਵਾਪਸ ਆ ਜਾਵੇਗਾ। ਇਸਨੂੰ ਵਾਪਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</string>
     <string name="tilt_calibration">ਟਿਲਟ ਕੈਲੀਬ੍ਰੇਸ਼ਨ</string>
     <string name="tilt_your_device_now">ਹੁਣੇ ਆਪਣੀ ਡਿਵਾਈਸ ਨੂੰ ਝੁਕਾਓ...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">ਲਿਖਤ ਸਾਂਝੀ ਕਰੋ</string>
     <string name="training">ਸਿਖਲਾਈ</string>
+    <string name="training_current_size">ਮੌਜੂਦਾ ਸਿਖਲਾਈ ਡੇਟਾ: {0} KB</string>
     <string name="training_data">ਸਿਖਲਾਈ ਡੇਟਾ</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">ਆਯਾਤ ਭਾਸ਼ਾ ਮਾਡਲ ਵਿੱਚ ਟੈਕਸਟ ਜੋੜਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਇਕੱਠੇ ਕੀਤੇ ਸਿਖਲਾਈ ਡੇਟਾ (ਰੀਸਟਾਰਟ ਵਿੱਚ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ)। ਨਿਰਯਾਤ ਬੈਕਅੱਪ ਜਾਂ ਟ੍ਰਾਂਸਫਰ ਲਈ ਤੁਹਾਡੇ ਸਿਖਲਾਈ ਡੇਟਾ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਦਾ ਹੈ। ਰੀਸੈਟ ਸਾਰੇ ਉਪਭੋਗਤਾ ਸਿਖਲਾਈ ਡੇਟਾ ਨੂੰ ਮਿਟਾ ਦਿੰਦਾ ਹੈ — ਮਾਡਲ ਅਗਲੀ ਲਾਂਚ \'ਤੇ ਆਪਣੇ ਬਿਲਟ-ਇਨ ਡਿਫੌਲਟ \'ਤੇ ਵਾਪਸ ਆ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">ਸਿਖਲਾਈ ਡਾਟਾ ਨਿਰਯਾਤ ਕਰੋ</string>
+    <string name="training_exported">{0} ਨੂੰ ਨਿਰਯਾਤ ਕੀਤਾ ਗਿਆ</string>
+    <string name="training_failed">{0} ਅਸਫਲ: {1}</string>
+    <string name="training_import">ਸਿਖਲਾਈ ਪਾਠ ਆਯਾਤ ਕਰੋ</string>
+    <string name="training_imported">ਸਿਖਲਾਈ ਪਾਠ ਦਾ {0} KB ਆਯਾਤ ਕੀਤਾ ਗਿਆ</string>
+    <string name="training_imported_restart">ਆਯਾਤ ਕੀਤਾ {0} KB — ਅਗਲੀ ਲਾਂਚ \'ਤੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲਾਗੂ ਹੁੰਦਾ ਹੈ (ਲਾਈਵ ਮਾਡਲ ਵਾਪਸ ਕੀਤਾ ਗਿਆ {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">ਅਜੇ ਤੱਕ ਕੋਈ ਉਪਭੋਗਤਾ ਸਿਖਲਾਈ ਡੇਟਾ ਨਹੀਂ ਹੈ</string>
+    <string name="training_nothing_to_export">ਨਿਰਯਾਤ ਕਰਨ ਲਈ ਹਾਲੇ ਕੋਈ ਸਿਖਲਾਈ ਡਾਟਾ ਨਹੀਂ</string>
+    <string name="training_reset">ਰੀਸੈੱਟ</string>
+    <string name="training_reset_done">ਸਿਖਲਾਈ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ — ਅਗਲੇ ਲਾਂਚ ਤੇ ਮਾਡਲ ਆਪਣੇ ਬਿਲਟ-ਇਨ ਡਿਫਾਲਟ ਤੇ ਵਾਪਸ ਆਵੇਗਾ</string>
+    <string name="training_reset_partial">ਜਿੱਥੇ ਸੰਭਵ ਹੋਵੇ ਮਿਟਾਇਆ ਗਿਆ ਸਿਖਲਾਈ ਡੇਟਾ — {0} ਆਈਟਮਾਂ ਅਸਫਲ ਹੋਈਆਂ; ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਦੁਬਾਰਾ ਰੀਸੈਟ ਦਬਾਓ</string>
     <string name="turbo">ਟਰਬੋ</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">ਟਾਈਪਿੰਗ ਦਰ</string>

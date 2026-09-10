@@ -40,6 +40,12 @@
     <string name="copy_all">Kopiera alla</string>
     <string name="copy_all_2">Kopiera alla</string>
     <string name="copy_commands">Kopiera kommandon</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">Nuvarande kalibrering</string>
     <string name="customization">Anpassning</string>
     <string name="dark">Mörk</string>
@@ -72,6 +78,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="failed_to_open">Misslyckades med att öppna:</string>
     <string name="failed_to_save">Misslyckades med att spara:</string>
     <string name="fast">Snabb</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="import_from_dasher_5">Importera från Dasher 5</string>
     <string name="import_settings">Importinställningar</string>
     <string name="import_training_text">Importera träningstext</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">Öka hastigheten</string>
     <string name="input">Input</string>
     <string name="input_method_joystick">Joystick/gamepad (vrid en spak för att styra)</string>
@@ -112,6 +121,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="learning">Inlärning</string>
     <string name="leave_game_mode">Lämna spelläget</string>
     <string name="light">Ljus</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">Språk</string>
     <string name="locale_2">Språk</string>
     <string name="migration">Migration</string>
@@ -121,6 +131,8 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="no_dasher_5_data_found_on_this_mac">Inga Dasher 5-data hittades på den här Mac-datorn.</string>
     <string name="no_settings_available_for_this_section">Inga inställningar tillgängliga för det här avsnittet.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">Inget att spara</string>
     <string name="nothing_to_share">Inget att dela</string>
     <string name="ok">OK</string>
@@ -196,8 +208,12 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="system">System</string>
     <string name="text">text</string>
     <string name="text_files">Textfiler</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">Felsökningsöverlägget ritar en grön panel uppe till vänster på arbetsytan som visar antal händelser i realtid och de senast rapporterade (x, y). När du nyper och håller nere bör du se touch.began och sedan touch.moved med ändrade koordinater när du tittar dig omkring.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">Detta raderar dina ackumulerade träningsdata. Språkmodellen återgår till inbyggda standardinställningar vid nästa start. Detta kan inte ångras.</string>
     <string name="tilt_calibration">Lutningskalibrering</string>
     <string name="tilt_your_device_now">Luta din enhet nu...</string>
@@ -211,7 +227,23 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">Dela text</string>
     <string name="training">Utbildning</string>
+    <string name="training_current_size">Aktuella träningsdata: {0} KB</string>
     <string name="training_data">Träningsdata</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">Import lägger till text till språkmodellen och dina ackumulerade träningsdata (förvaras över omstarter). Export sparar dina träningsdata för säkerhetskopiering eller överföring. Återställning tar bort all användarträningsdata – modellen återgår till sina inbyggda standardinställningar vid nästa lansering.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">Exportera träningsdata</string>
+    <string name="training_exported">Exporterad till {0}</string>
+    <string name="training_failed">{0} misslyckades: {1}</string>
+    <string name="training_import">Importera träningstext</string>
+    <string name="training_imported">{0} KB utbildningstext importerad</string>
+    <string name="training_imported_restart">{0} KB importerat — tillämpas fullständigt vid nästa start (livemodellen returnerade {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">Inga användarträningsdata ännu</string>
+    <string name="training_nothing_to_export">Ingen träningsdata att exportera ännu</string>
+    <string name="training_reset">Återställa</string>
+    <string name="training_reset_done">Träningsdata raderade — modellen återgår till sina inbyggda standardinställningar vid nästa lansering</string>
+    <string name="training_reset_partial">Raderade träningsdata där det är möjligt — {0} objekt(er) misslyckades; tryck på Reset igen för att försöka igen</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">Skrivhastighet</string>

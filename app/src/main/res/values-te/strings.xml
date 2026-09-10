@@ -40,6 +40,12 @@
     <string name="copy_all">అన్నింటినీ కాపీ చేయండి</string>
     <string name="copy_all_2">అన్నింటినీ కాపీ చేయండి</string>
     <string name="copy_commands">కాపీ ఆదేశాలు</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">ప్రస్తుత క్రమాంకనం</string>
     <string name="customization">అనుకూలీకరణ</string>
     <string name="dark">చీకటి</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">తెరవడంలో విఫలమైంది:</string>
     <string name="failed_to_save">సేవ్ చేయడంలో విఫలమైంది:</string>
     <string name="fast">వేగంగా</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">డాషర్ 5 నుండి దిగుమతి చేసుకోండి</string>
     <string name="import_settings">దిగుమతి సెట్టింగ్‌లు</string>
     <string name="import_training_text">శిక్షణ పాఠాన్ని దిగుమతి చేసుకోండి</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">వేగాన్ని పెంచండి</string>
     <string name="input">ఇన్‌పుట్</string>
     <string name="input_method_joystick">జాయ్‌స్టిక్ / గేమ్‌ప్యాడ్ (నడపడానికి స్టిక్‌ను పక్కకు తిప్పండి)</string>
@@ -112,6 +121,7 @@
     <string name="learning">నేర్చుకోవడం</string>
     <string name="leave_game_mode">గేమ్ మోడ్ నుండి నిష్క్రమించండి</string>
     <string name="light">కాంతి</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">భాష</string>
     <string name="locale_2">స్థానిక</string>
     <string name="migration">వలస</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">ఈ Macలో డాషర్ 5 డేటా కనుగొనబడలేదు.</string>
     <string name="no_settings_available_for_this_section">ఈ విభాగానికి ఎలాంటి సెట్టింగ్‌లు అందుబాటులో లేవు.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">కాపాడటానికి ఏమీ లేదు</string>
     <string name="nothing_to_share">పంచుకోవడానికి ఏమీ లేదు</string>
     <string name="ok">సరే</string>
@@ -196,8 +208,12 @@
     <string name="system">వ్యవస్థ</string>
     <string name="text">టెక్స్ట్</string>
     <string name="text_files">టెక్స్ట్ ఫైల్స్</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">డీబగ్ ఓవర్‌లే, కాన్వాస్‌కు ఎగువ ఎడమ వైపున ఒక ఆకుపచ్చ ప్యానెల్‌ను గీస్తుంది, అది లైవ్ టచ్ ఈవెంట్ కౌంట్‌లను మరియు చివరిగా నివేదించబడిన (x, y) విలువను చూపుతుంది. మీరు పించ్ చేసి పట్టుకున్నప్పుడు, మీరు చుట్టూ చూస్తున్న కొద్దీ మారుతున్న కోఆర్డినేట్‌లతో పాటు \'touch.began\' ఆపై \'touch.moved\' అని కనిపించాలి.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">ఇది మీరు సేకరించిన శిక్షణ డేటాను తొలగిస్తుంది. తదుపరి ప్రారంభించినప్పుడు భాషా నమూనా అంతర్నిర్మిత డిఫాల్ట్‌లకు తిరిగి వస్తుంది. దీనిని రద్దు చేయడం సాధ్యపడదు.</string>
     <string name="tilt_calibration">టిల్ట్ క్రమాంకనం</string>
     <string name="tilt_your_device_now">ఇప్పుడు మీ పరికరాన్ని వంచండి...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">టెక్స్ట్‌ను పంచుకోండి</string>
     <string name="training">శిక్షణ</string>
+    <string name="training_current_size">ప్రస్తుత శిక్షణ డేటా: {0} KB</string>
     <string name="training_data">శిక్షణ డేటా</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">దిగుమతి భాషా మోడల్ మరియు మీ పేర్కొన్న శిక్షణ డేటాకు పాఠ్యాన్ని జోడిస్తుంది (పునఃప్రారంభాలలో నిలుస్తుంది). ఎగుమతి బ్యాకప్ లేదా బదిలీ కోసం మీ శిక్షణ డేటాను సేవ్ చేస్తుంది. రీసెట్ అన్ని వినియోగదారు శిక్షణ డేటాను తొలగిస్తుంది — తదుపరి ప్రారంభంలో మోడల్ దాని అంతర్గత డిఫాల్ట్‌లకు తిరిగి వస్తుంది.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">శిక్షణ డేటాను ఎగుమతి చేయండి</string>
+    <string name="training_exported">{0}కి ఎగుమతి చేయబడింది</string>
+    <string name="training_failed">{0} విఫలమైంది: {1}</string>
+    <string name="training_import">శిక్షణ వచనాన్ని దిగుమతి చేయండి</string>
+    <string name="training_imported">{0} KB శిక్షణ పాఠ్యం దిగుమతి చేయబడింది</string>
+    <string name="training_imported_restart">దిగుమతి చేయబడిన {0} KB — తదుపరి ప్రయోగానికి పూర్తిగా వర్తిస్తుంది (ప్రత్యక్ష మోడల్ తిరిగి ఇవ్వబడింది {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">వినియోగదారు శిక్షణ డేటా ఇంకా లేదు</string>
+    <string name="training_nothing_to_export">ఎగుమతి చేయడానికి ఇంకా శిక్షణ డేటా లేదు</string>
+    <string name="training_reset">రీసెట్</string>
+    <string name="training_reset_done">శిక్షణ డేటా తొలగించబడింది - మోడల్ తదుపరి లాంచ్‌లో దాని అంతర్నిర్మిత డిఫాల్ట్‌లకు తిరిగి వస్తుంది</string>
+    <string name="training_reset_partial">సాధ్యమైన చోట శిక్షణ డేటా తొలగించబడింది — {0} అంశం(లు) విఫలమైంది; మళ్లీ ప్రయత్నించడానికి మళ్లీ రీసెట్ నొక్కండి</string>
     <string name="turbo">టర్బో</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">టైపింగ్ రేటు</string>

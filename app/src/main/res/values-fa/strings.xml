@@ -40,6 +40,12 @@
     <string name="copy_all">همه را کپی کنید</string>
     <string name="copy_all_2">کپی کردن همه</string>
     <string name="copy_commands">کپی کردن دستورات</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">کالیبراسیون جریان</string>
     <string name="customization">سفارشی سازی</string>
     <string name="dark">تیره</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">پرونده باز نشد</string>
     <string name="failed_to_save">ذخیره ناموفق بود</string>
     <string name="fast">سریع</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">وارد کردن از Dasher 5</string>
     <string name="import_settings">تنظیمات را وارد کنید</string>
     <string name="import_training_text">وارد کردن متن آموزشی</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">افزایش سرعت</string>
     <string name="input">ورودی</string>
     <string name="input_method_joystick">جوی‌استیک / گیم‌پد (برای هدایت، دسته را منحرف کنید)</string>
@@ -112,6 +121,7 @@
     <string name="learning">یادگیری</string>
     <string name="leave_game_mode">حالت بازی را ترک کنید</string>
     <string name="light">نور</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">زبان</string>
     <string name="locale_2">محل</string>
     <string name="migration">مهاجرت</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">هیچ داده‌ای از Dasher 5 در این مک یافت نشد.</string>
     <string name="no_settings_available_for_this_section">تنظیماتی برای این بخش وجود ندارد.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">چیزی برای ذخیره کردن نیست</string>
     <string name="nothing_to_share">چیزی برای به اشتراک گذاشتن وجود ندارد</string>
     <string name="ok">باشه</string>
@@ -196,8 +208,12 @@
     <string name="system">سیستم</string>
     <string name="text">متن</string>
     <string name="text_files">پرونده‌های متنی</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">لایه اشکال‌زدایی یک پنل سبز در بالا سمت چپ بوم رسم می‌کند که تعداد رویدادهای لمسی زنده و آخرین گزارش‌شده (x، y) را نشان می‌دهد. وقتی انگشت خود را روی صفحه نگه می‌دارید، باید touch.begin و سپس touch.moved را با تغییر مختصات هنگام نگاه کردن به اطراف ببینید.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">این کار داده‌های آموزشی انباشته‌شده شما را حذف می‌کند. مدل زبان در اجرای بعدی به پیش‌فرض‌های داخلی خود باز خواهد گشت. این کار قابل بازگشت نیست.</string>
     <string name="tilt_calibration">کالیبراسیون شیب</string>
     <string name="tilt_your_device_now">همین الان دستگاه خود را کج کنید...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">متن را به اشتراک بگذارید</string>
     <string name="training">آموزش</string>
+    <string name="training_current_size">داده های آموزشی فعلی: {0} کیلوبایت</string>
     <string name="training_data">داده‌های آموزشی</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">Import متنی را به مدل زبان و داده‌های آموزشی انباشته‌شده شما اضافه می‌کند (در طول راه‌اندازی مجدد حفظ می‌شود). Export داده های آموزشی شما را برای پشتیبان گیری یا انتقال ذخیره می کند. بازنشانی تمام داده‌های آموزش کاربر را حذف می‌کند - مدل در راه‌اندازی بعدی به پیش‌فرض‌های داخلی خود بازمی‌گردد.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">صادرات داده های آموزشی</string>
+    <string name="training_exported">به {0} صادر شد</string>
+    <string name="training_failed">{0} ناموفق بود: {1}</string>
+    <string name="training_import">وارد کردن متن آموزشی</string>
+    <string name="training_imported">{0} کیلوبایت متن آموزشی وارد شد</string>
+    <string name="training_imported_restart">{0} کیلوبایت وارد شده — در راه اندازی بعدی کاملاً اعمال می شود (مدل زنده {1} برگردانده شد)</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">هنوز اطلاعاتی برای آموزش کاربر وجود ندارد</string>
+    <string name="training_nothing_to_export">هنوز اطلاعات آموزشی برای صادرات وجود ندارد</string>
+    <string name="training_reset">بازنشانی کنید</string>
+    <string name="training_reset_done">داده های آموزشی حذف شد - مدل در راه اندازی بعدی به پیش فرض های داخلی خود باز می گردد</string>
+    <string name="training_reset_partial">در صورت امکان، داده‌های آموزشی حذف شد - {0} مورد (ها) ناموفق بود. دوباره Reset را فشار دهید تا دوباره امتحان کنید</string>
     <string name="turbo">توربو</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">نرخ تایپ</string>

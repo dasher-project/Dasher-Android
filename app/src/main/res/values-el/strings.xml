@@ -40,6 +40,12 @@
     <string name="copy_all">Αντιγραφή όλων</string>
     <string name="copy_all_2">Αντιγραφή όλων</string>
     <string name="copy_commands">Αντιγραφή εντολών</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">Βαθμονόμηση ρεύματος</string>
     <string name="customization">Προσαρμογή</string>
     <string name="dark">Σκοτάδι</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">: Αποτυχία ανοίγματος του :</string>
     <string name="failed_to_save">Αποτυχία αποθήκευσης :</string>
     <string name="fast">Γρήγορα</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">Εισαγωγή από το Dasher 5</string>
     <string name="import_settings">Εισαγωγή ρυθμίσεων</string>
     <string name="import_training_text">Εισαγωγή κειμένου εκπαίδευσης</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">Αύξηση ταχύτητας</string>
     <string name="input">Εισαγωγή</string>
     <string name="input_method_joystick">Joystick / gamepad (εκτροπή ενός μοχλού για οδήγηση)</string>
@@ -112,6 +121,7 @@
     <string name="learning">Μάθηση</string>
     <string name="leave_game_mode">Έξοδος από τη λειτουργία παιχνιδιού</string>
     <string name="light">Φως</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">Γλώσσα</string>
     <string name="locale_2">Τοποθεσία</string>
     <string name="migration">Μετανάστευση</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">Δεν βρέθηκαν δεδομένα Dasher 5 σε αυτόν τον Mac.</string>
     <string name="no_settings_available_for_this_section">Δεν υπάρχουν διαθέσιμες ρυθμίσεις για αυτήν την ενότητα.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">Δεν υπάρχει τίποτα για αποθήκευση</string>
     <string name="nothing_to_share">Δεν υπάρχει τίποτα για κοινή χρήση</string>
     <string name="ok">ΕΝΤΑΞΕΙ</string>
@@ -196,8 +208,12 @@
     <string name="system">Σύστημα</string>
     <string name="text">κείμενο</string>
     <string name="text_files">Αρχεία κειμένου</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">Η επικάλυψη εντοπισμού σφαλμάτων σχεδιάζει ένα πράσινο πλαίσιο επάνω αριστερά στον καμβά που δείχνει τον αριθμό των ζωντανών συμβάντων αφής και το τελευταίο που αναφέρθηκε (x, y). Όταν τραβάτε παρατεταμένα τα δάχτυλα, θα πρέπει να δείτε το touch.began και στη συνέχεια το touch.move με μεταβαλλόμενες συντεταγμένες καθώς κοιτάτε τριγύρω.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">Αυτό διαγράφει τα συσσωρευμένα δεδομένα εκπαίδευσης. Το μοντέλο γλώσσας θα επιστρέψει στις ενσωματωμένες προεπιλογές στην επόμενη εκκίνηση. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</string>
     <string name="tilt_calibration">Βαθμονόμηση κλίσης</string>
     <string name="tilt_your_device_now">Γείρετε τη συσκευή σας τώρα...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">Κοινή χρήση κειμένου</string>
     <string name="training">Εκπαίδευση</string>
+    <string name="training_current_size">Τρέχοντα δεδομένα εκπαίδευσης: {0} KB</string>
     <string name="training_data">Δεδομένα Εκπαίδευσης</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">Η Εισαγωγή προσθέτει κείμενο στο μοντέλο γλώσσας και τα συσσωρευμένα δεδομένα προπόνησής σας (διατηρούνται κατά τις επανεκκινήσεις). Η Εξαγωγή αποθηκεύει τα δεδομένα προπόνησής σας για δημιουργία αντιγράφων ασφαλείας ή μεταφορά. Η επαναφορά διαγράφει όλα τα δεδομένα εκπαίδευσης των χρηστών — το μοντέλο επιστρέφει στις ενσωματωμένες προεπιλογές του στην επόμενη εκκίνηση.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">Εξαγωγή δεδομένων εκπαίδευσης</string>
+    <string name="training_exported">Έγινε εξαγωγή σε {0}</string>
+    <string name="training_failed">{0} απέτυχε: {1}</string>
+    <string name="training_import">Εισαγωγή εκπαιδευτικού κειμένου</string>
+    <string name="training_imported">Εισήχθησαν {0} KB εκπαιδευτικού κειμένου</string>
+    <string name="training_imported_restart">Εισήχθησαν {0} KB — ισχύει πλήρως στην επόμενη κυκλοφορία (το ζωντανό μοντέλο επιστράφηκε {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">Δεν υπάρχουν ακόμη δεδομένα εκπαίδευσης χρηστών</string>
+    <string name="training_nothing_to_export">Δεν υπάρχουν ακόμη δεδομένα εκπαίδευσης για εξαγωγή</string>
+    <string name="training_reset">Επαναφορά</string>
+    <string name="training_reset_done">Τα δεδομένα προπόνησης διαγράφηκαν — το μοντέλο επιστρέφει στις ενσωματωμένες προεπιλογές του στην επόμενη εκκίνηση</string>
+    <string name="training_reset_partial">Διαγράφηκαν δεδομένα εκπαίδευσης όπου είναι δυνατόν — {0} στοιχεία απέτυχαν. πατήστε ξανά Επαναφορά για να προσπαθήσετε ξανά</string>
     <string name="turbo">Τούρμπο</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">Ρυθμός πληκτρολόγησης</string>

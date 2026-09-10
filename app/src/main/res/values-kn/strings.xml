@@ -40,6 +40,12 @@
     <string name="copy_all">ಎಲ್ಲವನ್ನೂ ನಕಲಿಸಿ</string>
     <string name="copy_all_2">ಎಲ್ಲವನ್ನೂ ನಕಲಿಸಿ</string>
     <string name="copy_commands">ಆದೇಶಗಳನ್ನು ನಕಲಿಸಿ</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">ಪ್ರಸ್ತುತ ಮಾಪನಾಂಕ ನಿರ್ಣಯ</string>
     <string name="customization">ಗ್ರಾಹಕೀಕರಣ</string>
     <string name="dark">ಕತ್ತಲೆ</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">ತೆರೆಯಲು ವಿಫಲವಾಗಿದೆ:</string>
     <string name="failed_to_save">ಉಳಿಸಲು &lt;x id="1"/&gt;ವಿಫಲವಾಗಿದೆ.</string>
     <string name="fast">ವೇಗವಾಗಿ</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">ಡ್ಯಾಷರ್ 5 ರಿಂದ ಆಮದು ಮಾಡಿ</string>
     <string name="import_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</string>
     <string name="import_training_text">ತರಬೇತಿ ಪಠ್ಯವನ್ನು ಆಮದು ಮಾಡಿ</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">ವೇಗ ಹೆಚ್ಚಿಸಿ</string>
     <string name="input">ಇನ್ಪುಟ್</string>
     <string name="input_method_joystick">ಜಾಯ್‌ಸ್ಟಿಕ್ / ಗೇಮ್‌ಪ್ಯಾಡ್ (ಸ್ಟಿಯರ್ ಮಾಡಲು ಕೋಲನ್ನು ತಿರುಗಿಸಿ)</string>
@@ -112,6 +121,7 @@
     <string name="learning">ಕಲಿಕೆ</string>
     <string name="leave_game_mode">ಆಟದ ಮೋಡ್ ಅನ್ನು ಬಿಡಿ</string>
     <string name="light">ಬೆಳಕು</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">ಭಾಷೆ</string>
     <string name="locale_2">ಪ್ರಾದೇಶಿಕ</string>
     <string name="migration">ವಲಸೆ</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">ಈ Mac ನಲ್ಲಿ ಯಾವುದೇ Dasher 5 ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ.</string>
     <string name="no_settings_available_for_this_section">ಈ ವಿಭಾಗಕ್ಕೆ ಯಾವುದೇ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">ಉಳಿಸಲು ಏನೂ ಇಲ್ಲ.</string>
     <string name="nothing_to_share">ಹಂಚಿಕೊಳ್ಳಲು ಏನೂ ಇಲ್ಲ</string>
     <string name="ok">ಸರಿ</string>
@@ -196,8 +208,12 @@
     <string name="system">ವ್ಯವಸ್ಥೆ</string>
     <string name="text">ಪಠ್ಯ</string>
     <string name="text_files">ಪಠ್ಯ ಕಡತಗಳುComment</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">ಡೀಬಗ್ ಓವರ್‌ಲೇ ಕ್ಯಾನ್ವಾಸ್‌ನ ಮೇಲಿನ ಎಡಭಾಗದಲ್ಲಿ ಹಸಿರು ಫಲಕವನ್ನು ಚಿತ್ರಿಸುತ್ತದೆ, ಇದು ಲೈವ್ ಟಚ್ ಈವೆಂಟ್ ಎಣಿಕೆಗಳು ಮತ್ತು ಕೊನೆಯದಾಗಿ ವರದಿ ಮಾಡಲಾದ (x, y) ಅನ್ನು ತೋರಿಸುತ್ತದೆ. ನೀವು ಪಿಂಚ್ ಮಾಡಿ ಹಿಡಿದಿಟ್ಟುಕೊಂಡಾಗ, ನೀವು ಸುತ್ತಲೂ ನೋಡುವಾಗ ಬದಲಾಗುತ್ತಿರುವ ನಿರ್ದೇಶಾಂಕಗಳೊಂದಿಗೆ touch.began ಅನ್ನು ನಂತರ touch.moved ಅನ್ನು ನೋಡಬೇಕು.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">ಇದು ನಿಮ್ಮ ಸಂಗ್ರಹವಾದ ತರಬೇತಿ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ. ಮುಂದಿನ ಉಡಾವಣೆಯಲ್ಲಿ ಭಾಷಾ ಮಾದರಿಯು ಅಂತರ್ನಿರ್ಮಿತ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ಹಿಂತಿರುಗುತ್ತದೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.</string>
     <string name="tilt_calibration">ಟಿಲ್ಟ್ ಮಾಪನಾಂಕ ನಿರ್ಣಯ</string>
     <string name="tilt_your_device_now">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಈಗ ಓರೆಯಾಗಿಸಿ...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">ಪಠ್ಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</string>
     <string name="training">ತರಬೇತಿ</string>
+    <string name="training_current_size">ಪ್ರಸ್ತುತ ತರಬೇತಿ ಡೇಟಾ: {0} KB</string>
     <string name="training_data">ತರಬೇತಿ ಡೇಟಾ</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">ಆಮದು ಭಾಷಾ ಮಾದರಿಗೆ ಪಠ್ಯವನ್ನು ಸೇರಿಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಸಂಚಿತ ತರಬೇತಿ ಡೇಟಾ (ಮರುಪ್ರಾರಂಭದಾದ್ಯಂತ ಇರಿಸಲಾಗುತ್ತದೆ). ರಫ್ತು ಬ್ಯಾಕಪ್ ಅಥವಾ ವರ್ಗಾವಣೆಗಾಗಿ ನಿಮ್ಮ ತರಬೇತಿ ಡೇಟಾವನ್ನು ಉಳಿಸುತ್ತದೆ. ಮರುಹೊಂದಿಸಿ ಎಲ್ಲಾ ಬಳಕೆದಾರ ತರಬೇತಿ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ - ಮುಂದಿನ ಉಡಾವಣೆಯಲ್ಲಿ ಮಾದರಿಯು ಅದರ ಅಂತರ್ನಿರ್ಮಿತ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ಹಿಂತಿರುಗುತ್ತದೆ.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">ತರಬೇತಿ ಡೇಟಾವನ್ನು ರಫ್ತು ಮಾಡಿ</string>
+    <string name="training_exported">{0} ಗೆ ರಫ್ತು ಮಾಡಲಾಗಿದೆ</string>
+    <string name="training_failed">{0} ವಿಫಲವಾಗಿದೆ: {1}</string>
+    <string name="training_import">ತರಬೇತಿ ಪಠ್ಯವನ್ನು ಆಮದು ಮಾಡಿ</string>
+    <string name="training_imported">{0} KB ತರಬೇತಿ ಪಠ್ಯವನ್ನು ಆಮದು ಮಾಡಲಾಗಿದೆ</string>
+    <string name="training_imported_restart">ಆಮದು ಮಾಡಿದ {0} KB — ಮುಂದಿನ ಉಡಾವಣೆಯಲ್ಲಿ ಸಂಪೂರ್ಣವಾಗಿ ಅನ್ವಯಿಸುತ್ತದೆ (ಲೈವ್ ಮಾಡೆಲ್ ಹಿಂತಿರುಗಿಸಲಾಗಿದೆ {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">ಬಳಕೆದಾರರ ತರಬೇತಿ ಡೇಟಾ ಇನ್ನೂ ಇಲ್ಲ</string>
+    <string name="training_nothing_to_export">ರಫ್ತು ಮಾಡಲು ಇನ್ನೂ ಯಾವುದೇ ತರಬೇತಿ ಡೇಟಾ ಇಲ್ಲ</string>
+    <string name="training_reset">ಮರುಹೊಂದಿಸಿ</string>
+    <string name="training_reset_done">ತರಬೇತಿ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ - ಮುಂದಿನ ಉಡಾವಣೆಯಲ್ಲಿ ಮಾದರಿಯು ಅದರ ಅಂತರ್ನಿರ್ಮಿತ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ಹಿಂತಿರುಗುತ್ತದೆ</string>
+    <string name="training_reset_partial">ಸಾಧ್ಯವಿರುವಲ್ಲಿ ತರಬೇತಿ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ - {0} ಐಟಂ(ಗಳು) ವಿಫಲವಾಗಿದೆ; ಮರುಪ್ರಯತ್ನಿಸಲು ಪುನಃ ಮರುಹೊಂದಿಸಿ ಒತ್ತಿರಿ</string>
     <string name="turbo">ಟರ್ಬೊ</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">ಟೈಪಿಂಗ್ ದರ</string>

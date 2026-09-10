@@ -40,6 +40,12 @@
     <string name="copy_all">Alles kopieren</string>
     <string name="copy_all_2">Alles kopieren</string>
     <string name="copy_commands">Befehle kopieren</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">Aktuelle Kalibrierung</string>
     <string name="customization">Anpassung</string>
     <string name="dark">Dunkel</string>
@@ -72,6 +78,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="failed_to_open">Öffnen fehlgeschlagen</string>
     <string name="failed_to_save">Speichern fehlgeschlagen.</string>
     <string name="fast">Schnell</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="import_from_dasher_5">Import aus Dasher 5</string>
     <string name="import_settings">Einstellungen importieren</string>
     <string name="import_training_text">Trainingstext importieren</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">Geschwindigkeit erhöhen</string>
     <string name="input">Eingang</string>
     <string name="input_method_joystick">Joystick / Gamepad (durch Bewegen eines Sticks zum Steuern)</string>
@@ -112,6 +121,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="learning">Lernen</string>
     <string name="leave_game_mode">Spielmodus verlassen</string>
     <string name="light">Licht</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">Sprache</string>
     <string name="locale_2">Locale (auch: Gebietsschema)</string>
     <string name="migration">Migration</string>
@@ -121,6 +131,8 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="no_dasher_5_data_found_on_this_mac">Auf diesem Mac wurden keine Dasher 5-Daten gefunden.</string>
     <string name="no_settings_available_for_this_section">Für diesen Abschnitt sind keine Einstellungen verfügbar.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">Nichts zu retten</string>
     <string name="nothing_to_share">Nichts zu teilen</string>
     <string name="ok">OK</string>
@@ -196,8 +208,12 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="system">System</string>
     <string name="text">Text</string>
     <string name="text_files">Textdateien</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">Das Debug-Overlay zeichnet oben links auf der Leinwand ein grünes Feld, das die Anzahl der Live-Touch-Ereignisse und die zuletzt gemeldeten Ereignisse (x, y) anzeigt. Wenn Sie die Finger zusammenziehen und gedrückt halten, sollten Sie „touch.began“ und dann „touch.moved“ sehen, wobei sich die Koordinaten ändern, während Sie sich umschauen.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">Dadurch werden Ihre gesammelten Trainingsdaten gelöscht. Das Sprachmodell wird beim nächsten Start auf die integrierten Standardeinstellungen zurückgesetzt. Dies kann nicht rückgängig gemacht werden.</string>
     <string name="tilt_calibration">Neigungskalibrierung</string>
     <string name="tilt_your_device_now">Neigen Sie Ihr Gerät jetzt...</string>
@@ -211,7 +227,23 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">Text teilen</string>
     <string name="training">Ausbildung</string>
+    <string name="training_current_size">Aktuelle Trainingsdaten: {0} KB</string>
     <string name="training_data">Trainingsdaten</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">Der Import fügt Text zum Sprachmodell und Ihren gesammelten Trainingsdaten hinzu (die über Neustarts hinweg beibehalten werden). Beim Exportieren werden Ihre Trainingsdaten zur Sicherung oder Übertragung gespeichert. Beim Zurücksetzen werden alle Benutzertrainingsdaten gelöscht – das Modell kehrt beim nächsten Start zu seinen integrierten Standardeinstellungen zurück.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">Trainingsdaten exportieren</string>
+    <string name="training_exported">Exportiert nach {0}</string>
+    <string name="training_failed">{0} fehlgeschlagen: {1}</string>
+    <string name="training_import">Trainingstext importieren</string>
+    <string name="training_imported">{0} KB Trainingstext importiert</string>
+    <string name="training_imported_restart">{0} KB importiert – wird beim nächsten Start vollständig übernommen (Live-Modell hat {1} zurückgegeben)</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">Noch keine Benutzerschulungsdaten</string>
+    <string name="training_nothing_to_export">Noch keine Trainingsdaten zum Exportieren</string>
+    <string name="training_reset">Zurücksetzen</string>
+    <string name="training_reset_done">Trainingsdaten gelöscht – das Modell kehrt beim nächsten Start zu seinen integrierten Standardwerten zurück</string>
+    <string name="training_reset_partial">Trainingsdaten nach Möglichkeit gelöscht – {0} Element(e) fehlgeschlagen; Drücken Sie erneut „Zurücksetzen“, um es erneut zu versuchen</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">Tippgeschwindigkeit</string>
