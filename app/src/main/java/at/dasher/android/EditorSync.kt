@@ -48,8 +48,24 @@ fun editorSyncAction(
     else -> EditorSyncAction.None
 }
 
-/** CR-normalised comparison: the engine emits CRLF newlines, the field holds LF. */
+/** CR-normalised comparison kept for callers that compare raw engine text (which emits CRLF) against LF field text. */
 fun editorTextEquals(pane: String, engine: String): Boolean {
     if (pane == engine) return true
     return pane.replace("\r", "") == engine.replace("\r", "")
+}
+
+/**
+ * RFC 0019 clause 4 — merge an engine push into the field state with the
+ * caret preserved: at the end follows growth (zooming keeps the caret with
+ * the new text), otherwise clamped in place. Pure — extracted so the caret
+ * math is unit-testable without Compose interaction.
+ */
+fun mergeEnginePush(
+    current: androidx.compose.ui.text.input.TextFieldValue,
+    pushed: String,
+): androidx.compose.ui.text.input.TextFieldValue {
+    val caret = if (current.selection.end >= current.text.length) pushed.length
+    else minOf(current.selection.end, pushed.length)
+    return androidx.compose.ui.text.input.TextFieldValue(
+        pushed, androidx.compose.ui.text.TextRange(caret))
 }

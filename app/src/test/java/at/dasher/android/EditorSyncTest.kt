@@ -56,6 +56,49 @@ class EditorSyncTest {
     }
 
     @Test
+    fun edit_while_out_of_sync_still_seeds() {
+        // The retry path after a failed seed: the field differs from the
+        // engine, and the user edits again — the new text must still seed
+        // (loop-guard stays at the engine's text until a seed SUCCEEDS).
+        assertEquals(
+            EditorSyncAction.Seed("retry text", 3),
+            action(textChanged = true, inSync = false, text = "retry text", caret = 3)
+        )
+    }
+
+    // ── mergeEnginePush: clause 4 caret preservation ──
+
+    private fun tfv(text: String, caret: Int) =
+        androidx.compose.ui.text.input.TextFieldValue(text, androidx.compose.ui.text.TextRange(caret))
+
+    @Test
+    fun push_caret_at_end_follows_growth() {
+        val merged = mergeEnginePush(tfv("ab", 2), "abcdef")
+        assertEquals("abcdef", merged.text)
+        assertEquals(6, merged.selection.end)
+    }
+
+    @Test
+    fun push_caret_mid_text_stays_put() {
+        val merged = mergeEnginePush(tfv("abcdef", 3), "abcdef")
+        assertEquals(3, merged.selection.end)
+    }
+
+    @Test
+    fun push_caret_clamps_when_text_shrinks() {
+        // Reset-class pushes shrink to "" — caret must clamp to 0.
+        val merged = mergeEnginePush(tfv("abcdef", 4), "")
+        assertEquals("", merged.text)
+        assertEquals(0, merged.selection.end)
+    }
+
+    @Test
+    fun push_caret_at_old_end_clamps_to_shorter_new_text() {
+        val merged = mergeEnginePush(tfv("abcdef", 6), "abc")
+        assertEquals(3, merged.selection.end)
+    }
+
+    @Test
     fun cr_normalised_equality() {
         // The engine emits CRLF; the field holds LF — equality must hold or the
         // loop-guard would misclassify every push as a user edit.
