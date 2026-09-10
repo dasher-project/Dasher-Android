@@ -556,7 +556,8 @@ private fun TrainingSection(engine: DasherEngine) {
             onDismissRequest = { showResetConfirm = false },
             title = { Text("Reset training data?") },
             text = { Text("This deletes your accumulated training data and cannot be undone. " +
-                    "Restart Dasher for the change to take full effect.") },
+                    "Restart Dasher — including the keyboard, if you use it — for the change " +
+                    "to take full effect.") },
             confirmButton = {
                 androidx.compose.material3.TextButton(onClick = {
                     val n = engine.resetTrainingData()
