@@ -48,12 +48,6 @@ fun editorSyncAction(
     else -> EditorSyncAction.None
 }
 
-/** CR-normalised comparison kept for callers that compare raw engine text (which emits CRLF) against LF field text. */
-fun editorTextEquals(pane: String, engine: String): Boolean {
-    if (pane == engine) return true
-    return pane.replace("\r", "") == engine.replace("\r", "")
-}
-
 /**
  * RFC 0019 clause 4 — merge an engine push into the field state with the
  * caret preserved: at the end follows growth (zooming keeps the caret with

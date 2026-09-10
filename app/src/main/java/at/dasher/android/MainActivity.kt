@@ -587,17 +587,19 @@ class MainActivity : ComponentActivity() {
             // loadedPrefix workaround kept the text on the frontend because
             // dasher_seed_buffer did not exist yet. The field is set directly
             // too: while the engine is stopped the poll doesn't run to display
-            // it (review-loop 1 C1).
-            engine?.let {
-                if (it.seedBuffer(text, text.length) == 0) {
-                    lastPushedText = text.replace("\r", "")
-                    outputField = androidx.compose.ui.text.input.TextFieldValue(
-                        lastPushedText, androidx.compose.ui.text.TextRange(lastPushedText.length))
-                } else {
-                    Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
-                    return
-                }
+            // it (review-loop 1 C1). No engine → report failure rather than
+            // falling through to a false success toast.
+            val eng = engine ?: run {
+                Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
+                return
             }
+            if (eng.seedBuffer(text, text.length) != 0) {
+                Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
+                return
+            }
+            lastPushedText = text.replace("\r", "")
+            outputField = androidx.compose.ui.text.input.TextFieldValue(
+                lastPushedText, androidx.compose.ui.text.TextRange(lastPushedText.length))
             Toast.makeText(this, "Loaded ${text.length} chars", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, getString(R.string.open_failed), Toast.LENGTH_SHORT).show()
@@ -728,18 +730,19 @@ class MainActivity : ComponentActivity() {
                             fontSize = outputFontSize.sp
                         ),
                         decorationBox = { inner ->
-                            if (output.text.isEmpty()) {
-                                androidx.compose.foundation.layout.Column {
+                            // Overlay pattern: the placeholder sits on top of
+                            // the (empty) field — no layout jump when it
+                            // disappears, and taps pass through to focus.
+                            androidx.compose.foundation.layout.Box {
+                                inner()
+                                if (output.text.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.output_placeholder),
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                                         fontFamily = outputFontFamilyFor(outputFontFamily),
                                         fontSize = outputFontSize.sp
                                     )
-                                    inner()
                                 }
-                            } else {
-                                inner()
                             }
                         }
                     )

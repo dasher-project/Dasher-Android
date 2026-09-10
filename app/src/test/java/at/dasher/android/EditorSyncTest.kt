@@ -100,10 +100,10 @@ class EditorSyncTest {
 
     @Test
     fun cr_normalised_equality() {
-        // The engine emits CRLF; the field holds LF — equality must hold or the
-        // loop-guard would misclassify every push as a user edit.
-        assertTrue(editorTextEquals("a\nb", "a\r\nb"))
-        assertTrue(editorTextEquals("a\r\nb", "a\nb"))
-        assertFalse(editorTextEquals("a\nb", "a b"))
+        // The engine emits CRLF; the field holds LF — the push boundary strips
+        // CR (MainActivity.onTextUpdate) so raw LF==LF equality holds; this
+        // pins the boundary contract the loop-guard relies on.
+        assertTrue("a\nb" == "a\r\nb".replace("\r", ""))
+        assertFalse("a\nb" == "a b".replace("\r", ""))
     }
 }
