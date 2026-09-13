@@ -40,6 +40,12 @@
     <string name="copy_all">সব কপি করুন</string>
     <string name="copy_all_2">সব কপি করুন</string>
     <string name="copy_commands">কমান্ড কপি করুন</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">বর্তমান ক্রমাঙ্কন</string>
     <string name="customization">কাস্টমাইজেশন</string>
     <string name="dark">অন্ধকার</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">প্যারেন্ট ফোল্ডারে স্থানান্তর করুন</string>
     <string name="failed_to_save">সংরক্ষণ করতে ব্যর্থ হয়েছে</string>
     <string name="fast">দ্রুত</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">ড্যাশার ৫ থেকে আমদানি করুন</string>
     <string name="import_settings">সেটিংস আমদানি করুন</string>
     <string name="import_training_text">প্রশিক্ষণ পাঠ্য আমদানি করুন</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">গতি বাড়ান</string>
     <string name="input">ইনপুট</string>
     <string name="input_method_joystick">জয়স্টিক / গেমপ্যাড (দিক পরিবর্তন করার জন্য স্টিকটি নাড়ানো)</string>
@@ -112,6 +121,7 @@
     <string name="learning">শিক্ষা</string>
     <string name="leave_game_mode">গেম মোড ত্যাগ করুন</string>
     <string name="light">আলো</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">ভাষা</string>
     <string name="locale_2">লোকাল</string>
     <string name="migration">অভিবাসন</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">এই ম্যাক-এ কোনো ড্যাশার ৫ ডেটা পাওয়া যায়নি।</string>
     <string name="no_settings_available_for_this_section">এই বিভাগের জন্য কোনও সেটিংস উপলব্ধ নেই ।</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">বাঁচানোর কিছুই নেই</string>
     <string name="nothing_to_share">শেয়ার করার মতো কিছুই নেই</string>
     <string name="ok">ঠিক আছে</string>
@@ -196,8 +208,12 @@
     <string name="system">সিস্টেম</string>
     <string name="text">পাঠ্য</string>
     <string name="text_files">টেক্সট ফাইল</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">ডিবাগ ওভারলে ক্যানভাসের উপরের-বামে একটি সবুজ প্যানেল প্রদর্শন করে, যেখানে লাইভ টাচ ইভেন্টের সংখ্যা এবং সর্বশেষ রিপোর্ট করা (x, y) স্থানাঙ্ক দেখা যায়। যখন আপনি পিঞ্চ করে ধরে রাখবেন, তখন চারপাশে তাকানোর সাথে সাথে স্থানাঙ্ক পরিবর্তন হতে থাকবে এবং তারপরে touch.began ও touch.moved লেখাটি দেখতে পাবেন।</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">এটি আপনার সঞ্চিত প্রশিক্ষণ ডেটা মুছে দেবে। পরবর্তীবার চালু করলে ল্যাঙ্গুয়েজ মডেলটি তার অন্তর্নির্মিত ডিফল্ট সেটিংসে ফিরে আসবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।</string>
     <string name="tilt_calibration">টিল্ট ক্যালিব্রেশন</string>
     <string name="tilt_your_device_now">এখন আপনার ডিভাইসটি কাত করুন...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">টেক্সট শেয়ার করুন</string>
     <string name="training">প্রশিক্ষণ</string>
+    <string name="training_current_size">বর্তমান প্রশিক্ষণ ডেটা: {0} KB</string>
     <string name="training_data">প্রশিক্ষণ ডেটা</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">আমদানি ভাষা মডেলে পাঠ্য যোগ করে এবং আপনার সঞ্চিত প্রশিক্ষণ ডেটা (পুনঃসূচনা জুড়ে রাখা)। রপ্তানি ব্যাকআপ বা স্থানান্তরের জন্য আপনার প্রশিক্ষণ ডেটা সংরক্ষণ করে। রিসেট সমস্ত ব্যবহারকারী প্রশিক্ষণ ডেটা মুছে দেয় — পরবর্তী লঞ্চে মডেলটি তার বিল্ট-ইন ডিফল্টে ফিরে আসে।</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">রপ্তানি প্রশিক্ষণ তথ্য</string>
+    <string name="training_exported">{0} এ রপ্তানি করা হয়েছে</string>
+    <string name="training_failed">{0} ব্যর্থ হয়েছে: {1}</string>
+    <string name="training_import">প্রশিক্ষণ পাঠ্য আমদানি করুন</string>
+    <string name="training_imported">প্রশিক্ষণ পাঠ্যের {0} KB আমদানি করা হয়েছে৷</string>
+    <string name="training_imported_restart">আমদানি করা {0} KB — পরবর্তী লঞ্চে সম্পূর্ণরূপে প্রযোজ্য (লাইভ মডেল {1} ফেরত)</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">এখনও কোন ব্যবহারকারী প্রশিক্ষণ তথ্য</string>
+    <string name="training_nothing_to_export">এখনো রপ্তানি করার জন্য কোনো প্রশিক্ষণের তথ্য নেই</string>
+    <string name="training_reset">রিসেট করুন</string>
+    <string name="training_reset_done">প্রশিক্ষণের ডেটা মুছে ফেলা হয়েছে — পরবর্তী লঞ্চে মডেলটি তার বিল্ট-ইন ডিফল্টে ফিরে আসে</string>
+    <string name="training_reset_partial">যেখানে সম্ভব প্রশিক্ষণের ডেটা মুছে ফেলা হয়েছে — {0}টি আইটেম(গুলি) ব্যর্থ হয়েছে; পুনরায় চেষ্টা করতে আবার রিসেট টিপুন</string>
     <string name="turbo">টার্বো</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">টাইপ করার হার</string>

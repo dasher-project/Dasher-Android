@@ -40,6 +40,12 @@
     <string name="copy_all">Kopioi kaikki</string>
     <string name="copy_all_2">Kopioi kaikki</string>
     <string name="copy_commands">Kopioi komennot</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">Nykyinen kalibrointi</string>
     <string name="customization">Ulkoasu</string>
     <string name="dark">Tumma</string>
@@ -72,6 +78,7 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="failed_to_open">Avaaminen epäonnistui@ title Title of a list of documents that are open</string>
     <string name="failed_to_save">Tallennus epäonnistui</string>
     <string name="fast">Nopeasti</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="import_from_dasher_5">Tuo Dasher 5:stä</string>
     <string name="import_settings">Tuo asetukset</string>
     <string name="import_training_text">Tuo harjoitusteksti</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">Lisää nopeutta</string>
     <string name="input">Syöttö</string>
     <string name="input_method_joystick">Joystick / peliohjain (ohjaa ohjataksesi ohjainta ohjaamalla sitä)</string>
@@ -112,6 +121,7 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="learning">Oppiminen</string>
     <string name="leave_game_mode">Poistu pelitilasta</string>
     <string name="light">Valo</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">Kieli</string>
     <string name="locale_2">Sijainti</string>
     <string name="migration">Muuttoliike</string>
@@ -121,6 +131,8 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="no_dasher_5_data_found_on_this_mac">Tältä Macilta ei löytynyt Dasher 5 -tietoja.</string>
     <string name="no_settings_available_for_this_section">Tälle osiolle ei ole käytettävissä asetuksia.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">Ei mitään tallennettavaa</string>
     <string name="nothing_to_share">Ei mitään jaettavaa</string>
     <string name="ok">OK</string>
@@ -196,8 +208,12 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="system">Järjestelmä</string>
     <string name="text">teksti</string>
     <string name="text_files">Tekstitiedostot</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">Virheenkorjausnäkymä piirtää vihreän paneelin kankaan vasempaan yläkulmaan, jossa näkyvät reaaliaikaisten kosketustapahtumien määrät ja viimeksi raportoidut arvot (x, y). Kun pidät painettuna, sinun pitäisi nähdä touch.began ja sitten touch.moved muuttuvilla koordinaateilla katsellessasi ympärillesi.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">Tämä poistaa kertyneet harjoitustietosi. Kielimalli palautuu oletusasetuksiin seuraavan käynnistyksen yhteydessä. Tätä ei voi perua.</string>
     <string name="tilt_calibration">Kallistuksen kalibrointi</string>
     <string name="tilt_your_device_now">Kallista laitettasi nyt...</string>
@@ -211,7 +227,23 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">Jaa teksti</string>
     <string name="training">Koulutus</string>
+    <string name="training_current_size">Nykyiset harjoitustiedot: {0} kt</string>
     <string name="training_data">Harjoitustiedot</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">Tuo lisää tekstiä kielimalliin ja kertyneisiin harjoitustietoihisi (säilytetään uudelleenkäynnistysten aikana). Vienti tallentaa harjoitustietosi varmuuskopiointia tai siirtoa varten. Reset poistaa kaikki käyttäjien harjoitustiedot – malli palaa sisäänrakennetuille oletusasetuksiin seuraavan käynnistyksen yhteydessä.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">Vie koulutustiedot</string>
+    <string name="training_exported">Vietiin kohteeseen {0}</string>
+    <string name="training_failed">{0} epäonnistui: {1}</string>
+    <string name="training_import">Tuo koulutusteksti</string>
+    <string name="training_imported">Tuotu {0} kt harjoitustekstiä</string>
+    <string name="training_imported_restart">Tuotu {0} kt – sovelletaan kokonaan seuraavan julkaisun yhteydessä (malli palautettiin {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">Ei vielä käyttäjien koulutustietoja</string>
+    <string name="training_nothing_to_export">Ei vielä harjoitustietoja viedä</string>
+    <string name="training_reset">Nollaa</string>
+    <string name="training_reset_done">Harjoitustiedot poistettu – malli palaa sisäänrakennettuun oletusasetuksiinsa seuraavan käynnistyksen yhteydessä</string>
+    <string name="training_reset_partial">Harjoitustiedot poistettu mahdollisuuksien mukaan – {0} kohde(tta) epäonnistui; paina Reset uudelleen yrittääksesi uudelleen</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">Kirjoitusnopeus</string>

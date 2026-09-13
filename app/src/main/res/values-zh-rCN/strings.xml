@@ -40,6 +40,12 @@
     <string name="copy_all">全部复制</string>
     <string name="copy_all_2">全部复制</string>
     <string name="copy_commands">复制命令</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">电流校准</string>
     <string name="customization">定制</string>
     <string name="dark">黑暗的</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">打开失败：</string>
     <string name="failed_to_save">保存失败：</string>
     <string name="fast">快速地</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">从 Dasher 5 导入</string>
     <string name="import_settings">导入设置</string>
     <string name="import_training_text">导入训练文本</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">提高速度</string>
     <string name="input">输入</string>
     <string name="input_method_joystick">游戏手柄/操纵杆（拨动操纵杆来控制方向）</string>
@@ -112,6 +121,7 @@
     <string name="learning">学习</string>
     <string name="leave_game_mode">退出游戏模式</string>
     <string name="light">光</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">语言</string>
     <string name="locale_2">本地化</string>
     <string name="migration">迁移</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">在此 Mac 上找不到 Dasher 5 数据。</string>
     <string name="no_settings_available_for_this_section">此部分暂无设置选项。</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">已无可挽救</string>
     <string name="nothing_to_share">没什么可分享的</string>
     <string name="ok">好的</string>
@@ -196,8 +208,12 @@
     <string name="system">系统</string>
     <string name="text">文本</string>
     <string name="text_files">文本文件</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">调试覆盖层在画布的左上角绘制一个绿色面板，显示实时触摸事件计数和最后报告的 (x, y)。当您捏住并按住时，您应该会看到 touch.began 然后 touch.moved ，并且当您环顾四周时，坐标会发生变化。</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">这将删除您积累的训练数据。语言模型将在下次启动时恢复为内置默认值。此操作无法撤消。</string>
     <string name="tilt_calibration">倾斜校准</string>
     <string name="tilt_your_device_now">现在倾斜您的设备...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">分享文本</string>
     <string name="training">训练</string>
+    <string name="training_current_size">当前训练数据：{0} KB</string>
     <string name="training_data">训练数据</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">导入会将文本添加到语言模型和您累积的训练数据中（重启后仍保留）。导出可保存您的训练数据以用于备份或传输。重置会删除所有用户训练数据 — 模型将在下次启动时恢复为内置默认值。</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">导出训练数据</string>
+    <string name="training_exported">导出到{0}</string>
+    <string name="training_failed">{0} 失败：{1}</string>
+    <string name="training_import">导入训练文本</string>
+    <string name="training_imported">导入了 {0} KB 的训练文本</string>
+    <string name="training_imported_restart">已导入 {0} KB — 将在下次启动时完全生效（实时模型返回了 {1}）</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">尚无用户训练数据</string>
+    <string name="training_nothing_to_export">尚无可导出的训练数据</string>
+    <string name="training_reset">重置</string>
+    <string name="training_reset_done">训练数据已删除 - 模型在下次启动时恢复其内置默认值</string>
+    <string name="training_reset_partial">已尽可能删除训练数据 — {0} 项失败；请再次点击重置以重试</string>
     <string name="turbo">涡轮</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">打字速度</string>

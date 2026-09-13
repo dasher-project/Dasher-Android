@@ -40,6 +40,12 @@
     <string name="copy_all">คัดลอกทั้งหมด</string>
     <string name="copy_all_2">คัดลอกทั้งหมด</string>
     <string name="copy_commands">คัดลอกคำสั่ง</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">การสอบเทียบกระแสไฟฟ้า</string>
     <string name="customization">การปรับแต่ง</string>
     <string name="dark">มืด</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">ไม่สามารถเปิดได้:</string>
     <string name="failed_to_save">บันทึกไม่สำเร็จ:</string>
     <string name="fast">เร็ว</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">นำเข้าจาก Dasher 5</string>
     <string name="import_settings">การตั้งค่าการนำเข้า</string>
     <string name="import_training_text">นำเข้าข้อความฝึกอบรม</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">เพิ่มความเร็ว</string>
     <string name="input">ป้อนข้อมูล</string>
     <string name="input_method_joystick">จอยสติ๊ก / เกมแพด (ใช้การขยับจอยสติ๊กเพื่อบังคับทิศทาง)</string>
@@ -112,6 +121,7 @@
     <string name="learning">การเรียนรู้</string>
     <string name="leave_game_mode">ออกจากโหมดเกม</string>
     <string name="light">แสงสว่าง</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">ภาษา</string>
     <string name="locale_2">ท้องถิ่น</string>
     <string name="migration">การย้ายถิ่นฐาน</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">ไม่พบข้อมูล Dasher 5 บนเครื่อง Mac นี้</string>
     <string name="no_settings_available_for_this_section">ไม่มีการตั้งค่าใดๆ สำหรับส่วนนี้</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">ไม่มีอะไรให้เก็บ</string>
     <string name="nothing_to_share">ไม่มีอะไรจะแบ่งปัน</string>
     <string name="ok">ตกลง</string>
@@ -196,8 +208,12 @@
     <string name="system">ระบบ</string>
     <string name="text">ข้อความ</string>
     <string name="text_files">ไฟล์ข้อความ</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">หน้าต่างดีบักจะแสดงแผงสีเขียวที่มุมซ้ายบนของพื้นที่แสดงผล โดยแสดงจำนวนการสัมผัสแบบเรียลไทม์และตำแหน่งล่าสุดที่รายงาน (x, y) เมื่อคุณบีบนิ้วค้างไว้ คุณจะเห็น touch.began จากนั้น touch.moved พร้อมพิกัดที่เปลี่ยนแปลงไปตามการมองไปรอบๆ</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">การดำเนินการนี้จะลบข้อมูลการฝึกอบรมที่คุณสะสมไว้ โมเดลภาษาจะกลับไปใช้ค่าเริ่มต้นเมื่อเปิดใช้งานครั้งถัดไป การดำเนินการนี้ไม่สามารถย้อนกลับได้</string>
     <string name="tilt_calibration">การสอบเทียบความเอียง</string>
     <string name="tilt_your_device_now">เอียงอุปกรณ์ของคุณตอนนี้...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">แชร์ข้อความ</string>
     <string name="training">การฝึกอบรม</string>
+    <string name="training_current_size">ข้อมูลการฝึกอบรมปัจจุบัน: {0} KB</string>
     <string name="training_data">ข้อมูลการฝึกอบรม</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">การนำเข้าจะเพิ่มข้อความลงในโมเดลภาษาและข้อมูลการฝึกอบรมที่สะสมของคุณ (เก็บไว้ระหว่างการรีสตาร์ท) การส่งออกจะบันทึกข้อมูลการฝึกอบรมของคุณเพื่อสำรองหรือถ่ายโอน การรีเซ็ตจะลบข้อมูลการฝึกผู้ใช้ทั้งหมด โมเดลจะกลับสู่ค่าเริ่มต้นในตัวในการเปิดตัวครั้งถัดไป</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">ส่งออกข้อมูลการฝึกอบรม</string>
+    <string name="training_exported">ส่งออกไปยัง {0} แล้ว</string>
+    <string name="training_failed">{0} ล้มเหลว: {1}</string>
+    <string name="training_import">นำเข้าข้อความฝึกอบรม</string>
+    <string name="training_imported">นำเข้าข้อความการฝึกอบรม {0} KB</string>
+    <string name="training_imported_restart">นำเข้า {0} KB — นำไปใช้โดยสมบูรณ์ในการเปิดตัวครั้งถัดไป (โมเดลสดส่งคืน {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">ยังไม่มีข้อมูลการฝึกอบรมของผู้ใช้</string>
+    <string name="training_nothing_to_export">ยังไม่มีข้อมูลการฝึกอบรมที่จะส่งออก</string>
+    <string name="training_reset">รีเซ็ต</string>
+    <string name="training_reset_done">ลบข้อมูลการฝึกอบรมแล้ว — โมเดลจะกลับไปใช้ค่าเริ่มต้นที่มีอยู่ในตัวเมื่อเปิดใช้งานครั้งถัดไป</string>
+    <string name="training_reset_partial">ลบข้อมูลการฝึกอบรมเท่าที่ทำได้ — {0} รายการล้มเหลว; กดรีเซ็ตอีกครั้งเพื่อลองใหม่</string>
     <string name="turbo">เทอร์โบ</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">อัตราการพิมพ์</string>

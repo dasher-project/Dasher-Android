@@ -40,6 +40,12 @@
     <string name="copy_all">എല്ലാം പകർത്തുക</string>
     <string name="copy_all_2">എല്ലാം പകർത്തുക</string>
     <string name="copy_commands">കമാൻഡുകൾ പകർത്തുക</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">നിലവിലെ കാലിബ്രേഷൻ</string>
     <string name="customization">ഇഷ്ടാനുസൃതമാക്കൽ</string>
     <string name="dark">ഇരുണ്ടത്</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">തുറക്കുന്നതിൽ പരാജയപ്പെട്ടു:</string>
     <string name="failed_to_save">സംരക്ഷിക്കുന്നതിൽ പരാജയപ്പെട്ടു:</string>
     <string name="fast">വേഗത</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">ഡാഷർ 5-ൽ നിന്ന് ഇറക്കുമതി ചെയ്യുക</string>
     <string name="import_settings">ക്രമീകരണങ്ങൾ ഇറക്കുമതി ചെയ്യുക</string>
     <string name="import_training_text">പരിശീലന വാചകം ഇറക്കുമതി ചെയ്യുക</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">വേഗത കൂട്ടുക</string>
     <string name="input">ഇൻപുട്ട്</string>
     <string name="input_method_joystick">ജോയ്‌സ്റ്റിക്ക് / ഗെയിംപാഡ് (സ്റ്റിയറിനായി ഒരു വടി തിരിച്ചുവിടുക)</string>
@@ -112,6 +121,7 @@
     <string name="learning">പഠനം</string>
     <string name="leave_game_mode">ഗെയിം മോഡ് വിടുക</string>
     <string name="light">വെളിച്ചം</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">ഭാഷ</string>
     <string name="locale_2">സ്ഥലം</string>
     <string name="migration">മൈഗ്രേഷൻ</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">ഈ മാക്കിൽ ഡാഷർ 5 ഡാറ്റയൊന്നും കണ്ടെത്തിയില്ല.</string>
     <string name="no_settings_available_for_this_section">ഈ വിഭാഗത്തിന് ക്രമീകരണങ്ങളൊന്നും ലഭ്യമല്ല.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">സംരക്ഷിക്കാൻ ഒന്നുമില്ല.</string>
     <string name="nothing_to_share">പങ്കിടാൻ ഒന്നുമില്ല</string>
     <string name="ok">ശരി</string>
@@ -196,8 +208,12 @@
     <string name="system">സിസ്റ്റം</string>
     <string name="text">വാചകം</string>
     <string name="text_files">ടെക്സ്റ്റ് ഫയലുകൾ</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">ഡീബഗ് ഓവർലേ, ക്യാൻവാസിന്റെ മുകളിൽ ഇടതുവശത്ത് ഒരു പച്ച പാനൽ വരയ്ക്കുന്നു, അതിൽ തത്സമയ ടച്ച് ഇവന്റ് എണ്ണങ്ങളും അവസാനം റിപ്പോർട്ട് ചെയ്തതും (x, y) കാണിക്കുന്നു. നിങ്ങൾ പിഞ്ച് ചെയ്ത് പിടിക്കുമ്പോൾ, ചുറ്റും നോക്കുമ്പോൾ മാറുന്ന കോർഡിനേറ്റുകളോടെ touch.began, തുടർന്ന് touch.moved എന്നിവ കാണും.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">ഇത് നിങ്ങളുടെ ശേഖരിച്ച പരിശീലന ഡാറ്റ ഇല്ലാതാക്കുന്നു. അടുത്ത സമാരംഭത്തിൽ ഭാഷാ മോഡൽ ബിൽറ്റ്-ഇൻ ഡിഫോൾട്ടുകളിലേക്ക് മടങ്ങും. ഇത് പഴയപടിയാക്കാൻ കഴിയില്ല.</string>
     <string name="tilt_calibration">ടിൽറ്റ് കാലിബ്രേഷൻ</string>
     <string name="tilt_your_device_now">നിങ്ങളുടെ ഉപകരണം ഇപ്പോൾ ചരിക്കുക...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">ടെക്സ്റ്റ് പങ്കിടുക</string>
     <string name="training">പരിശീലനം</string>
+    <string name="training_current_size">നിലവിലെ പരിശീലന ഡാറ്റ: {0} KB</string>
     <string name="training_data">പരിശീലന ഡാറ്റ</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">ഇറക്കുമതി ഭാഷാ മോഡലിലേക്കും നിങ്ങളുടെ പരിശീലന ഡാറ്റയിലേക്കും ടെക്‌സ്‌റ്റ് ചേർക്കുന്നു (പുനരാരംഭിക്കുന്നതിലുടനീളം സൂക്ഷിക്കുന്നു). കയറ്റുമതി നിങ്ങളുടെ പരിശീലന ഡാറ്റ ബാക്കപ്പിനും കൈമാറ്റത്തിനും സംരക്ഷിക്കുന്നു. റീസെറ്റ് എല്ലാ ഉപയോക്തൃ പരിശീലന ഡാറ്റയും ഇല്ലാതാക്കുന്നു - അടുത്ത ലോഞ്ചിൽ മോഡൽ അതിൻ്റെ ബിൽറ്റ്-ഇൻ ഡിഫോൾട്ടുകളിലേക്ക് മടങ്ങുന്നു.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">പരിശീലന ഡാറ്റ കയറ്റുമതി ചെയ്യുക</string>
+    <string name="training_exported">{0} എന്നതിലേക്ക് കയറ്റുമതി ചെയ്തു</string>
+    <string name="training_failed">{0} പരാജയപ്പെട്ടു: {1}</string>
+    <string name="training_import">പരിശീലന വാചകം ഇറക്കുമതി ചെയ്യുക</string>
+    <string name="training_imported">{0} KB പരിശീലന വാചകം ഇറക്കുമതി ചെയ്തു</string>
+    <string name="training_imported_restart">ഇറക്കുമതി ചെയ്‌ത {0} KB — അടുത്ത ലോഞ്ചിൽ പൂർണ്ണമായും ബാധകമാകും (തത്സമയ മോഡൽ തിരികെ നൽകി {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">ഇതുവരെ ഉപയോക്തൃ പരിശീലന ഡാറ്റകളൊന്നുമില്ല</string>
+    <string name="training_nothing_to_export">കയറ്റുമതി ചെയ്യാൻ ഇതുവരെ പരിശീലന ഡാറ്റകളൊന്നുമില്ല</string>
+    <string name="training_reset">പുനഃസജ്ജമാക്കുക</string>
+    <string name="training_reset_done">പരിശീലന ഡാറ്റ ഇല്ലാതാക്കി - അടുത്ത ലോഞ്ചിൽ മോഡൽ അതിൻ്റെ ബിൽറ്റ്-ഇൻ ഡിഫോൾട്ടുകളിലേക്ക് മടങ്ങുന്നു</string>
+    <string name="training_reset_partial">സാധ്യമാകുന്നിടത്ത് പരിശീലന ഡാറ്റ ഇല്ലാതാക്കി - {0} ഇനം(ങ്ങൾ) പരാജയപ്പെട്ടു; വീണ്ടും ശ്രമിക്കാൻ വീണ്ടും റീസെറ്റ് അമർത്തുക</string>
     <string name="turbo">ടർബോ</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">ടൈപ്പിംഗ് നിരക്ക്</string>

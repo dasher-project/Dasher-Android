@@ -40,6 +40,12 @@
     <string name="copy_all">kopieer alles</string>
     <string name="copy_all_2">Kopieer Alles</string>
     <string name="copy_commands">Kopieer opdragte</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">Huidige Kalibrasie</string>
     <string name="customization">Aanpassing</string>
     <string name="dark">Donker</string>
@@ -72,6 +78,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="failed_to_open">Kon nie spel open nie: %s</string>
     <string name="failed_to_save">Kon nie spel stoor nie: %s</string>
     <string name="fast">Vinnig</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="import_from_dasher_5">Voer in vanaf Dasher 5</string>
     <string name="import_settings">Invoerinstellings</string>
     <string name="import_training_text">Voer opleidingsteks in</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">Verhoog Spoed</string>
     <string name="input">Invoer</string>
     <string name="input_method_joystick">Joystick / gamepad (buig \'n stok af om te stuur)</string>
@@ -112,6 +121,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="learning">Leer</string>
     <string name="leave_game_mode">Verlaat spelmodus</string>
     <string name="light">Lig</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">Taal</string>
     <string name="locale_2">Lokalisering</string>
     <string name="migration">Migrasie</string>
@@ -121,6 +131,8 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="no_dasher_5_data_found_on_this_mac">Geen Dasher 5-data op hierdie Mac gevind nie.</string>
     <string name="no_settings_available_for_this_section">Geen instellings beskikbaar vir hierdie afdeling nie.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">Niks om te spaar nie</string>
     <string name="nothing_to_share">Niks om te deel</string>
     <string name="ok">Goed</string>
@@ -196,8 +208,12 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="system">Stelsel</string>
     <string name="text">teks</string>
     <string name="text_files">BeeldeName</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">Die ontfoutingsoorleg teken \'n groen paneel links bo op die doek wat die aantal lewendige aanrakingsgebeurtenisse en die laaste gerapporteerde (x, y) wys. Wanneer jy knyp en hou, behoort jy touch.began en dan touch.moved te sien met veranderende koördinate terwyl jy rondkyk.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">Dit verwyder jou opgehoopte opleidingsdata. Die taalmodel sal terugkeer na ingeboude verstekwaardes met die volgende bekendstelling. Dit kan nie ongedaan gemaak word nie.</string>
     <string name="tilt_calibration">Kantelkalibrasie</string>
     <string name="tilt_your_device_now">Kantel jou toestel nou...</string>
@@ -211,7 +227,23 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">Deel teks</string>
     <string name="training">Opleiding</string>
+    <string name="training_current_size">Huidige opleidingsdata: {0} KB</string>
     <string name="training_data">Opleidingsdata</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">Invoer voeg teks by die taalmodel en jou opgehoopte opleidingsdata (met herbeginsels gehou). Uitvoer stoor jou opleidingsdata vir rugsteun of oordrag. Herstel vee alle gebruikersopleidingsdata uit - die model keer terug na sy ingeboude verstekke met volgende bekendstelling.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">Voer opleidingsdata uit</string>
+    <string name="training_exported">Uitgevoer na {0}</string>
+    <string name="training_failed">{0} het misluk: {1}</string>
+    <string name="training_import">Voer opleidingsteks in</string>
+    <string name="training_imported">Het {0} KB se opleidingsteks ingevoer</string>
+    <string name="training_imported_restart">Ingevoerde {0} KB — is ten volle van toepassing op volgende bekendstelling (regstreekse model teruggestuur {1})</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">Nog geen gebruikeropleidingsdata nie</string>
+    <string name="training_nothing_to_export">Nog geen opleidingsdata om uit te voer nie</string>
+    <string name="training_reset">Stel terug</string>
+    <string name="training_reset_done">Opleidingsdata is uitgevee - die model keer terug na sy ingeboude verstekke met volgende bekendstelling</string>
+    <string name="training_reset_partial">Opleidingsdata uitgevee waar moontlik — {0} item(s) het misluk; druk Herstel weer om weer te probeer</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">Te tik Tempo</string>

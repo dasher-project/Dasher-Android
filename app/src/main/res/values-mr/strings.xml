@@ -40,6 +40,12 @@
     <string name="copy_all">सर्व कॉपी करा</string>
     <string name="copy_all_2">सर्व कॉपी करा</string>
     <string name="copy_commands">कॉपी कमांड्स</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">वर्तमान कॅलिब्रेशन</string>
     <string name="customization">सानुकूलन</string>
     <string name="dark">गडद</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">उघडण्यात अयशस्वी:</string>
     <string name="failed_to_save">जतन करण्यात अयशस्वी:</string>
     <string name="fast">जलद</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">डॅशर ५ मधून आयात करा</string>
     <string name="import_settings">सेटिंग्ज आयात करा</string>
     <string name="import_training_text">प्रशिक्षण मजकूर आयात करा</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">वेग वाढवा</string>
     <string name="input">इनपुट</string>
     <string name="input_method_joystick">जॉयस्टिक / गेमपॅड (दिशा बदलण्यासाठी स्टिक फिरवा)</string>
@@ -112,6 +121,7 @@
     <string name="learning">शिकणे</string>
     <string name="leave_game_mode">गेम मोड सोडा</string>
     <string name="light">प्रकाश</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">भाषा</string>
     <string name="locale_2">स्थानिक</string>
     <string name="migration">स्थलांतर</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">या मॅकवर डॅशर ५ चा कोणताही डेटा आढळला नाही.</string>
     <string name="no_settings_available_for_this_section">या विभागासाठी कोणतीही सेटिंग उपलब्ध नाही.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">वाचवण्यासारखं काही नाही</string>
     <string name="nothing_to_share">शेअर करण्यासारखं काही नाही</string>
     <string name="ok">ठीक आहे</string>
@@ -196,8 +208,12 @@
     <string name="system">प्रणाली</string>
     <string name="text">मजकूर</string>
     <string name="text_files">मजकूर फाइल्स</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">डीबग ओव्हरले कॅनव्हासच्या वरच्या-डाव्या कोपऱ्यात एक हिरवा पॅनल दाखवतो, जो थेट टच इव्हेंटची संख्या आणि शेवटचे नोंदवलेले (x, y) दर्शवतो. जेव्हा तुम्ही पिंच करून धरता, तेव्हा तुम्ही आजूबाजूला पाहता त्याप्रमाणे बदलत्या कोऑर्डिनेट्ससह तुम्हाला \'touch.began\' आणि नंतर \'touch.moved\' दिसायला हवे.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">यामुळे तुमचा जमा झालेला प्रशिक्षण डेटा हटवला जातो. पुढील वेळी सुरू केल्यावर लँग्वेज मॉडेल त्याच्या मूळ डीफॉल्ट सेटिंग्जवर परत येईल. हा बदल पूर्ववत करता येणार नाही.</string>
     <string name="tilt_calibration">टिल्ट कॅलिब्रेशन</string>
     <string name="tilt_your_device_now">आता तुमचे डिव्हाइस तिरपे करा...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">मजकूर शेअर करा</string>
     <string name="training">प्रशिक्षण</string>
+    <string name="training_current_size">वर्तमान प्रशिक्षण डेटा: {0} KB</string>
     <string name="training_data">प्रशिक्षण डेटा</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">इंपोर्ट भाषा मॉडेलमध्ये मजकूर जोडते आणि तुमचा जमा झालेला प्रशिक्षण डेटा (रीस्टार्टमध्ये ठेवला जातो). निर्यात तुमचा प्रशिक्षण डेटा बॅकअप किंवा हस्तांतरणासाठी जतन करते. रीसेट केल्याने सर्व वापरकर्ता प्रशिक्षण डेटा हटवला जातो — पुढील लॉन्चवर मॉडेल त्याच्या बिल्ट-इन डीफॉल्टवर परत येते.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">प्रशिक्षण डेटा निर्यात करा</string>
+    <string name="training_exported">{0} वर निर्यात केले</string>
+    <string name="training_failed">{0} अयशस्वी: {1}</string>
+    <string name="training_import">प्रशिक्षण मजकूर आयात करा</string>
+    <string name="training_imported">प्रशिक्षण मजकूराचा {0} KB आयात केला</string>
+    <string name="training_imported_restart">आयात केलेले {0} KB — पुढील लॉन्चवर पूर्णपणे लागू होते (लाइव्ह मॉडेल {1} परत केले)</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">अद्याप कोणताही वापरकर्ता प्रशिक्षण डेटा नाही</string>
+    <string name="training_nothing_to_export">अद्याप निर्यात करण्यासाठी कोणताही प्रशिक्षण डेटा नाही</string>
+    <string name="training_reset">रीसेट करा</string>
+    <string name="training_reset_done">प्रशिक्षण डेटा हटवला — पुढील लॉन्च झाल्यावर मॉडेल त्याच्या बिल्ट-इन डीफॉल्टवर परत येईल</string>
+    <string name="training_reset_partial">जेथे शक्य असेल तेथे प्रशिक्षण डेटा हटविला — {0} आयटम अयशस्वी; पुन्हा प्रयत्न करण्यासाठी पुन्हा रीसेट दाबा</string>
     <string name="turbo">टर्बो</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">टायपिंग दर</string>

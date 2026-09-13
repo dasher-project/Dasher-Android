@@ -40,6 +40,12 @@
     <string name="copy_all">அனைத்தையும் நகலெடுக்கவும்</string>
     <string name="copy_all_2">அனைத்தையும் நகலெடுக்கவும்</string>
     <string name="copy_commands">நகல் கட்டளைகள்</string>
+    <string name="could_not_load_the_file_into_the_engine">Could not load the file into the engine</string>
+    <string name="could_not_open_the_selected_file">Could not open the selected file.</string>
+    <string name="could_not_read_the_selected_file">Could not read the selected file.</string>
+    <string name="could_not_sync_your_edit_with_the_engine_it_may_be_overwritt">Could not sync your edit with the engine — it may be overwritten</string>
+    <string name="could_not_write_the_export_file">Could not write the export file.</string>
+    <string name="could_not_write_the_training_data">Could not write the training data.</string>
     <string name="current_calibration">தற்போதைய அளவுத்திருத்தம்</string>
     <string name="customization">தனிப்பயனாக்கம்</string>
     <string name="dark">இருள்</string>
@@ -72,6 +78,7 @@
     <string name="failed_to_open">திறக்க முடியவில்லை:</string>
     <string name="failed_to_save">சேமிக்க முடியவில்லை:</string>
     <string name="fast">வேகமாக</string>
+    <string name="file_truncated_at_4_mb_only_the_first_part_is_loaded">File truncated at 4 MB — only the first part is loaded</string>
     <string name="flatpak_or_appimage_build_can_t_provide">Flatpak or AppImage build can\'t provide.
 
 </string>
@@ -86,6 +93,8 @@
     <string name="import_from_dasher_5">டேஷர் 5 இலிருந்து இறக்குமதி செய்யவும்</string>
     <string name="import_settings">முக்கியமான அமைப்புகள்</string>
     <string name="import_training_text">இறக்குமதி பயிற்சி உரை</string>
+    <string name="imported_1_applies_fully_on_next_launch">Imported %1 — applies fully on next launch</string>
+    <string name="imported_1_of_training_text">Imported %1 of training text</string>
     <string name="increase_speed">வேகத்தை அதிகரிக்கவும்</string>
     <string name="input">உள்ளீடு</string>
     <string name="input_method_joystick">ஜாய்ஸ்டிக் / கேம்பேட் (திசை திருப்புவதற்கு ஸ்டிக்கை ஒரு பக்கமாகத் திருப்பவும்)</string>
@@ -112,6 +121,7 @@
     <string name="learning">கற்றல்</string>
     <string name="leave_game_mode">விளையாட்டு பயன்முறையை விட்டு வெளியேறு</string>
     <string name="light">ஒளி</string>
+    <string name="loaded_1_characters">Loaded %1 characters</string>
     <string name="locale">மொழி</string>
     <string name="locale_2">வட்டாரம்</string>
     <string name="migration">இடம்பெயர்வு</string>
@@ -121,6 +131,8 @@
     <string name="no_dasher_5_data_found_on_this_mac">இந்த மேக்கில் டேஷர் 5 தரவு எதுவும் காணப்படவில்லை.</string>
     <string name="no_settings_available_for_this_section">இந்தப் பகுதிக்கு அமைப்புகள் எதுவும் கிடைக்கவில்லை.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
+    <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="nothing_to_save">காப்பாற்ற ஒன்றுமில்லை</string>
     <string name="nothing_to_share">பகிர்வதற்கு ஒன்றுமில்லை.</string>
     <string name="ok">சரி</string>
@@ -196,8 +208,12 @@
     <string name="system">அமைப்பு</string>
     <string name="text">உரை</string>
     <string name="text_files">உரை கோப்புகள்</string>
+    <string name="that_file_already_is_your_training_data">That file already is your training data.</string>
     <string name="the_app_you_are_pointing_at_needs_ydotool">the app you are pointing at (needs ydotool)</string>
     <string name="the_debug_overlay_draws_a_green_panel_top_left_of_the_canvas">பிழைத்திருத்த மேலடுக்கு, கேன்வாஸின் மேல் இடதுபுறத்தில் ஒரு பச்சை நிறப் பலகையை வரைகிறது. அது நிகழ்நேரத் தொடு நிகழ்வுகளின் எண்ணிக்கையையும், கடைசியாகப் பதிவு செய்யப்பட்ட (x, y) ஆயத்தொலைவுகளையும் காட்டுகிறது. நீங்கள் விரலைச் சுருக்கிப் பிடிக்கும்போது, நீங்கள் சுற்றிலும் பார்க்கும்போது ஆயத்தொலைவுகள் மாறிக்கொண்டே, \'touch.began\' மற்றும் அதைத் தொடர்ந்து \'touch.moved\' நிகழ்வுகளைக் காண்பீர்கள்.</string>
+    <string name="the_file_is_too_large_over_10_mb_to_import_as_training_text">The file is too large (over 10 MB) to import as training text.</string>
+    <string name="the_selected_file_is_empty">The selected file is empty.</string>
+    <string name="this_deletes_your_accumulated_training_data_for_every_alphab">This deletes your accumulated training data for every alphabet. Predictions keep the influence of very recent typing.</string>
     <string name="this_deletes_your_accumulated_training_data_the_language_mod">இது நீங்கள் சேகரித்த பயிற்சித் தரவுகளை நீக்கிவிடும். அடுத்த முறை இயக்கும்போது மொழி மாதிரி அதன் இயல்புநிலை அமைப்புகளுக்குத் திரும்பும். இதை மீண்டும் பழைய நிலைக்குக் கொண்டுவர முடியாது.</string>
     <string name="tilt_calibration">சாய்வு அளவுத்திருத்தம்</string>
     <string name="tilt_your_device_now">உங்கள் சாதனத்தை இப்போது சாய்க்கவும்...</string>
@@ -211,7 +227,23 @@
     <string name="toolbar_settings_description">Open settings</string>
     <string name="toolbar_share_description">உரையைப் பகிரவும்</string>
     <string name="training">பயிற்சி</string>
+    <string name="training_current_size">தற்போதைய பயிற்சி தரவு: {0} KB</string>
     <string name="training_data">பயிற்சி தரவு</string>
+    <string name="training_data_deleted_restart_dasher_to_fully_apply">Training data deleted — restart Dasher to fully apply</string>
+    <string name="training_data_description">இறக்குமதி மொழி மாதிரியிலும் உங்கள் சேமிப்பு பயிற்சி தரவிலும் உரையைச் சேர்க்கிறது (மறுதொடக்கங்களிலும் நிலவும்). ஏற்றுமதி காப்புப்பிரதி அல்லது பரிமாற்றத்திற்காக உங்கள் பயிற்சி தரவைச் சேமிக்கிறது. மீட்டமைப்பு அனைத்து பயனர் பயிற்சி தரவையும் நீக்குகிறது — அடுத்த தொடக்கத்தில் மாதிரி தனது உள்ளமைக்கப்பட்ட இயல்புநிலைக்குத் திரும்பும்.</string>
+    <string name="training_data_exported">Training data exported.</string>
+    <string name="training_export">பயிற்சி தரவை ஏற்றுமதி செய்யவும்</string>
+    <string name="training_exported">{0}க்கு ஏற்றுமதி செய்யப்பட்டது</string>
+    <string name="training_failed">{0} தோல்வியுற்றது: {1}</string>
+    <string name="training_import">பயிற்சி உரையை இறக்குமதி செய்யவும்</string>
+    <string name="training_imported">{0} KB பயிற்சி உரை இறக்குமதி செய்யப்பட்டது</string>
+    <string name="training_imported_restart">{0} KB இறக்குமதி செய்யப்பட்டது — அடுத்த தொடக்கத்தில் முழுமையாக பயன்படும் (நேரடி மாதிரி {1} திருப்பியது)</string>
+    <string name="training_is_not_available_yet_try_again_once_the_canvas_has_">Training is not available yet — try again once the canvas has rendered.</string>
+    <string name="training_none_yet">இன்னும் பயனர் பயிற்சி தரவு இல்லை</string>
+    <string name="training_nothing_to_export">ஏற்றுமதி செய்ய இன்னும் பயிற்சி தரவு இல்லை</string>
+    <string name="training_reset">மீட்டமை</string>
+    <string name="training_reset_done">பயிற்சி தரவு நீக்கப்பட்டது — அடுத்த தொடக்கத்தில் மாதிரி தனது உள்ளமைக்கப்பட்ட இயல்புநிலைக்குத் திரும்பும்</string>
+    <string name="training_reset_partial">முடிந்த இடங்களில் பயிற்சி தரவு நீக்கப்பட்டது — {0} உருப்படி(கள்) தோல்வியுற்றன; மீண்டும் முயற்சிக்க மீட்டமையை மீண்டும் அழுத்தவும்</string>
     <string name="turbo">டர்போ</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typing into other applications needs access to /dev/uinput, which a sandboxed </string>
     <string name="typing_rate">தட்டச்சு விகிதம்</string>
