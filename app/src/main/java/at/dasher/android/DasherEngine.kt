@@ -429,7 +429,18 @@ class DasherEngine(
     /** Total bytes of accumulated user training data (0 if none). */
     fun userTrainingSize(): Long = userTrainingFile()?.length() ?: 0L
 
-    /** Append [text] to the engine-owned training file (the engine's own layout). */
+    /**
+     * Append [text] to the engine-owned training file (the engine's own layout).
+     *
+     * KNOWN EDGE (mirrors Dasher-Windows#54 nit 3, engine fix tracked in
+     * DasherCore#84's dasher_append_training_text proposal): the engine's own
+     * appends DOUBLE a literal context-escape character (default '§') so its
+     * trainer can tell escapes from content; this raw append does not, so an
+     * imported text containing the escape char misparses as a context header
+     * at the next startup. The live import path misparses identically, so the
+     * file and the model stay in agreement. Proper fix is engine-side (append
+     * through the engine, which knows its alphabet's escape char).
+     */
     fun appendTrainingFile(text: String) {
         try {
             val target = userTrainingFile() ?: return
@@ -707,11 +718,18 @@ class DasherEngine(
          * root file already containing a legacy corpus deletes it without
          * re-appending. Pure file shuffling — unit-testable without an
          * engine (DataInstaller-style).
+         *
+         * TWO-PROCESS SAFE: the main app and the IME both run this at
+         * startup against the same user dir. The append path is guarded by a
+         * per-file claim marker created atomically (`createNewFile`) — the
+         * loser skips, and the content check makes a re-run after a crashed
+         * migration (marker present, content absent) take over rather than
+         * block (review-loop finding on #38).
          */
         fun migrateLegacyTrainingDir(userDir: java.io.File) {
             val legacyDir = java.io.File(userDir, "training")
             val legacy = legacyDir.listFiles()
-                ?.filter { it.isFile && it.name.startsWith("training_") }
+                ?.filter { it.isFile && it.name.startsWith("training_") && it.extension.equals("txt", true) }
                 ?: return
             if (legacy.isEmpty()) return
             for (f in legacy) {
@@ -724,7 +742,22 @@ class DasherEngine(
                         }
                         else -> {
                             val text = f.readText()
-                            if (!dest.readText().contains(text)) dest.appendText(text + "\n")
+                            if (dest.readText().contains(text)) {
+                                f.delete()
+                                continue
+                            }
+                            // Claim the append atomically; the other process
+                            // (app vs IME) skips if it loses the race. A
+                            // marker left behind by a crash is retaken: the
+                            // content check above already proved the work
+                            // unfinished.
+                            val claim = java.io.File(userDir, ".${f.name}.migrating")
+                            if (!claim.createNewFile()) {
+                                if (!claim.delete()) continue // uncleared: other process mid-run
+                                if (!claim.createNewFile()) continue // lost the re-race
+                            }
+                            dest.appendText(text + "\n")
+                            claim.delete()
                             f.delete()
                         }
                     }
@@ -752,6 +785,11 @@ class DasherEngine(
             }
             val eng = DasherEngine(handle, userDir, frameConsumer)
             // Realize the engine immediately with a provisional screen size.
+            // One-time merge of pre-#37 `training/` copies into the
+            // engine-owned root file (idempotent, two-process safe). Runs
+            // BEFORE realize so the startup training scan picks the legacy
+            // content up THIS launch, not the next (review-loop finding).
+            migrateLegacyTrainingDir(java.io.File(userDir))
             // Realize() builds the alphabet name index (474 entries) and loads
             // the selected alphabet — without this, queries made before the
             // canvas lays out (getAlphabetNames, locale-follow, etc.) see an
@@ -759,24 +797,33 @@ class DasherEngine(
             // showed one entry and locale-follow had nothing to match against.
             // The canvas corrects the size when it actually lays out.
             NativeBridge.nativeSetScreenSize(handle, 800, 600)
-            // One-time merge of pre-#37 `training/` copies into the
-            // engine-owned root file (idempotent).
-            migrateLegacyTrainingDir(java.io.File(userDir))
             // Stopgap for cores older than CAPI 1 (DasherCore#86): the
             // startup scan never loaded user-dir training, so feed it back
             // through the import API. Version-gated — at >= 1 the engine
             // already loaded it and a re-import would count every word twice.
+            // Inert on this pin (reports 1); retained per the engine's
+            // documented "MUST skip at >= 1" contract. Filtered to the
+            // CURRENT alphabet's file — feeding every training_*.txt into
+            // the current model would train e.g. the German corpus into the
+            // English engine.
             if (NativeBridge.nativeCapiVersion() < 1) {
-                java.io.File(userDir).listFiles()
-                    ?.filter { it.isFile && it.name.startsWith("training_") && it.extension.equals("txt", true) }
-                    ?.forEach { f ->
+                val ownName = try {
+                    NativeBridge.nativeGetTrainingPath(handle)
+                        ?.let { java.io.File(it).name }
+                } catch (e: Exception) {
+                    null
+                }
+                if (ownName != null) {
+                    val own = java.io.File(userDir, ownName)
+                    if (own.isFile) {
                         try {
-                            val text = f.readText()
+                            val text = own.readText()
                             if (text.isNotBlank()) NativeBridge.nativeImportTrainingText(handle, text)
                         } catch (e: Exception) {
-                            Log.w(TAG, "training re-import failed for ${f.name}: ${e.message}")
+                            Log.w(TAG, "training re-import failed for ${ownName}: ${e.message}")
                         }
                     }
+                }
             }
             return eng
         }
