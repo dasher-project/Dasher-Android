@@ -35,25 +35,28 @@ class EditingToolbar(
         setBackgroundColor(if (nightMode) 0xFF2A353D.toInt() else 0xFFE0E6E8.toInt())
         setPadding(dp(4), dp(2), dp(4), dp(2))
 
-        addTool("←", "Move cursor left") { moveCursor(-1) }
-        addTool("→", "Move cursor right") { moveCursor(1) }
+        // Buffer-mutating actions re-anchor the engine (buffer changed);
+        // non-mutating (Copy, Select All) don't — replacing the edit buffer
+        // on every action would reset the model mid-sentence (review 2).
+        addTool("←", "Move cursor left", mutates = true) { moveCursor(-1) }
+        addTool("→", "Move cursor right", mutates = true) { moveCursor(1) }
         addSpacer(dp(8))
-        addTool("⌫", "Delete", large = true) { backspace() }
+        addTool("⌫", "Delete", large = true, mutates = true) { backspace() }
         addSpacer(dp(8))
-        addTool("Sel", "Select all") { performAction(android.R.id.selectAll) }
-        addTool("Cp", "Copy") { performAction(android.R.id.copy) }
-        addTool("Ps", "Paste") { performAction(android.R.id.paste) }
+        addTool("Sel", "Select all", mutates = false) { performAction(android.R.id.selectAll) }
+        addTool("Cp", "Copy", mutates = false) { performAction(android.R.id.copy) }
+        addTool("Ps", "Paste", mutates = true) { performAction(android.R.id.paste) }
     }
 
     private fun dp(v: Int) = (v * density).toInt()
 
     private fun toolButton(label: String, tooltip: String, large: Boolean): Button {
-        val width = if (large) dp(56) else dp(44)
+        val width = if (large) dp(56) else dp(48)
         return Button(context).apply {
             text = label
             textSize = if (large) 20f else 14f
             isAllCaps = false
-            minimumWidth = width
+            minimumWidth = width // exact width; LayoutParams below uses this
             minimumHeight = dp(48) // #48: 48dp minimum touch target for motor-impaired users
             setPadding(dp(4), dp(2), dp(4), dp(2))
             contentDescription = tooltip
@@ -68,11 +71,12 @@ class EditingToolbar(
         }
     }
 
-    private fun addTool(label: String, tooltip: String, large: Boolean = false, action: () -> Unit) {
+    private fun addTool(label: String, tooltip: String, large: Boolean = false,
+                        mutates: Boolean = true, action: () -> Unit) {
         addView(toolButton(label, tooltip, large).apply {
             setOnClickListener {
                 action()
-                onBufferChanged()
+                if (mutates) onBufferChanged()
             }
         })
     }

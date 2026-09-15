@@ -67,7 +67,6 @@ class DasherImeService : InputMethodService() {
         val nightMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
         val bg = if (nightMode) 0xFF1E262B.toInt() else 0xFFF4F7F6.toInt()
-        val imeHeight = imeHeightPx()
 
         // Dasher canvas — shared between docked and floating modes.
         val canvas = DasherCanvasView(this).apply {
@@ -438,6 +437,11 @@ class DasherImeService : InputMethodService() {
         if (!floating) {
             setDockedHeight(imeHeightPx())
             dockedRoot?.minimumHeight = imeHeightPx()
+        } else {
+            // Floating: the recreated docked root gets full height at
+            // line 143 — re-shrink it (review 2: fold-while-floating
+            // produced a full-height empty dock behind the overlay).
+            setDockedHeight(dp(40, resources.displayMetrics.density))
         }
     }
 
