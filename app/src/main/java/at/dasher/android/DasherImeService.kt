@@ -245,7 +245,12 @@ class DasherImeService : InputMethodService() {
         dockedRoot?.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
         // Restore docked height.
         val imeHeight = (resources.displayMetrics.heightPixels * 0.42f).toInt()
-        dockedRoot?.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, imeHeight)
+        // FrameLayout.LayoutParams: the docked root's parent is the IME window's
+        // FrameLayout decor — LinearLayout.LayoutParams crash on re-measure.
+        // (PostHog crash #43: exitFloatingMode was the only path still setting
+        // LinearLayout.LayoutParams; the Float shrink and onCreateInputView
+        // both correctly use FrameLayout.LayoutParams.)
+        dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, imeHeight)
         floatingView = null
         floatingParams = null
         floating = false
