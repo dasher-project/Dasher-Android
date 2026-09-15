@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout (DasherCore + pugixml submodules)
         uses: actions/checkout@v4
@@ -27,11 +27,11 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install NDK + CMake (versions pinned in app/build.gradle.kts)
-        run: sdkmanager "ndk;27.0.12077973" "cmake;3.22.1"
+        # The runners pre-install the Android SDK; android-actions/setup-android@v3
+        # fails with "Failed to find package tools" on current runner images
+        # (SDK repo + cmdline-tools 16.0 conflict). Run sdkmanager directly.
+        run: yes | sdkmanager "ndk;27.0.12077973" "cmake;3.22.1" || true
 
       - name: Build debug APK
         run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
