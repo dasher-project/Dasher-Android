@@ -196,7 +196,7 @@ class DasherImeService : InputMethodService() {
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.TOP or Gravity.START
+            gravity = Gravity.TOP or Gravity.LEFT
             x = (screenW - floatW) / 2
             y = resources.displayMetrics.heightPixels - floatH - dp(48, resources.displayMetrics.density)
         }
@@ -222,7 +222,12 @@ class DasherImeService : InputMethodService() {
         floatBtn.text = "Dock"
         floatBtn.setOnClickListener { exitFloatingMode(floatBtn) }
 
-        // Drag handling.
+        // Drag handling. Gravity.TOP or Gravity.LEFT — LEFT is explicit;
+        // START can resolve to RIGHT on Samsung (overlay windows), inverting
+        // the x-axis (Heide: "it moves the opposite way horizontally"). Both
+        // axes use + (finger right → window right, finger down → window
+        // down); the old y formula had a compensating - that only worked
+        // by accident on the same Samsung devices that broke x.
         var initX = 0; var initY = 0; var touchX = 0f; var touchY = 0f
         dragBar.setOnTouchListener { _, ev ->
             when (ev.action) {
@@ -233,7 +238,7 @@ class DasherImeService : InputMethodService() {
                 }
                 MotionEvent.ACTION_MOVE -> {
                     params.x = initX + (ev.rawX - touchX).toInt()
-                    params.y = initY - (ev.rawY - touchY).toInt()
+                    params.y = initY + (ev.rawY - touchY).toInt()
                     try { windowManager.updateViewLayout(floating, params) } catch (_: Exception) { }
                     true
                 }
