@@ -42,6 +42,18 @@ class DasherImeService : InputMethodService() {
     // Floating mode
     private var floating = false
     private var floatingView: LinearLayout? = null
+
+    // The docked root's parent is a FrameLayout inside the IME window's
+    // decor. setLayoutParams performs NO type conversion — LinearLayout
+    // .LayoutParams survives until the next measure pass casts them and
+    // crashes (PostHog #43). This helper makes the wrong type impossible.
+    private fun setDockedHeight(heightPx: Int) {
+        dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, heightPx)
+    }
+
+    // Shared height formula (was duplicated between onCreateInputView and
+    // exitFloatingMode — drift would give different dock heights).
+    private fun imeHeightPx() = (resources.displayMetrics.heightPixels * 0.42f).toInt()
     private var floatingParams: WindowManager.LayoutParams? = null
     private val windowManager get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -50,7 +62,7 @@ class DasherImeService : InputMethodService() {
         val nightMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
         val bg = if (nightMode) 0xFF1E262B.toInt() else 0xFFF4F7F6.toInt()
-        val imeHeight = (resources.displayMetrics.heightPixels * 0.42f).toInt()
+        val imeHeight = imeHeightPx()
 
         // Dasher canvas — shared between docked and floating modes.
         val canvas = DasherCanvasView(this).apply {
@@ -111,8 +123,8 @@ class DasherImeService : InputMethodService() {
         // window's FrameLayout-based decor. LinearLayout.LayoutParams here
         // survives until a re-measure casts them and crashes (Float's
         // docked-shrink relayout did exactly that).
-        root.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, imeHeight)
-        root.minimumHeight = imeHeight
+        setDockedHeight(imeHeightPx())
+        root.minimumHeight = imeHeightPx()
         dockedRoot = root
 
         floatBtn.setOnClickListener { enterFloatingMode(floatBtn) }
@@ -206,7 +218,7 @@ class DasherImeService : InputMethodService() {
         // Shrink the docked view so the system doesn't reserve full keyboard space.
         // FrameLayout.LayoutParams: the docked root's parent is the window's
         // FrameLayout decor — LinearLayout.LayoutParams crash on re-measure.
-        dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, dp(40, density))
+        setDockedHeight(dp(40, density))
         floatBtn.text = "Dock"
         floatBtn.setOnClickListener { exitFloatingMode(floatBtn) }
 
@@ -222,7 +234,7 @@ class DasherImeService : InputMethodService() {
                 MotionEvent.ACTION_MOVE -> {
                     params.x = initX + (ev.rawX - touchX).toInt()
                     params.y = initY - (ev.rawY - touchY).toInt()
-                    windowManager.updateViewLayout(floating, params)
+                    try { windowManager.updateViewLayout(floating, params) } catch (_: Exception) { }
                     true
                 }
                 else -> false
@@ -244,8 +256,8 @@ class DasherImeService : InputMethodService() {
         (canvasHost?.parent as? ViewGroup)?.removeView(canvasHost)
         dockedRoot?.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
         // Restore docked height.
-        val imeHeight = (resources.displayMetrics.heightPixels * 0.42f).toInt()
-        dockedRoot?.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, imeHeight)
+        val imeHeight = imeHeightPx()
+        setDockedHeight(imeHeightPx())
         floatingView = null
         floatingParams = null
         floating = false
