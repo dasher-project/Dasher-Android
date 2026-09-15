@@ -53,9 +53,15 @@ class DasherImeService : InputMethodService() {
 
     // Shared height formula (was duplicated between onCreateInputView and
     // exitFloatingMode — drift would give different dock heights).
-    private fun imeHeightPx() = (resources.displayMetrics.heightPixels * 0.42f).toInt()
+    // #48: 35% on screens ≥600dp (tablets/foldables — Heide: "you can't even
+    // see what you're zooming"), 42% on phones.
+    private fun imeHeightPx(): Int {
+        val fraction = if (resources.displayMetrics.widthPixels >= dp(600, resources.displayMetrics.density)) 0.35f else 0.42f
+        return (resources.displayMetrics.heightPixels * fraction).toInt()
+    }
     private var floatingParams: WindowManager.LayoutParams? = null
     private val windowManager get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private var editingToolbar: EditingToolbar? = null
 
     override fun onCreateInputView(): View {
         val density = resources.displayMetrics.density
@@ -113,10 +119,22 @@ class DasherImeService : InputMethodService() {
         top.addView(floatBtn)
         top.addView(hideBtn)
 
+        // RFC 0019 editing toolbar (#50): backspace, cursor, clipboard.
+        // Acts on the TARGET app via InputConnection; after each action,
+        // re-read the target text and re-anchor the engine so predictions
+        // follow the edit (RFC 0015 tier 2).
+        val toolbar = EditingToolbar(
+            context = this,
+            inputConnection = { currentInputConnection },
+            onBufferChanged = { reanchorEngineToTarget() },
+        )
+        editingToolbar = toolbar
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(bg)
         }
+        root.addView(toolbar, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         root.addView(top, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         root.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
         // The root is the IME window's content view — its parent is the
@@ -162,7 +180,7 @@ class DasherImeService : InputMethodService() {
         val floatW = minOf(screenW - dp(32, density), dp(600, density))
         val floatH = dp(280, density)
 
-        // Drag handle bar with a Dock button.
+        // Drag handle bar with a Dock button and a resize handle (#49).
         val dragBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
@@ -171,6 +189,13 @@ class DasherImeService : InputMethodService() {
         }
         val dockBtn = Button(this).apply { text = "Dock" }
         dragBar.addView(dockBtn)
+        // Resize handle (#49): drag right/bottom edge to grow, left/top to shrink.
+        val resizeHandle = Button(this).apply {
+            text = "⟷" // horizontal resize indicator
+            contentDescription = "Resize"
+            layoutParams = LinearLayout.LayoutParams(dp(44, density), WRAP_CONTENT)
+        }
+        dragBar.addView(resizeHandle)
 
         // Floating container: drag bar + canvas.
         val floating = LinearLayout(this).apply {
@@ -184,6 +209,10 @@ class DasherImeService : InputMethodService() {
             setPadding(dp(2, density), dp(2, density), dp(2, density), dp(2, density))
         }
         floating.addView(dragBar, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
+        // RFC 0019 editing toolbar in floating mode too (#50).
+        editingToolbar?.let { toolbar ->
+            floating.addView(toolbar, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
+        }
         // Reparent the canvas (host carries the loading overlay) from docked to floating.
         (canvasHost?.parent as? ViewGroup)?.removeView(canvasHost)
         floating.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
@@ -248,6 +277,35 @@ class DasherImeService : InputMethodService() {
         // Also wire the dock button.
         dockBtn.setOnClickListener { exitFloatingMode(floatBtn) }
 
+        // Resize handling (#49): drag the ⟷ handle to adjust the floating
+        // window's width (height follows proportionally). Pin the handle's
+        // initial touch position and the window's initial size; the delta
+        // applies to both dimensions with a 0.6 height-to-width ratio.
+        var initW = 0; var resizeTouchX = 0f
+        val minW = dp(240, density)
+        val maxW = screenW - dp(16, density)
+        resizeHandle.setOnTouchListener { _, ev ->
+            when (ev.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initW = params.width
+                    resizeTouchX = ev.rawX
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val newW = (initW + (ev.rawX - resizeTouchX).toInt()).coerceIn(minW, maxW)
+                    params.width = newW
+                    params.height = (newW * 0.47f).toInt().coerceIn(dp(180, density), dp(420, density))
+                    try { windowManager.updateViewLayout(floating, params) } catch (_: Exception) { }
+                    // Notify the canvas of its new size.
+                    canvasView?.let { v ->
+                        v.post { engine?.onSurfaceSizeChanged(v.width, v.height) }
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
         // Notify the canvas of its new size.
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
     }
@@ -255,13 +313,16 @@ class DasherImeService : InputMethodService() {
     private fun exitFloatingMode(floatBtn: Button) {
         if (!floating) return
         val fv = floatingView ?: return
-        val fp = floatingParams ?: return
         try { windowManager.removeView(fv) } catch (_: Exception) {}
+        // Remove the editing toolbar from the floating container — the
+        // docked root already has its own instance at index 0.
+        editingToolbar?.let { toolbar ->
+            (toolbar.parent as? ViewGroup)?.removeView(toolbar)
+        }
         // Reparent canvas back to docked.
         (canvasHost?.parent as? ViewGroup)?.removeView(canvasHost)
         dockedRoot?.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
-        // Restore docked height.
-        val imeHeight = imeHeightPx()
+        // Restore docked height (#48: adaptive — smaller on tablets).
         setDockedHeight(imeHeightPx())
         floatingView = null
         floatingParams = null
@@ -333,6 +394,26 @@ class DasherImeService : InputMethodService() {
         eng.start()
     }
 
+    // ── Engine re-anchoring (RFC 0015 tier 2) ────────────────────────────
+
+    /**
+     * After an editing action (backspace, cursor move, paste), the target
+     * field's text changed. Re-read it and re-anchor the engine so
+     * predictions follow (RFC 0015 tier 2 + RFC 0019 clause 2). Reads a
+     * trailing window (not the full field — sentence-window, governance#40).
+     */
+    private fun reanchorEngineToTarget() {
+        val eng = engine ?: return
+        val ic = currentInputConnection ?: return
+        // Read a trailing window of text before the cursor (the engine's
+        // context is what's BEFORE the caret — predictions continue from it).
+        val before = ic.getTextBeforeCursor(200, 0)?.toString() ?: return
+        if (before.isEmpty()) return
+        // UTF-16 → UTF-8 byte offset for the engine (caret at end of `before`).
+        val caretBytes = NativeBridge.nativeByteOffsetFromUtf16(before, before.length)
+        if (caretBytes >= 0) eng.seedBuffer(before, caretBytes)
+    }
+
     // ── Lifecycle ──────────────────────────────────────────────────────────
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -365,6 +446,7 @@ class DasherImeService : InputMethodService() {
         canvasHost = null
         loadingOverlay = null
         dockedRoot = null
+        editingToolbar = null
         super.onDestroy()
     }
 
