@@ -54,7 +54,7 @@ class EditingToolbar(
             textSize = if (large) 20f else 14f
             isAllCaps = false
             minimumWidth = width
-            minimumHeight = dp(36)
+            minimumHeight = dp(48) // #48: 48dp minimum touch target for motor-impaired users
             setPadding(dp(4), dp(2), dp(4), dp(2))
             contentDescription = tooltip
             background = GradientDrawable().apply {

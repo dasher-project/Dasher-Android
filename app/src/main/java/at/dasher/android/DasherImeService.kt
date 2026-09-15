@@ -59,7 +59,6 @@ class DasherImeService : InputMethodService() {
         val fraction = if (resources.displayMetrics.widthPixels >= dp(600, resources.displayMetrics.density)) 0.35f else 0.42f
         return (resources.displayMetrics.heightPixels * fraction).toInt()
     }
-    private var floatingParams: WindowManager.LayoutParams? = null
     private val windowManager get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var editingToolbar: EditingToolbar? = null
 
@@ -209,8 +208,11 @@ class DasherImeService : InputMethodService() {
             setPadding(dp(2, density), dp(2, density), dp(2, density), dp(2, density))
         }
         floating.addView(dragBar, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
-        // RFC 0019 editing toolbar in floating mode too (#50).
+        // RFC 0019 editing toolbar in floating mode too (#50). Must detach
+        // from the docked root FIRST — addView on an attached child throws
+        // IllegalStateException (review C1: Float crashed on first tap).
         editingToolbar?.let { toolbar ->
+            (toolbar.parent as? ViewGroup)?.removeView(toolbar)
             floating.addView(toolbar, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         }
         // Reparent the canvas (host carries the loading overlay) from docked to floating.
@@ -234,14 +236,17 @@ class DasherImeService : InputMethodService() {
             windowManager.addView(floating, params)
         } catch (e: Exception) {
             Log.e(TAG, "Floating overlay failed: ${e.message}")
-            // Fall back: put canvas back in docked
+            // Fall back: put canvas and toolbar back in docked
             floating.removeView(canvasHost)
             dockedRoot?.addView(canvasHost, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
+            editingToolbar?.let { toolbar ->
+                floating.removeView(toolbar)
+                dockedRoot?.addView(toolbar, 0, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
+            }
             return
         }
 
         floatingView = floating
-        floatingParams = params
         this.floating = true
 
         // Shrink the docked view so the system doesn't reserve full keyboard space.
@@ -280,7 +285,7 @@ class DasherImeService : InputMethodService() {
         // Resize handling (#49): drag the ⟷ handle to adjust the floating
         // window's width (height follows proportionally). Pin the handle's
         // initial touch position and the window's initial size; the delta
-        // applies to both dimensions with a 0.6 height-to-width ratio.
+        // applies to both dimensions with a 0.47 height-to-width ratio.
         var initW = 0; var resizeTouchX = 0f
         val minW = dp(240, density)
         val maxW = screenW - dp(16, density)
@@ -314,10 +319,12 @@ class DasherImeService : InputMethodService() {
         if (!floating) return
         val fv = floatingView ?: return
         try { windowManager.removeView(fv) } catch (_: Exception) {}
-        // Remove the editing toolbar from the floating container — the
-        // docked root already has its own instance at index 0.
+        // Detach the toolbar from floating; re-insert at the TOP of the
+        // docked root (index 0, above the Float/Hide bar — where it was
+        // before floating). Review I1: the toolbar was being orphaned.
         editingToolbar?.let { toolbar ->
             (toolbar.parent as? ViewGroup)?.removeView(toolbar)
+            dockedRoot?.addView(toolbar, 0, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         }
         // Reparent canvas back to docked.
         (canvasHost?.parent as? ViewGroup)?.removeView(canvasHost)
@@ -325,7 +332,6 @@ class DasherImeService : InputMethodService() {
         // Restore docked height (#48: adaptive — smaller on tablets).
         setDockedHeight(imeHeightPx())
         floatingView = null
-        floatingParams = null
         floating = false
         floatBtn.text = "Float"
         floatBtn.setOnClickListener { enterFloatingMode(floatBtn) }
@@ -408,13 +414,32 @@ class DasherImeService : InputMethodService() {
         // Read a trailing window of text before the cursor (the engine's
         // context is what's BEFORE the caret — predictions continue from it).
         val before = ic.getTextBeforeCursor(200, 0)?.toString() ?: return
-        if (before.isEmpty()) return
-        // UTF-16 → UTF-8 byte offset for the engine (caret at end of `before`).
-        val caretBytes = NativeBridge.nativeByteOffsetFromUtf16(before, before.length)
-        if (caretBytes >= 0) eng.seedBuffer(before, caretBytes)
+        if (before.isEmpty()) {
+            // Empty window: the engine's buffer is stale (user backspaced
+            // to the start or the field is empty) — reset rather than
+            // predict from deleted text (review I2).
+            eng.newSession()
+            return
+        }
+        // seedBuffer converts the UTF-16 caret to UTF-8 bytes internally —
+        // do NOT pre-convert (review C2: double-conversion shifted the
+        // anchor past the caret for any non-ASCII text).
+        eng.seedBuffer(before, before.length)
     }
 
     // ── Lifecycle ──────────────────────────────────────────────────────────
+
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // #48: fold/unfold changes the screen dimensions — recompute the
+        // docked height so the adaptive fraction (35%/42%) matches the
+        // current device state. Only when not floating (floating has its
+        // own window size, managed by the resize handle).
+        if (!floating) {
+            setDockedHeight(imeHeightPx())
+            dockedRoot?.minimumHeight = imeHeightPx()
+        }
+    }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
