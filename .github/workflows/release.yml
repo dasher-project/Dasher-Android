@@ -31,11 +31,8 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install NDK + CMake (versions pinned in app/build.gradle.kts)
-        run: sdkmanager "ndk;27.0.12077973" "cmake;3.22.1"
+        run: yes | sdkmanager "ndk;27.0.12077973" "cmake;3.22.1" || true
 
       - name: Build release APK
         run: ./gradlew :app:assembleRelease --no-daemon --stacktrace
