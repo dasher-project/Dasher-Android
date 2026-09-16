@@ -370,21 +370,14 @@ class DasherImeService : InputMethodService() {
         val nightMode = resources.configuration.uiMode and
             android.content.res.Configuration.UI_MODE_NIGHT_MASK
         eng.setSystemAppearance(nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES)
-        NativeBridge.onOutputListener = { type, text ->
-            val ic = currentInputConnection
-            if (ic != null) {
-                if (type == 0) ic.commitText(text, 1)
-                else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
-            }
-        }
-        NativeBridge.onMessageListener = { _, msg ->
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-        }
-        NativeBridge.onClipboardListener = { text ->
-            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
-        }
-        NativeBridge.onSpeakListener = null
+        // Install ALL IME-owned static listeners. The statics on NativeBridge
+        // are process-wide — MainActivity's installAppListeners() overwrites
+        // them when the user opens the main app, and the IME engine is
+        // created once per process (not per show), so without re-asserting
+        // on every onStartInputView the IME's handlers are silently dead
+        // after any visit to the main app (#53 and its siblings: output,
+        // clipboard, messages, speak, text-measurement).
+        installImeListeners()
         engine = eng
         // The canvas laid out during onCreateInputView — BEFORE this handler
         // posted — so its size callback hit a null engine and was dropped.
@@ -445,14 +438,46 @@ class DasherImeService : InputMethodService() {
         }
     }
 
+    /**
+     * Asserts ALL NativeBridge static listeners to the IME's handlers.
+     * Called from createEngine() AND onStartInputView() — the main app's
+     * installAppListeners() (MainActivity) overwrites every static when it
+     * creates its engine, and the IME's engine is created once per process,
+     * not per show. Without this re-assert on every show, output (#53),
+     * clipboard, messages, speak, and text-measurement are silently dead
+     * after any visit to the main app.
+     */
+    private fun installImeListeners() {
+        NativeBridge.onOutputListener = { type, text ->
+            val ic = currentInputConnection
+            if (ic != null) {
+                if (type == 0) ic.commitText(text, 1)
+                else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
+            }
+        }
+        NativeBridge.onMessageListener = { _, msg ->
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        }
+        NativeBridge.onClipboardListener = { text ->
+            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
+        }
+        NativeBridge.onSpeakListener = null // IME doesn't speak (the app does)
+    }
+
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
-        // The main app's engine writes to the shared dasher_settings.xml
-        // while the IME engine holds its own in-memory copy — reload on
-        // every show so speed, alphabet, palette etc. match what the user
-        // last set (dasher_reload_settings, DasherCore v0.2.11). Cheap:
-        // one file read + diff, only changed parameters fire callbacks.
-        if (restarting) engine?.reloadSettings()
+        // Re-assert ALL IME-owned static listeners — the main app may have
+        // overwritten them (#53: output, clipboard, messages, speak).
+        installImeListeners()
+        // #54: always reload — the main app's engine writes to the shared
+        // dasher_settings.xml while the IME engine holds its own in-memory
+        // copy. The old `if (restarting)` check only covered re-showing for
+        // the SAME target field, missing the common case of switching from
+        // the main app to the IME with changed settings (Heide: "don't
+        // remember the setting that you set"). Cheap: one file read +
+        // diff, only changed parameters fire callbacks.
+        engine?.reloadSettings()
         engine?.start()
     }
 
@@ -465,10 +490,12 @@ class DasherImeService : InputMethodService() {
         if (floating) {
             floatingView?.let { fv -> try { windowManager.removeView(fv) } catch (_: Exception) {} }
         }
+        // Only null the output listener (the one the IME uniquely owns and
+        // the one that would commit text into a dead InputConnection). The
+        // other statics are shared with MainActivity — nulling them here
+        // while the app is foreground kills the app's handlers until its
+        // next onResume (review minor: ownership rules).
         NativeBridge.onOutputListener = null
-        NativeBridge.onMessageListener = null
-        NativeBridge.onClipboardListener = null
-        NativeBridge.onSpeakListener = null
         engine?.destroy()
         engine = null
         canvasView = null
