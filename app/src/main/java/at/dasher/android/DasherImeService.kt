@@ -447,12 +447,26 @@ class DasherImeService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
-        // The main app's engine writes to the shared dasher_settings.xml
-        // while the IME engine holds its own in-memory copy — reload on
-        // every show so speed, alphabet, palette etc. match what the user
-        // last set (dasher_reload_settings, DasherCore v0.2.11). Cheap:
-        // one file read + diff, only changed parameters fire callbacks.
-        if (restarting) engine?.reloadSettings()
+        // #53: re-assert the output listener on EVERY show — the main app's
+        // MainActivity nulls NativeBridge.onOutputListener (a static, shared
+        // across the process) when it creates its own engine. Without this,
+        // typing through the IME after visiting the main app produced no
+        // output (Heide: "no letters are showing up").
+        NativeBridge.onOutputListener = { type, text ->
+            val ic = currentInputConnection
+            if (ic != null) {
+                if (type == 0) ic.commitText(text, 1)
+                else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
+            }
+        }
+        // #54: always reload — the main app's engine writes to the shared
+        // dasher_settings.xml while the IME engine holds its own in-memory
+        // copy. The old `if (restarting)` check only covered re-showing for
+        // the SAME target field, missing the common case of switching from
+        // the main app to the IME with changed settings (Heide: "don't
+        // remember the setting that you set"). Cheap: one file read +
+        // diff, only changed parameters fire callbacks.
+        engine?.reloadSettings()
         engine?.start()
     }
 
