@@ -5,3 +5,4 @@
 -keepclassmembers class at.dasher.android.NativeBridge {
     public static native *** *(...);
 }
+

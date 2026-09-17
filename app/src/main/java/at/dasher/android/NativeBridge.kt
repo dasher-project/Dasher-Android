@@ -289,17 +289,30 @@ object NativeBridge {
     @JvmStatic external fun nativeSetOutputCallback(handle: Long)
 
     // ── Callback listeners (set by the app; invoked on the main thread) ──
-    @JvmStatic var onClipboardListener: ((String) -> Unit)? = null
-    @JvmStatic var onSpeakListener: ((text: String, interrupt: Boolean) -> Unit)? = null
-    @JvmStatic var onMessageListener: ((type: Int, text: String) -> Unit)? = null
+    // Per-engine-instance listeners (#56): each engine handle registers its
+    // own callbacks; dispatch goes only to the listener registered for the
+    // handle that fired. Replaces the old process-wide statics that caused
+    // the IME and main app to stomp each other's handlers (#53).
+    private val clipboardListeners = java.util.concurrent.ConcurrentHashMap<Long, (String) -> Unit>()
+    private val speakListeners = java.util.concurrent.ConcurrentHashMap<Long, (text: String, interrupt: Boolean) -> Unit>()
+    private val messageListeners = java.util.concurrent.ConcurrentHashMap<Long, (type: Int, text: String) -> Unit>()
+
+    @JvmStatic fun registerClipboardListener(handle: Long, l: (String) -> Unit) { clipboardListeners[handle] = l }
+    @JvmStatic fun unregisterClipboardListener(handle: Long) { clipboardListeners.remove(handle) }
+    @JvmStatic fun registerSpeakListener(handle: Long, l: (text: String, interrupt: Boolean) -> Unit) { speakListeners[handle] = l }
+    @JvmStatic fun unregisterSpeakListener(handle: Long) { speakListeners.remove(handle) }
+    @JvmStatic fun registerMessageListener(handle: Long, l: (type: Int, text: String) -> Unit) { messageListeners[handle] = l }
+    @JvmStatic fun unregisterMessageListener(handle: Long) { messageListeners.remove(handle) }
     /**
      * Diagnostic log receiver. Level: 0=debug 1=info 2=warn 3=error (per dasher.h).
      * Default install (see [DasherEngine.installEngineCallbacks]) routes to `android.util.Log`
      * under the "DasherCore" tag — the logcat equivalent of Dasher-Windows's engine.log.
      */
-    @JvmStatic var onLogListener: ((level: Int, text: String) -> Unit)? = null
-    @JvmStatic var onOutputListener: ((type: Int, text: String) -> Unit)? = null
-    @JvmStatic var onParameterChangedListener: ((key: Int) -> Unit)? = null
+    // (onLogListener/onTextSizeListener/onParameterChangedListener converted to per-handle maps above)
+    private val outputListeners = java.util.concurrent.ConcurrentHashMap<Long, (type: Int, text: String) -> Unit>()
+    @JvmStatic fun registerOutputListener(handle: Long, l: (type: Int, text: String) -> Unit) { outputListeners[handle] = l }
+    @JvmStatic fun unregisterOutputListener(handle: Long) { outputListeners.remove(handle) }
+
 
     /**
      * Real text measurement for the engine's label layout (DasherCore v0.2.4 /
@@ -309,19 +322,31 @@ object NativeBridge {
      * false to let the engine fall back to its estimate. Fires on the thread
      * that calls nativeFrame (main).
      */
-    @JvmStatic var onTextSizeListener: ((text: String, fontSize: Int, out: FloatArray) -> Boolean)? = null
 
-    @JvmStatic fun onClipboard(text: String) { onClipboardListener?.invoke(text) }
-    @JvmStatic fun onSpeak(text: String, interrupt: Int) {
-        onSpeakListener?.invoke(text, interrupt != 0)
+
+    @JvmStatic fun onClipboard(handle: Long, text: String) { clipboardListeners[handle]?.invoke(text) }
+    @JvmStatic fun onSpeak(handle: Long, text: String, interrupt: Int) {
+        speakListeners[handle]?.invoke(text, interrupt != 0)
     }
-    @JvmStatic fun onMessage(type: Int, text: String) { onMessageListener?.invoke(type, text) }
-    @JvmStatic fun onLog(level: Int, text: String) { onLogListener?.invoke(level, text) }
-    @JvmStatic fun onOutput(type: Int, text: String) { onOutputListener?.invoke(type, text) }
-    @JvmStatic fun onParameterChanged(key: Int) { onParameterChangedListener?.invoke(key) }
+    @JvmStatic fun onMessage(handle: Long, type: Int, text: String) { messageListeners[handle]?.invoke(type, text) }
+    @JvmStatic fun onLog(handle: Long, level: Int, text: String) { logListeners[handle]?.invoke(level, text) }
+    @JvmStatic fun onOutput(handle: Long, type: Int, text: String) { outputListeners[handle]?.invoke(type, text) }
+    @JvmStatic fun onParameterChanged(handle: Long, key: Int) { parameterChangedListeners[handle]?.invoke(key) }
 
     /** Called from JNI (textSizeCallback); signature must match the cached method ID. */
-    @JvmStatic fun onTextSize(text: String, fontSize: Int, out: FloatArray): Boolean {
-        return onTextSizeListener?.invoke(text, fontSize, out) ?: false
+    @JvmStatic fun onTextSize(handle: Long, text: String, fontSize: Int, out: FloatArray): Boolean {
+        return textSizeListeners[handle]?.invoke(text, fontSize, out) ?: false
     }
+
+    // Remaining per-handle conversions (review I2): log, textSize, parameterChanged
+    private val logListeners = java.util.concurrent.ConcurrentHashMap<Long, (level: Int, text: String) -> Unit>()
+    private val textSizeListeners = java.util.concurrent.ConcurrentHashMap<Long, (text: String, fontSize: Int, out: FloatArray) -> Boolean>()
+    private val parameterChangedListeners = java.util.concurrent.ConcurrentHashMap<Long, (key: Int) -> Unit>()
+
+    @JvmStatic fun registerLogListener(handle: Long, l: (level: Int, text: String) -> Unit) { logListeners[handle] = l }
+    @JvmStatic fun unregisterLogListener(handle: Long) { logListeners.remove(handle) }
+    @JvmStatic fun registerTextSizeListener(handle: Long, l: (text: String, fontSize: Int, out: FloatArray) -> Boolean) { textSizeListeners[handle] = l }
+    @JvmStatic fun unregisterTextSizeListener(handle: Long) { textSizeListeners.remove(handle) }
+    @JvmStatic fun registerParameterChangedListener(handle: Long, l: (key: Int) -> Unit) { parameterChangedListeners[handle] = l }
+    @JvmStatic fun unregisterParameterChangedListener(handle: Long) { parameterChangedListeners.remove(handle) }
 }

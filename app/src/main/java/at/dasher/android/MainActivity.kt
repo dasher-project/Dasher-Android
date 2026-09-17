@@ -518,13 +518,15 @@ class MainActivity : ComponentActivity() {
      * the IME (which installs its own) is dismissed.
      */
     private fun installAppListeners() {
-        NativeBridge.onOutputListener = null // main app uses polled onTextUpdate, not per-char output
-        NativeBridge.onClipboardListener = { text -> copyToClipboard(text) }
-        NativeBridge.onSpeakListener = { text, interrupt -> speak(text, interrupt) }
-        NativeBridge.onMessageListener = { _, text ->
+        val eng = engine ?: return
+        // Per-engine-instance listeners (#56): each engine handle dispatches
+        // only to its own registration. No cross-talk with the IME.
+        eng.setClipboardListener { text -> copyToClipboard(text) }
+        eng.setSpeakListener { text, interrupt -> speak(text, interrupt) }
+        eng.setMessageListener { _, text ->
             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
         }
-        NativeBridge.onParameterChangedListener = { key ->
+        eng.setParameterChangedListener { key ->
             engine?.let {
                 if (key == dasherFontKey) applyCanvasFont(it)
                 if (key == speedKey) speedPercent = it.getSpeedPercent()
@@ -533,7 +535,7 @@ class MainActivity : ComponentActivity() {
                 if (key == learningKey) learning = it.boolValue(learningKey)
             }
         }
-        NativeBridge.onLogListener = { level, text ->
+        eng.setLogListener { level, text ->
             when (level) {
                 0 -> Log.d("DasherCore", text)
                 1 -> Log.i("DasherCore", text)
@@ -1037,9 +1039,8 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         tiltProvider?.unregister()
         tiltProvider = null
-        NativeBridge.onClipboardListener = null
-        NativeBridge.onSpeakListener = null
-        NativeBridge.onMessageListener = null
+        // Per-engine-instance cleanup (#56): destroy() unregisters all
+        // listeners for THIS engine's handle.
         tts?.stop()
         tts?.shutdown()
         tts = null
