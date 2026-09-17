@@ -377,8 +377,8 @@ class DasherImeService : InputMethodService() {
         // on every onStartInputView the IME's handlers are silently dead
         // after any visit to the main app (#53 and its siblings: output,
         // clipboard, messages, speak, text-measurement).
-        installImeListeners()
         engine = eng
+        installImeListeners()
         // The canvas laid out during onCreateInputView — BEFORE this handler
         // posted — so its size callback hit a null engine and was dropped.
         // Without a screen size the engine never realizes and renders
@@ -448,21 +448,25 @@ class DasherImeService : InputMethodService() {
      * after any visit to the main app.
      */
     private fun installImeListeners() {
-        NativeBridge.onOutputListener = { type, text ->
+        val eng = engine ?: return
+        // Per-engine-instance listeners (#56): the JNI dispatch passes the
+        // handle; only THIS engine's listener is called. No cross-talk with
+        // the main app's engine.
+        eng.setOutputListener { type, text ->
             val ic = currentInputConnection
             if (ic != null) {
                 if (type == 0) ic.commitText(text, 1)
                 else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
             }
         }
-        NativeBridge.onMessageListener = { _, msg ->
+        eng.setMessageListener { _, msg ->
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
-        NativeBridge.onClipboardListener = { text ->
+        eng.setClipboardListener { text ->
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
         }
-        NativeBridge.onSpeakListener = null // IME doesn't speak (the app does)
+        eng.clearSpeakListener() // IME doesn't speak (the app does)
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -490,12 +494,9 @@ class DasherImeService : InputMethodService() {
         if (floating) {
             floatingView?.let { fv -> try { windowManager.removeView(fv) } catch (_: Exception) {} }
         }
-        // Only null the output listener (the one the IME uniquely owns and
-        // the one that would commit text into a dead InputConnection). The
-        // other statics are shared with MainActivity — nulling them here
-        // while the app is foreground kills the app's handlers until its
-        // next onResume (review minor: ownership rules).
-        NativeBridge.onOutputListener = null
+        // Per-engine-instance cleanup (#56): destroy() unregisters all
+        // listeners for THIS engine's handle. No static cleanup needed —
+        // the main app's engine has its own registration.
         engine?.destroy()
         engine = null
         canvasView = null

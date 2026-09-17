@@ -82,6 +82,15 @@ class DasherEngine(
         if (destroyed) return
         stop()
         destroyed = true
+        // Unregister this engine's per-instance listeners (#56) — without
+        // this, the map holds a stale entry for a dead handle.
+        NativeBridge.unregisterOutputListener(nativeHandle)
+        NativeBridge.unregisterClipboardListener(nativeHandle)
+        NativeBridge.unregisterSpeakListener(nativeHandle)
+        NativeBridge.unregisterMessageListener(nativeHandle)
+        NativeBridge.unregisterLogListener(nativeHandle)
+        NativeBridge.unregisterTextSizeListener(nativeHandle)
+        NativeBridge.unregisterParameterChangedListener(nativeHandle)
         if (nativeHandle != 0L) NativeBridge.nativeDestroy(nativeHandle)
     }
 
@@ -516,6 +525,48 @@ class DasherEngine(
      * analogue of Dasher-Windows's Debug.Write + engine.log (DasherCanvas.cs:OnEngineLog).
      * Override [NativeBridge.onLogListener] to redirect (e.g. to a file).
      */
+    /**
+     * Registers per-engine-instance listeners (#56). Each engine handle gets
+     * its own dispatch — the main app and IME can no longer stomp each
+     * other's handlers. Call AFTER installEngineCallbacks (which wires the
+     * JNI callbacks to pass the handle).
+     */
+    fun setOutputListener(l: (type: Int, text: String) -> Unit) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.registerOutputListener(nativeHandle, l)
+    }
+
+    fun setClipboardListener(l: (text: String) -> Unit) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.registerClipboardListener(nativeHandle, l)
+    }
+
+    fun setSpeakListener(l: (text: String, interrupt: Boolean) -> Unit) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.registerSpeakListener(nativeHandle, l)
+    }
+
+    fun setMessageListener(l: (type: Int, text: String) -> Unit) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.registerMessageListener(nativeHandle, l)
+    }
+
+    fun clearOutputListener() { if (!destroyed) NativeBridge.unregisterOutputListener(nativeHandle) }
+    fun clearClipboardListener() { if (!destroyed) NativeBridge.unregisterClipboardListener(nativeHandle) }
+    fun clearSpeakListener() { if (!destroyed) NativeBridge.unregisterSpeakListener(nativeHandle) }
+    fun clearMessageListener() { if (!destroyed) NativeBridge.unregisterMessageListener(nativeHandle) }
+    fun setLogListener(l: (level: Int, text: String) -> Unit) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.registerLogListener(nativeHandle, l)
+    }
+    fun clearLogListener() { if (!destroyed) NativeBridge.unregisterLogListener(nativeHandle) }
+    fun clearTextSizeListener() { if (!destroyed) NativeBridge.unregisterTextSizeListener(nativeHandle) }
+    fun setParameterChangedListener(l: (key: Int) -> Unit) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.registerParameterChangedListener(nativeHandle, l)
+    }
+    fun clearParameterChangedListener() { if (!destroyed) NativeBridge.unregisterParameterChangedListener(nativeHandle) }
+
     fun installEngineCallbacks() {
         if (destroyed || nativeHandle == 0L) return
         NativeBridge.nativeSetClipboardCallback(nativeHandle)
@@ -523,8 +574,7 @@ class DasherEngine(
         NativeBridge.nativeSetMessageCallback(nativeHandle)
         NativeBridge.nativeSetOutputCallback(nativeHandle)
         NativeBridge.nativeSetLogCallback(nativeHandle)
-        if (NativeBridge.onLogListener == null) {
-            NativeBridge.onLogListener = { level, text ->
+        setLogListener { level, text ->
                 when (level) {
                     3 -> Log.e("DasherCore", text)
                     2 -> Log.w("DasherCore", text)
@@ -534,7 +584,6 @@ class DasherEngine(
                 // Also feed the crash ring buffer (RFC 0009): info+ kept so a crash
                 // report can carry the engine's last actions as engine_log_tail.
                 if (level >= 1) AnalyticsService.appendEngineLog(level, text)
-            }
         }
     }
 
@@ -643,7 +692,7 @@ class DasherEngine(
      */
     fun installTextSizeCallback(measure: (text: String, fontSize: Int, out: FloatArray) -> Boolean) {
         if (nativeHandle == 0L) return
-        NativeBridge.onTextSizeListener = measure
+        NativeBridge.registerTextSizeListener(nativeHandle, measure)
         NativeBridge.nativeSetTextSizeCallback(nativeHandle)
     }
 

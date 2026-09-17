@@ -75,6 +75,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Upload the ProGuard mapping to PostHog (#44): crash stacks
+            // are unreadable without it — every frame arrives as
+            // "resolve_failure: No proguard map uploaded".
         }
     }
 
