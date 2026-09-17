@@ -139,9 +139,9 @@ class DasherImeService : InputMethodService() {
         // window's FrameLayout-based decor. LinearLayout.LayoutParams here
         // survives until a re-measure casts them and crashes (Float's
         // docked-shrink relayout did exactly that).
+        dockedRoot = root
         setDockedHeight(imeHeightPx())
         root.minimumHeight = imeHeightPx()
-        dockedRoot = root
 
         floatBtn.setOnClickListener { enterFloatingMode(floatBtn) }
 
@@ -467,6 +467,26 @@ class DasherImeService : InputMethodService() {
             cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
         }
         eng.clearSpeakListener() // IME doesn't speak (the app does)
+    }
+
+    // API 36+ (Android 16): measure the actual docked-root position in the
+    // window so the insets animation has a concrete target (review C1/C3:
+    // imeHeightPx() is a HEIGHT, not an offset — a constant created a dead
+    // touch band above the keyboard and was wrong in floating mode).
+    // Measuring handles both modes automatically: floating shrinks the
+    // docked root to 40dp, and the measurement reflects that.
+    // API 36+: force-show even if a hardware keyboard is attached — our users
+    // (motor-impaired AAC) always want the soft keyboard (accessibility decision).
+    override fun onEvaluateInputViewShown(): Boolean = true
+
+    override fun onComputeInsets(outInsets: Insets) {
+        super.onComputeInsets(outInsets)
+        val root = dockedRoot ?: return
+        val loc = IntArray(2)
+        root.getLocationInWindow(loc)
+        outInsets.contentTopInsets = loc[1]
+        outInsets.visibleTopInsets = loc[1]
+        outInsets.touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
