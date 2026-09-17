@@ -833,19 +833,20 @@ Java_at_dasher_android_NativeBridge_nativeGetLocale(JNIEnv* env, jclass, jlong h
 
 // ── Parameter-change callback (two-way sync: settings <-> toolbar) ──────────
 
-static void parameterCallback(int key, void*) {
+static void parameterCallback(int key, void* user_data) {
     if (!g_nbClass || !g_onParameterChanged) return;
     bool attached = false;
     JNIEnv* env = attachEnv(attached);
     if (!env) return;
-    env->CallStaticVoidMethod(g_nbClass, g_onParameterChanged, static_cast<jint>(key));
+    jlong jhandle = reinterpret_cast<jlong>(user_data);
+    env->CallStaticVoidMethod(g_nbClass, g_onParameterChanged, jhandle, static_cast<jint>(key));
     if (attached) g_jvm->DetachCurrentThread();
 }
 
 JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSetParameterCallback(JNIEnv*, jclass, jlong handle) {
     auto* s = fromHandle(handle);
-    if (s && s->ctx) dasher_set_parameter_callback(s->ctx, parameterCallback, nullptr);
+    if (s && s->ctx) dasher_set_parameter_callback(s->ctx, parameterCallback, reinterpret_cast<void*>(handle));
 }
 
 // ── Text measurement (DasherCore v0.2.4 / upstream #56) ────────────────────
@@ -865,8 +866,9 @@ static int textSizeCallback(const char* text, int font_size, int* out_width, int
     jfloatArray out = env->NewFloatArray(2);
     int ok = 1;
     if (jtext && out) {
+        jlong jhandle = reinterpret_cast<jlong>(user_data);
         const jboolean measured =
-            env->CallStaticBooleanMethod(g_nbClass, g_onTextSize, jtext, static_cast<jint>(font_size), out);
+            env->CallStaticBooleanMethod(g_nbClass, g_onTextSize, jhandle, jtext, static_cast<jint>(font_size), out);
         if (measured) {
             jfloat dims[2] = {0, 0};
             env->GetFloatArrayRegion(out, 0, 2, dims);
@@ -887,7 +889,7 @@ static int textSizeCallback(const char* text, int font_size, int* out_width, int
 JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSetTextSizeCallback(JNIEnv*, jclass, jlong handle) {
     auto* s = fromHandle(handle);
-    if (s && s->ctx) dasher_set_text_size_callback(s->ctx, textSizeCallback, nullptr);
+    if (s && s->ctx) dasher_set_text_size_callback(s->ctx, textSizeCallback, reinterpret_cast<void*>(handle));
 }
 
 JNIEXPORT void JNICALL
