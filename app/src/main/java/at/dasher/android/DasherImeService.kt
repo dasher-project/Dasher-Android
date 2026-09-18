@@ -42,6 +42,19 @@ class DasherImeService : InputMethodService() {
     // Floating mode
     private var floating = false
     private var floatingView: LinearLayout? = null
+    private var floatDockBtn: Button? = null
+
+    // Last-used mode (dock/float), restored on the next keyboard show so
+    // the IME opens where the user left it (Heide: "start it directly as
+    // docked, like other keyboards do"). Docked is the default.
+    private val imePrefs get() = getSharedPreferences("dasher_ime", MODE_PRIVATE)
+
+    private fun saveStartMode(floatingNow: Boolean) {
+        imePrefs.edit().putString("start_mode", if (floatingNow) "floating" else "docked").apply()
+    }
+
+    private fun startModeIsFloating(): Boolean =
+        imePrefs.getString("start_mode", "docked") == "floating"
 
     // The docked root's parent is a FrameLayout inside the IME window's
     // decor. setLayoutParams performs NO type conversion — LinearLayout
@@ -143,15 +156,27 @@ class DasherImeService : InputMethodService() {
         setDockedHeight(imeHeightPx())
         root.minimumHeight = imeHeightPx()
 
-        floatBtn.setOnClickListener { enterFloatingMode(floatBtn) }
+        floatDockBtn = floatBtn
+        floatBtn.setOnClickListener { enterFloatingMode() }
 
-        Handler(Looper.getMainLooper()).post { createEngine() }
+        Handler(Looper.getMainLooper()).post {
+            createEngine()
+            // Restore the user's last mode. Only when the overlay permission
+            // is already granted — without it enterFloatingMode would bounce
+            // the user to system settings on every keyboard show (the
+            // permission prompt belongs to an explicit Float tap).
+            if (startModeIsFloating() &&
+                android.provider.Settings.canDrawOverlays(this)
+            ) {
+                enterFloatingMode()
+            }
+        }
         return root
     }
 
     // ── Floating mode ──────────────────────────────────────────────────────
 
-    private fun enterFloatingMode(floatBtn: Button) {
+    private fun enterFloatingMode() {
         if (floating) return
         // Floating mode draws over other apps (TYPE_APPLICATION_OVERLAY) —
         // a special-app-access permission the user must grant. Without it
@@ -252,8 +277,9 @@ class DasherImeService : InputMethodService() {
         // FrameLayout.LayoutParams: the docked root's parent is the window's
         // FrameLayout decor — LinearLayout.LayoutParams crash on re-measure.
         setDockedHeight(dp(40, density))
-        floatBtn.text = "Dock"
-        floatBtn.setOnClickListener { exitFloatingMode(floatBtn) }
+        saveStartMode(true)
+        floatDockBtn?.text = "Dock"
+        floatDockBtn?.setOnClickListener { exitFloatingMode() }
 
         // Drag handling. Gravity.TOP or Gravity.LEFT — LEFT is explicit;
         // START can resolve to RIGHT on Samsung (overlay windows), inverting
@@ -279,7 +305,7 @@ class DasherImeService : InputMethodService() {
             }
         }
         // Also wire the dock button.
-        dockBtn.setOnClickListener { exitFloatingMode(floatBtn) }
+        dockBtn.setOnClickListener { exitFloatingMode() }
 
         // Resize handling (#49): drag the ⟷ handle to adjust the floating
         // window's width (height follows proportionally). Pin the handle's
@@ -314,7 +340,7 @@ class DasherImeService : InputMethodService() {
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
     }
 
-    private fun exitFloatingMode(floatBtn: Button) {
+    private fun exitFloatingMode() {
         if (!floating) return
         val fv = floatingView ?: return
         try { windowManager.removeView(fv) } catch (_: Exception) {}
@@ -332,8 +358,9 @@ class DasherImeService : InputMethodService() {
         setDockedHeight(imeHeightPx())
         floatingView = null
         floating = false
-        floatBtn.text = "Float"
-        floatBtn.setOnClickListener { enterFloatingMode(floatBtn) }
+        saveStartMode(false)
+        floatDockBtn?.text = "Float"
+        floatDockBtn?.setOnClickListener { enterFloatingMode() }
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
     }
 
@@ -523,6 +550,7 @@ class DasherImeService : InputMethodService() {
         canvasHost = null
         loadingOverlay = null
         dockedRoot = null
+        floatDockBtn = null
         editingToolbar = null
         super.onDestroy()
     }
