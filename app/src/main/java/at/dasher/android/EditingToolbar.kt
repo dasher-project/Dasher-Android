@@ -17,17 +17,27 @@ import android.widget.LinearLayout
  * All actions go through [InputConnection] against the TARGET app's field.
  * After each action, [onBufferChanged] fires so the IME can re-anchor the
  * engine (re-read the target text and re-seed — RFC 0015 tier 2).
+ *
+ * Emoji toggle (#61, option 2): when [onToggleEmoji] is supplied and the
+ * engine ships the Emoji alphabet, a 😀/Abc button switches the engine's
+ * alphabet. The IME owns the switch logic (remembering the previous
+ * alphabet); the toolbar only renders state.
+ *
+ * @param onToggleEmoji invoked on button tap; null hides the button.
  */
 class EditingToolbar(
     context: Context,
     private val inputConnection: () -> InputConnection?,
     private val onBufferChanged: () -> Unit,
+    private val onToggleEmoji: (() -> Unit)? = null,
 ) : LinearLayout(context) {
 
     private val density = context.resources.displayMetrics.density
     private val nightMode = (context.resources.configuration.uiMode and
         android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
         android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+    private var emojiButton: Button? = null
 
     init {
         orientation = HORIZONTAL
@@ -46,6 +56,28 @@ class EditingToolbar(
         addTool("Sel", "Select all", mutates = false) { performAction(android.R.id.selectAll) }
         addTool("Cp", "Copy", mutates = false) { performAction(android.R.id.copy) }
         addTool("Ps", "Paste", mutates = true) { performAction(android.R.id.paste) }
+        // Emoji toggle (#61 option 2). Hidden until the IME confirms the
+        // engine's data bundle contains the Emoji alphabet (next DasherCore
+        // release) — setEmojiAvailable(true) makes it appear.
+        onToggleEmoji?.let { toggle ->
+            addSpacer(dp(8))
+            emojiButton = addTool("😀", "Switch to emoji keyboard", mutates = false) { toggle() }
+                .also { it.visibility = GONE }
+        }
+    }
+
+    /** Show/hide the emoji toggle (call once the engine's alphabets are known). */
+    fun setEmojiAvailable(available: Boolean) {
+        emojiButton?.visibility = if (available) VISIBLE else GONE
+    }
+
+    /** Relabel the toggle for the current mode: 😀 = enter emoji, Abc = back. */
+    fun setEmojiMode(active: Boolean) {
+        emojiButton?.let { btn ->
+            btn.text = if (active) "Abc" else "😀"
+            btn.contentDescription =
+                if (active) "Switch back to text keyboard" else "Switch to emoji keyboard"
+        }
     }
 
     private fun dp(v: Int) = (v * density).toInt()
@@ -72,13 +104,15 @@ class EditingToolbar(
     }
 
     private fun addTool(label: String, tooltip: String, large: Boolean = false,
-                        mutates: Boolean = true, action: () -> Unit) {
-        addView(toolButton(label, tooltip, large).apply {
+                        mutates: Boolean = true, action: () -> Unit): Button {
+        val btn = toolButton(label, tooltip, large).apply {
             setOnClickListener {
                 action()
                 if (mutates) onBufferChanged()
             }
-        })
+        }
+        addView(btn)
+        return btn
     }
 
     private fun addSpacer(widthPx: Int) {

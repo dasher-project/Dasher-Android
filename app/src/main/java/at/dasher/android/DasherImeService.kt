@@ -56,6 +56,42 @@ class DasherImeService : InputMethodService() {
     private fun startModeIsFloating(): Boolean =
         imePrefs.getString("start_mode", "docked") == "floating"
 
+    // ── Emoji alphabet toggle (#61 option 2) ───────────────────────────────
+
+    // The alphabet to return to after emoji mode. Persisted so a keyboard
+    // process death mid-emoji-mode doesn't strand the user without a way
+    // back (the engine persists its own alphabet choice in settings — if it
+    // restarts in Emoji, the previous one must still be knowable).
+    private var emojiReturnAlphabet: String? = null
+
+    private fun toggleEmojiMode() {
+        val eng = engine ?: return
+        val toolbar = editingToolbar ?: return
+        val current = eng.getCurrentAlphabet()
+        if (current == "Emoji") {
+            val target = emojiReturnAlphabet
+            if (target.isNullOrEmpty() || target == "Emoji") {
+                // No remembered alphabet (e.g. pref lost) — fall back to the
+                // engine default rather than a no-op toggle.
+                eng.setAlphabet("English with limited punctuation")
+            } else {
+                eng.setAlphabet(target)
+            }
+            emojiReturnAlphabet = null
+            imePrefs.edit().remove("emoji_return_alphabet").apply()
+            toolbar.setEmojiMode(false)
+            // The alphabet switch rebuilt the model from scratch — re-seed
+            // from the target field so predictions continue mid-sentence
+            // (same machinery as the editing actions, RFC 0015 tier 2).
+            reanchorEngineToTarget()
+        } else {
+            emojiReturnAlphabet = current
+            imePrefs.edit().putString("emoji_return_alphabet", current).apply()
+            eng.setAlphabet("Emoji")
+            toolbar.setEmojiMode(true)
+        }
+    }
+
     // The docked root's parent is a FrameLayout inside the IME window's
     // decor. setLayoutParams performs NO type conversion — LinearLayout
     // .LayoutParams survives until the next measure pass casts them and
@@ -138,6 +174,9 @@ class DasherImeService : InputMethodService() {
             context = this,
             inputConnection = { currentInputConnection },
             onBufferChanged = { reanchorEngineToTarget() },
+            // editingToolbar is assigned below, before the button can be
+            // tapped — the deferred capture is why this isn't a cycle.
+            onToggleEmoji = { toggleEmojiMode() },
         )
         editingToolbar = toolbar
 
@@ -416,6 +455,20 @@ class DasherImeService : InputMethodService() {
         }
         // Engine is live and rendering — drop the first-show loading overlay.
         loadingOverlay?.visibility = View.GONE
+        // Emoji toggle (#61): show the button only when the data bundle
+        // actually ships the Emoji alphabet (next DasherCore release); if
+        // the engine restarted while in emoji mode (alphabet persists in
+        // the engine's own settings), restore the toggle state and the
+        // remembered return alphabet.
+        val names = eng.getAlphabetNames()
+        val emojiAvailable = names.contains("Emoji")
+        editingToolbar?.setEmojiAvailable(emojiAvailable)
+        if (emojiAvailable && eng.getCurrentAlphabet() == "Emoji") {
+            if (emojiReturnAlphabet == null) {
+                emojiReturnAlphabet = imePrefs.getString("emoji_return_alphabet", null)
+            }
+            editingToolbar?.setEmojiMode(true)
+        }
         eng.start()
     }
 
