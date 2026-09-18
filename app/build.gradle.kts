@@ -35,13 +35,13 @@ plugins {
 
 android {
     namespace = "at.dasher.android"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "at.dasher.android"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = gitVersionCode(base = 1000, fallback = 8)
         versionName = gitVersionName(fallback = "0.1.8")
 
