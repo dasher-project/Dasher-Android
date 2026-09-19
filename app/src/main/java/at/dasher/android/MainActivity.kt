@@ -117,6 +117,11 @@ class MainActivity : ComponentActivity() {
         AlphabetIndex.get(this).associateBy { it.id }
     }
     private var currentAlphabet by mutableStateOf("")
+    // Emoji mode (#61 option 2): the return alphabet is shared with the IME
+    // via the dasher_ime prefs — toggle in the app, restore in the keyboard,
+    // and vice versa.
+    private var emojiReturnAlphabet: String? = null
+    private val imePrefs get() = getSharedPreferences("dasher_ime", MODE_PRIVATE)
     private var palettes by mutableStateOf<List<String>>(emptyList())
     private var currentPalette by mutableStateOf("")
     private var speedPercent by mutableStateOf(100)
@@ -351,6 +356,9 @@ class MainActivity : ComponentActivity() {
                         typingRate = typingRate,
                         alphabets = alphabets,
                         currentAlphabet = currentAlphabet,
+                        emojiAvailable = alphabets.contains("Emoji"),
+                        emojiActive = currentAlphabet == "Emoji",
+                        onToggleEmoji = { toggleEmojiMode() },
                         speedPercent = speedPercent,
                         autoSpeed = autoSpeed,
                         isPlaying = isPlaying,
@@ -443,6 +451,34 @@ class MainActivity : ComponentActivity() {
     private fun pinAlphabetChoice() {
         getSharedPreferences(AlphabetPrefs.PREFS, android.content.Context.MODE_PRIVATE).edit()
             .putBoolean(AlphabetPrefs.KEY_FOLLOWS_LOCALE, false).apply()
+    }
+
+    /**
+     * Emoji toggle (#61 option 2): switch to the Emoji alphabet and remember
+     * the way back (shared with the IME via dasher_ime prefs). Explicit
+     * choice → pins, like any picker selection.
+     */
+    private fun toggleEmojiMode() {
+        val eng = engine ?: return
+        val current = eng.getCurrentAlphabet()
+        if (current == "Emoji") {
+            val target = emojiReturnAlphabet
+            if (target.isNullOrEmpty() || target == "Emoji") {
+                eng.setAlphabet("English with limited punctuation")
+            } else {
+                eng.setAlphabet(target)
+            }
+            emojiReturnAlphabet = null
+            imePrefs.edit().remove("emoji_return_alphabet").apply()
+        } else {
+            emojiReturnAlphabet = current
+            imePrefs.edit().putString("emoji_return_alphabet", current).apply()
+            eng.setAlphabet("Emoji")
+        }
+        currentAlphabet = eng.getCurrentAlphabet()
+        eng.saveSettings()
+        pinAlphabetChoice()
+        AnalyticsService.capture("emoji_toggled", mapOf("active" to (currentAlphabet == "Emoji")))
     }
 
     /**
@@ -687,6 +723,9 @@ class MainActivity : ComponentActivity() {
         typingRate: String,
         alphabets: List<String>,
         currentAlphabet: String,
+        emojiAvailable: Boolean,
+        emojiActive: Boolean,
+        onToggleEmoji: () -> Unit,
         speedPercent: Int,
         autoSpeed: Boolean,
         isPlaying: Boolean,
@@ -787,6 +826,9 @@ class MainActivity : ComponentActivity() {
                     alphabets = alphabets,
                     currentAlphabet = currentAlphabet,
                     onAlphabetSelected = onAlphabetSelected,
+                    emojiAvailable = emojiAvailable,
+                    emojiActive = emojiActive,
+                    onToggleEmoji = onToggleEmoji,
                     speedPercent = speedPercent,
                     onSpeedChanged = onSpeedChanged,
                     autoSpeed = autoSpeed,
@@ -882,18 +924,32 @@ class MainActivity : ComponentActivity() {
         alphabets: List<String>,
         currentAlphabet: String,
         onAlphabetSelected: (String) -> Unit,
+        emojiAvailable: Boolean,
+        emojiActive: Boolean,
+        onToggleEmoji: () -> Unit,
         speedPercent: Int,
         onSpeedChanged: (Int) -> Unit,
         autoSpeed: Boolean,
         onAutoSpeedChanged: (Boolean) -> Unit
     ) {
-        // Windows-style single-row bottom bar: alphabet picker | speed stepper | auto toggle.
+        // Windows-style single-row bottom bar: emoji toggle | alphabet picker | speed stepper | auto toggle.
         Surface(color = MaterialTheme.colorScheme.surface) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
+                // Emoji toggle (#61): small mode switch beside the picker —
+                // the alphabet stays selected; the toggle is a shortcut with
+                // a remembered way back.
+                if (emojiAvailable) {
+                    IconButton(onClick = onToggleEmoji, modifier = Modifier.size(36.dp)) {
+                        Text(
+                            if (emojiActive) "Abc" else "😀",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
                 DropdownPicker(
                     leadingIcon = Lucide.Languages,
                     options = alphabets,
