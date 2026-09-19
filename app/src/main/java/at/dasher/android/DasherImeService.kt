@@ -43,6 +43,7 @@ class DasherImeService : InputMethodService() {
     private var floating = false
     private var floatingView: LinearLayout? = null
     private var floatDockBtn: Button? = null
+    private var emojiToggleBtn: Button? = null
 
     // Last-used mode (dock/float), restored on the next keyboard show so
     // the IME opens where the user left it (Heide: "start it directly as
@@ -66,7 +67,7 @@ class DasherImeService : InputMethodService() {
 
     private fun toggleEmojiMode() {
         val eng = engine ?: return
-        val toolbar = editingToolbar ?: return
+        val btn = emojiToggleBtn ?: return
         val current = eng.getCurrentAlphabet()
         if (current == "Emoji") {
             val target = emojiReturnAlphabet
@@ -79,7 +80,8 @@ class DasherImeService : InputMethodService() {
             }
             emojiReturnAlphabet = null
             imePrefs.edit().remove("emoji_return_alphabet").apply()
-            toolbar.setEmojiMode(false)
+            btn.text = "😀"
+            btn.contentDescription = "Switch to emoji keyboard"
             // The alphabet switch rebuilt the model from scratch — re-seed
             // from the target field so predictions continue mid-sentence
             // (same machinery as the editing actions, RFC 0015 tier 2).
@@ -88,7 +90,8 @@ class DasherImeService : InputMethodService() {
             emojiReturnAlphabet = current
             imePrefs.edit().putString("emoji_return_alphabet", current).apply()
             eng.setAlphabet("Emoji")
-            toolbar.setEmojiMode(true)
+            btn.text = "Abc"
+            btn.contentDescription = "Switch back to text keyboard"
         }
     }
 
@@ -152,18 +155,30 @@ class DasherImeService : InputMethodService() {
         }
         this.canvasHost = canvasHost
 
-        // Top bar (shared look): Hide + Float toggle.
+        // Top bar (shared look): Float toggle + emoji mode + Hide. Mode
+        // controls cluster here so the editing strip below stays a pure
+        // edit-action row (Heide feedback: too many buttons up top).
         val top = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
             setPadding(dp(8, density), dp(2, density), dp(8, density), dp(2, density))
         }
         val floatBtn = Button(this).apply { text = "Float" }
+        // Emoji toggle (#61 option 2): GONE until createEngine() confirms
+        // the data bundle ships the Emoji alphabet (DasherCore b00a4c8a+).
+        val emojiBtn = Button(this).apply {
+            text = "😀"
+            contentDescription = "Switch to emoji keyboard"
+            visibility = View.GONE
+            setOnClickListener { toggleEmojiMode() }
+        }
+        emojiToggleBtn = emojiBtn
         val hideBtn = Button(this).apply {
             text = "Hide"
             setOnClickListener { requestHideSelf(0) }
         }
         top.addView(floatBtn)
+        top.addView(emojiBtn)
         top.addView(hideBtn)
 
         // RFC 0019 editing toolbar (#50): backspace, cursor, clipboard.
@@ -174,9 +189,6 @@ class DasherImeService : InputMethodService() {
             context = this,
             inputConnection = { currentInputConnection },
             onBufferChanged = { reanchorEngineToTarget() },
-            // editingToolbar is assigned below, before the button can be
-            // tapped — the deferred capture is why this isn't a cycle.
-            onToggleEmoji = { toggleEmojiMode() },
         )
         editingToolbar = toolbar
 
@@ -456,18 +468,18 @@ class DasherImeService : InputMethodService() {
         // Engine is live and rendering — drop the first-show loading overlay.
         loadingOverlay?.visibility = View.GONE
         // Emoji toggle (#61): show the button only when the data bundle
-        // actually ships the Emoji alphabet (next DasherCore release); if
-        // the engine restarted while in emoji mode (alphabet persists in
-        // the engine's own settings), restore the toggle state and the
-        // remembered return alphabet.
+        // actually ships the Emoji alphabet; if the engine restarted while
+        // in emoji mode (alphabet persists in the engine's own settings),
+        // restore the toggle state and the remembered return alphabet.
         val names = eng.getAlphabetNames()
         val emojiAvailable = names.contains("Emoji")
-        editingToolbar?.setEmojiAvailable(emojiAvailable)
+        emojiToggleBtn?.visibility = if (emojiAvailable) View.VISIBLE else View.GONE
         if (emojiAvailable && eng.getCurrentAlphabet() == "Emoji") {
             if (emojiReturnAlphabet == null) {
                 emojiReturnAlphabet = imePrefs.getString("emoji_return_alphabet", null)
             }
-            editingToolbar?.setEmojiMode(true)
+            emojiToggleBtn?.text = "Abc"
+            emojiToggleBtn?.contentDescription = "Switch back to text keyboard"
         }
         eng.start()
     }
@@ -604,6 +616,7 @@ class DasherImeService : InputMethodService() {
         loadingOverlay = null
         dockedRoot = null
         floatDockBtn = null
+        emojiToggleBtn = null
         editingToolbar = null
         super.onDestroy()
     }
