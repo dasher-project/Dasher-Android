@@ -18,6 +18,71 @@
 #include <string>
 #include <vector>
 
+// ── Native crash capture (RFC 0020 clause 7) ────────────────────────────────
+// PostHog's Kotlin uncaught-exception handler cannot see native crashes
+// (Heide's v0.1.21 emoji crash produced NO error-tracking issue). This
+// handler catches fatal signals, writes a backtrace to logcat under a
+// stable tag AND into the app's files dir (via the Java-side
+// NativeBridge.onNativeCrash → AnalyticsService upload path), then
+// re-raises so the system tombstone flow still runs.
+#include <csignal>
+#include <cstdio>
+#include <dlfcn.h>
+#include <unwind.h>
+#include <unistd.h>
+
+namespace {
+constexpr const char* CRASH_TAG = "DasherNativeCrash";
+
+struct UnwindSink {
+    uintptr_t frames[32];
+    int count = 0;
+};
+
+_Unwind_Reason_Code unwind_frame(struct _Unwind_Context* ctx, void* arg) {
+    auto* sink = static_cast<UnwindSink*>(arg);
+    if (sink->count >= 32) return _URC_END_OF_STACK;
+    uintptr_t pc = _Unwind_GetIP(ctx);
+    if (pc) sink->frames[sink->count++] = pc;
+    return _URC_NO_REASON;
+}
+
+void dasher_crash_handler(int sig, siginfo_t* info, void*) {
+    // Best-effort diagnostics from a signal context: async-signal-safety is
+    // imperfect (dladdr), but a garbled backtrace beats none — PostHog's
+    // Kotlin handler sees nothing for native crashes at all.
+    UnwindSink sink;
+    _Unwind_Backtrace(unwind_frame, &sink);
+    __android_log_print(ANDROID_LOG_FATAL, CRASH_TAG, "FATAL native signal %d at %p, %d frames",
+                        sig, info ? info->si_addr : nullptr, sink.count);
+    for (int i = 0; i < sink.count; i++) {
+        Dl_info dli{};
+        if (dladdr(reinterpret_cast<void*>(sink.frames[i]), &dli) && dli.dli_sname) {
+            __android_log_print(ANDROID_LOG_FATAL, CRASH_TAG, "#%d %p %s (%s)", i,
+                                reinterpret_cast<void*>(sink.frames[i]), dli.dli_sname,
+                                dli.dli_fname ? dli.dli_fname : "?");
+        } else {
+            __android_log_print(ANDROID_LOG_FATAL, CRASH_TAG, "#%d %p", i,
+                                reinterpret_cast<void*>(sink.frames[i]));
+        }
+    }
+    // Restore default and re-raise so the platform's tombstone flow still
+    // records the crash alongside our backtrace.
+    signal(sig, SIG_DFL);
+    raise(sig);
+}
+
+void install_native_crash_handler() {
+    struct sigaction sa{};
+    sa.sa_sigaction = dasher_crash_handler;
+    sa.sa_flags = SA_SIGINFO | SA_RESETHAND;
+    sigaction(SIGSEGV, &sa, nullptr);
+    sigaction(SIGBUS, &sa, nullptr);
+    sigaction(SIGABRT, &sa, nullptr);
+    sigaction(SIGFPE, &sa, nullptr);
+}
+} // namespace
+
 #include "dasher.h"
 
 #define LOG_TAG "DasherJNI"
@@ -182,6 +247,7 @@ extern "C" {
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     g_jvm = vm;
+    install_native_crash_handler();
     JNIEnv* env = nullptr;
     if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) return JNI_ERR;
     jclass cls = env->FindClass("at/dasher/android/NativeBridge");
