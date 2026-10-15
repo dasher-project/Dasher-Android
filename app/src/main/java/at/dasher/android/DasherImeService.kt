@@ -14,6 +14,7 @@ import android.os.Looper
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,12 @@ import at.dasher.android.ui.DasherCanvasView
 class DasherImeService : InputMethodService() {
 
     private var engine: DasherEngine? = null
+
+    // Bug #5 ("letters get completely jumbled up in OneNote and Word"):
+    // engine deltas coalesce here and flush ONCE per frame as one atomic
+    // batch edit — see ImeOutputCoalescer.
+    private val outputCoalescer = ImeOutputCoalescer()
+
     private var canvasView: DasherCanvasView? = null
     private var canvasHost: android.widget.FrameLayout? = null
     private var dockedRoot: LinearLayout? = null
@@ -424,6 +431,10 @@ class DasherImeService : InputMethodService() {
         val userDir = DataInstaller.userDir(this).apply { mkdirs() }
         val eng = DasherEngine.create(dataDir, userDir.absolutePath) { commands, strings ->
             canvasView?.submitFrame(commands, strings)
+            // All of this frame's engine deltas have now fired — apply them
+            // to the target field as ONE atomic edit (bug #5: unbatched
+            // deltas garble text in OneNote/Word's async editors).
+            flushOutputToTarget()
         }
         if (eng == null) {
             Log.e(TAG, "IME engine creation failed (dataDir=$dataDir)")
@@ -544,12 +555,10 @@ class DasherImeService : InputMethodService() {
         // Per-engine-instance listeners (#56): the JNI dispatch passes the
         // handle; only THIS engine's listener is called. No cross-talk with
         // the main app's engine.
+        // Output deltas are COALESCED, not applied — see flushOutputToTarget
+        // (bug #5: OneNote/Word jumbled unbatched per-delta edits).
         eng.setOutputListener { type, text ->
-            val ic = currentInputConnection
-            if (ic != null) {
-                if (type == 0) ic.commitText(text, 1)
-                else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
-            }
+            outputCoalescer.onEngineOutput(type, text)
         }
         eng.setMessageListener { _, msg ->
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
@@ -559,6 +568,40 @@ class DasherImeService : InputMethodService() {
             cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
         }
         eng.clearSpeakListener() // IME doesn't speak (the app does)
+    }
+
+    /**
+     * Applies the coalesced frame output to the target field as one atomic
+     * batch edit (bug #5): first the deletion, then the insertion, inside a
+     * beginBatchEdit/endBatchEdit pair so the editor cannot reformat between
+     * the two halves.
+     *
+     * Deletion strategy: deleteSurroundingText first; if the editor reports
+     * it did not handle it (WebView/custom editors — precisely the
+     * OneNote/Word class), fall back to KEYCODE_DEL key events, which go
+     * through the target's own key pipeline where a delta would be dropped
+     * (the same principle as Dasher-Windows #17's deletion forwarding).
+     *
+     * No connection yet (field switch in flight): keep the deltas pending —
+     * the next frame flushes them once a field is served.
+     */
+    private fun flushOutputToTarget() {
+        val ic = currentInputConnection ?: return
+        val flush = outputCoalescer.takeFlush() ?: return
+        ic.beginBatchEdit()
+        try {
+            if (flush.deleteUnits > 0) {
+                if (!ic.deleteSurroundingText(flush.deleteUnits, 0)) {
+                    repeat(flush.deleteUnits) {
+                        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+                        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
+                    }
+                }
+            }
+            if (flush.insert.isNotEmpty()) ic.commitText(flush.insert, 1)
+        } finally {
+            ic.endBatchEdit()
+        }
     }
 
     // API 36+ (Android 16): measure the actual docked-root position in the
@@ -579,6 +622,26 @@ class DasherImeService : InputMethodService() {
         outInsets.contentTopInsets = loc[1]
         outInsets.visibleTopInsets = loc[1]
         outInsets.touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
+    }
+
+    /**
+     * Bug #5b ("Dasher wouldn't pop up on Chrome… on the MuMu emulator, I had
+     * to switch to Firefox"): while a hardware keyboard is attached (emulators
+     * default to one), Chrome never asks the system to show the IME when a
+     * field gains focus — Firefox asks regardless, which is why it worked
+     * there. onEvaluateInputViewShown()=true only helps when something asks;
+     * nobody asked. We serve motor-impaired AAC users who always want the
+     * soft keyboard, so ask ourselves on every fresh focus of a real text
+     * field (TYPE_NULL fields are non-editing views and stay untouched).
+     */
+    override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInput(info, restarting)
+        if (!restarting && info != null &&
+            info.inputType != android.text.InputType.TYPE_NULL &&
+            !isInputViewShown
+        ) {
+            requestShowSelf(0)
+        }
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
