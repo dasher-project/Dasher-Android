@@ -21,20 +21,26 @@ package at.dasher.android
  * "delete N, insert S" step instead of a burst of unrelated calls.
  *
  * Delete-event contract (see DasherCore src/CAPI.cpp) and its limits:
- * type-1 events come from two engine paths. `editDelete` is a true
- * backspace — it always removes the buffer TAIL, which is what the split
- * arithmetic below assumes. `ctrlDelete` (control-mode delete nodes, if the
- * user enables them) removes a range AT the cursor — possibly mid-buffer,
- * possibly forwards — but the event carries only the removed string, with
- * no position or direction, so no frontend can express it faithfully
- * (deleteSurroundingText only deletes backwards from the caret). Those are
- * approximated as tail deletes — exactly what the pre-batching code did
- * per-event, so no regression; proper fix needs the event contract to grow
- * position/direction (DasherCore issue filed).
+ * type-1 events come from two engine paths. `editDelete` is a
+ * caret-relative backspace — it erases N units immediately BEFORE
+ * cursorPos, which is exactly `deleteSurroundingText(N, 0)` semantics
+ * (mid-buffer only after a control-mode ctrlMove moved the cursor — see
+ * below). `ctrlDelete` (control-mode delete nodes, if the user enables
+ * them) removes a range AT the cursor — possibly spanning it, possibly
+ * forwards — but the event carries only the removed string, with no
+ * position or direction, so no frontend can express it faithfully. Both
+ * non-caret-relative cases are approximated as caret deletes — exactly
+ * what the pre-batching code did per-event, so no regression; the proper
+ * fix needs the event contract to grow position/direction (DasherCore
+ * #100; #101 covers editDelete firing the event even when its guard
+ * rejected the erase).
  *
- * Type-2 (buffer clear) is ignored, and that is only safe because the flush
- * runs at the end of every dasher_frame() while resets can only run between
- * frames on the same thread — pending state is always empty at a reset.
+ * Type-2 (buffer clear) DROPS pending deltas — dasher.h says subscribers
+ * "must treat this as 'clear your copy'", and the pending state is exactly a
+ * shadow copy of the engine buffer. This matters because the flush can strand
+ * deltas when the connection is momentarily null (WebView focus churn); a
+ * later reset (dasher_seed_buffer fires type-2 on every toolbar reanchor —
+ * CAPI_edit.cpp) must not let those stale deltas apply to post-reset context.
  *
  * Pure logic — no InputConnection, so the delta arithmetic (including the
  * surrogate-pair and boundary-spanning cases) is unit-testable, following
@@ -79,7 +85,7 @@ class ImeOutputCoalescer {
                     pendingInsert.setLength(0)
                 }
             }
-            else -> {} // type 2 (buffer clear) — nothing to apply; see class doc
+            else -> clear() // type 2 (buffer clear) — drop the shadow copy; see class doc
         }
     }
 
@@ -114,6 +120,11 @@ class ImeOutputCoalescer {
  * preceding character, so the count is derived from the actual text before
  * the caret.
  *
+ * Boundary note (decided behavior, review M-3): if the range start lands
+ * INSIDE a surrogate pair (only possible when engine and field are already
+ * desynced — this is a fallback of a fallback), the orphaned low surrogate
+ * counts as one codepoint. Pinned by test.
+ *
  * @param units UTF-16 units the engine wants deleted
  * @param beforeCursor the field text actually before the caret, at least
  *   `units` long from a cooperative editor — shorter text is clamped (the
@@ -126,4 +137,24 @@ fun delKeyEventCount(units: Int, beforeCursor: String?): Int? {
     if (beforeCursor == null) return null
     val from = (beforeCursor.length - units).coerceAtLeast(0)
     return Character.codePointCount(beforeCursor, from, beforeCursor.length)
+}
+
+/**
+ * The DEL-fallback decision for one flush (review M-4 — extracted so the
+ * cap boundary is unit-testable, not buried in the service).
+ * [DelFallback.Send] means `keyEvents` DOWN/UP pairs (i.e. 2×keyEvents
+ * `sendKeyEvent` calls) inside the batch edit.
+ */
+sealed interface DelFallback {
+    data class Send(val keyEvents: Int) : DelFallback
+    /** Editor returned no text before the caret — no safe count exists. */
+    object SkipNoText : DelFallback
+    /** Bulk delete over the flood cap — skipped to avoid jank/ANR. */
+    data class SkipOverCap(val requested: Int, val cap: Int) : DelFallback
+}
+
+fun delFallbackPlan(dels: Int?, cap: Int): DelFallback = when {
+    dels == null -> DelFallback.SkipNoText
+    dels > cap -> DelFallback.SkipOverCap(dels, cap)
+    else -> DelFallback.Send(dels)
 }

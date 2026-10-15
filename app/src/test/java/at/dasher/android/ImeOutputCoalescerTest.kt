@@ -73,10 +73,21 @@ class ImeOutputCoalescerTest {
 
     @Test
     fun buffer_clear_emits_nothing() {
-        // dasher.h type 2: buffer clear carries empty text — the deltas
-        // cannot express it and the IME re-anchors instead. It must not
-        // poison pending state either.
+        // dasher.h type 2: buffer clear carries empty text — no delta applies.
         val c = ImeOutputCoalescer()
+        c.onEngineOutput(2, "")
+        assertNull(c.takeFlush())
+    }
+
+    @Test
+    fun buffer_clear_drops_pending_deltas() {
+        // Review I-1: pending state is a shadow copy of the engine buffer;
+        // dasher.h says subscribers must "clear your copy" on event 2. A
+        // reset after a stranded (null-connection) flush must never let
+        // stale deltas apply to post-reset context.
+        val c = ImeOutputCoalescer()
+        c.onEngineOutput(0, "stale")
+        c.onEngineOutput(1, "x")
         c.onEngineOutput(2, "")
         assertNull(c.takeFlush())
     }
@@ -162,5 +173,34 @@ class ImeOutputCoalescerTest {
     @Test
     fun del_count_zero_units_is_zero() {
         assertEquals(0, delKeyEventCount(0, "anything"))
+    }
+
+    @Test
+    fun del_count_mid_surrogate_pair_is_pinned_desync_behavior() {
+        // Review M-3: "a😀b" (4 units). units=2 → range starts at the LOW
+        // surrogate of the pair — only possible when engine and field are
+        // already desynced. The orphaned low surrogate counts as one
+        // codepoint + 'b' = 2. Decided behavior, not an accident.
+        assertEquals(2, delKeyEventCount(2, "a😀b"))
+    }
+
+    // ── delFallbackPlan: the cap decision is pure and boundary-tested ──
+
+    @Test
+    fun fallback_plan_at_cap_sends() {
+        assertEquals(DelFallback.Send(64), delFallbackPlan(64, 64))
+    }
+
+    @Test
+    fun fallback_plan_over_cap_skips() {
+        assertEquals(
+            DelFallback.SkipOverCap(65, 64),
+            delFallbackPlan(65, 64)
+        )
+    }
+
+    @Test
+    fun fallback_plan_null_is_skip_no_text() {
+        assertEquals(DelFallback.SkipNoText, delFallbackPlan(null, 64))
     }
 }

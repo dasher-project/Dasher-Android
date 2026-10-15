@@ -585,9 +585,10 @@ class DasherImeService : InputMethodService() {
      * OneNote/Word class), fall back to KEYCODE_DEL key events through the
      * target's own key pipeline (the same principle as Dasher-Windows #17's
      * deletion forwarding). DELs count CHARACTERS, not UTF-16 units
-     * (delKeyEventCount), and are capped: a bulk control-mode delete must
-     * not flood the target with hundreds of key events (jank/ANR) — beyond
-     * the cap the deletion is skipped with a log rather than corrupt text.
+     * (delKeyEventCount), and are capped (delFallbackPlan): a bulk
+     * control-mode delete must not flood the target with hundreds of key
+     * events (jank/ANR). A skipped deletion re-anchors the engine from the
+     * field (reanchorEngineToTarget) so the mismatch doesn't compound.
      *
      * No connection yet (field switch in flight): keep the deltas pending —
      * the next frame flushes them once a field is served. (Stranded deltas
@@ -596,6 +597,7 @@ class DasherImeService : InputMethodService() {
     private fun flushOutputToTarget() {
         val ic = currentInputConnection ?: return
         val flush = outputCoalescer.takeFlush() ?: return
+        var skippedDeletion = false
         ic.beginBatchEdit()
         try {
             if (flush.deleteUnits > 0) {
@@ -604,21 +606,30 @@ class DasherImeService : InputMethodService() {
                         flush.deleteUnits,
                         ic.getTextBeforeCursor(flush.deleteUnits, 0)?.toString()
                     )
-                    if (dels == null || dels > MAX_DEL_KEY_EVENTS) {
-                        Log.w(TAG, "DEL fallback skipped (dels=$dels, units=${flush.deleteUnits}) — " +
-                            "no safe count or bulk delete over the ${MAX_DEL_KEY_EVENTS}-event cap")
-                    } else {
-                        repeat(dels) {
-                            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
-                            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
-                        }
+                    when (val plan = delFallbackPlan(dels, MAX_DEL_KEY_EVENTS)) {
+                        is DelFallback.Send ->
+                            repeat(plan.keyEvents) {
+                                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+                                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
+                            }
+                        is DelFallback.SkipOverCap ->
+                            Log.w(TAG, "DEL fallback skipped: $plan — bulk delete over the " +
+                                "${MAX_DEL_KEY_EVENTS}-event flood cap")
+                        DelFallback.SkipNoText ->
+                            Log.w(TAG, "DEL fallback skipped: editor returned no text before caret")
                     }
+                    if (dels == null || dels > MAX_DEL_KEY_EVENTS) skippedDeletion = true
                 }
             }
             if (flush.insert.isNotEmpty()) ic.commitText(flush.insert, 1)
         } finally {
             ic.endBatchEdit()
         }
+        // Review M-1: a skipped deletion leaves engine and field desynced —
+        // re-anchor from the field so the mismatch doesn't compound on every
+        // later delete (seedBuffer re-reads the field and fires the type-2
+        // clear, dropping any stale pending state).
+        if (skippedDeletion) reanchorEngineToTarget()
     }
 
     // API 36+ (Android 16): measure the actual docked-root position in the
