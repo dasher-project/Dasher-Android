@@ -6,19 +6,35 @@ package at.dasher.android
  * OneNote and Word, though it works perfectly fine inside AquaMail").
  *
  * Dasher emits text as a stream of small deltas — one commit per node entry,
- * one delete per backspace-class control node. Applied delta-by-delta, each
- * op is a separate binder call that the TARGET app applies on its own
- * pipeline. Editors with synchronous InputConnections (AquaMail's EditText)
- * apply them in order and everything works. OneNote and Word route edits
- * through their own async editing engines (undo coalescing, autosave),
- * where rapid unbatched deltas can land out of order or partially — the
- * field ends up jumbled. (Android's version of the problem Dasher-Windows
- * #17 fixed by forwarding deletions through the target's own input path.)
+ * one delete per deletion. Applied delta-by-delta, each op is a separate
+ * binder call that the TARGET app applies on its own pipeline. Editors with
+ * synchronous InputConnections (AquaMail's EditText) apply them in order and
+ * everything works. OneNote and Word route edits through their own async
+ * editing engines (undo coalescing, autosave), where rapid unbatched deltas
+ * can land out of order or partially — the field ends up jumbled. (Android's
+ * version of the problem Dasher-Windows #17 fixed by forwarding deletions
+ * through the target's own input path.)
  *
  * The IME feeds every engine output event here as it fires during
  * dasher_frame(), then flushes ONCE after the frame inside a
  * beginBatchEdit/endBatchEdit pair: the editor sees a single atomic
  * "delete N, insert S" step instead of a burst of unrelated calls.
+ *
+ * Delete-event contract (see DasherCore src/CAPI.cpp) and its limits:
+ * type-1 events come from two engine paths. `editDelete` is a true
+ * backspace — it always removes the buffer TAIL, which is what the split
+ * arithmetic below assumes. `ctrlDelete` (control-mode delete nodes, if the
+ * user enables them) removes a range AT the cursor — possibly mid-buffer,
+ * possibly forwards — but the event carries only the removed string, with
+ * no position or direction, so no frontend can express it faithfully
+ * (deleteSurroundingText only deletes backwards from the caret). Those are
+ * approximated as tail deletes — exactly what the pre-batching code did
+ * per-event, so no regression; proper fix needs the event contract to grow
+ * position/direction (DasherCore issue filed).
+ *
+ * Type-2 (buffer clear) is ignored, and that is only safe because the flush
+ * runs at the end of every dasher_frame() while resets can only run between
+ * frames on the same thread — pending state is always empty at a reset.
  *
  * Pure logic — no InputConnection, so the delta arithmetic (including the
  * surrogate-pair and boundary-spanning cases) is unit-testable, following
@@ -37,19 +53,20 @@ class ImeOutputCoalescer {
 
     /**
      * Engine output event (dasher_output_callback semantics from dasher.h):
-     * 0 = commit `text`; 1 = delete `text` (a backspace — always removes the
-     * buffer TAIL); 2 = buffer clear (dasher_reset / alphabet change — no
-     * delta can express it; the IME re-anchors the engine separately, and
-     * committed text already belongs to the target field).
+     * 0 = commit `text`; 1 = delete `text` (see the class doc for the
+     * tail-delete assumption and its control-mode limits); 2 = buffer clear
+     * (dasher_reset / alphabet change — no delta can express it; the IME
+     * re-anchors the engine separately, and committed text already belongs
+     * to the target field).
      */
     fun onEngineOutput(type: Int, text: String) {
         when (type) {
             0 -> pendingInsert.append(text)
             1 -> {
                 if (text.isEmpty()) return
-                // The delete removes the engine buffer's tail. That tail is
-                // [text already flushed to the field][pending insert]. Split
-                // the deleted length across that boundary:
+                // A tail delete removes the engine buffer's tail. That tail
+                // is [text already flushed to the field][pending insert].
+                // Split the deleted length across that boundary:
                 if (text.length <= pendingInsert.length) {
                     // Entirely inside this frame's pending insert — those
                     // chars never reached the field; just cancel them.
@@ -62,7 +79,7 @@ class ImeOutputCoalescer {
                     pendingInsert.setLength(0)
                 }
             }
-            else -> {} // type 2 (buffer clear) — nothing to apply
+            else -> {} // type 2 (buffer clear) — nothing to apply; see class doc
         }
     }
 
@@ -78,4 +95,35 @@ class ImeOutputCoalescer {
         pendingInsert.setLength(0)
         return flush
     }
+
+    /** Drop any pending deltas (e.g. on a field switch — see onStartInput). */
+    fun clear() {
+        pendingDeleteUnits = 0
+        pendingInsert.setLength(0)
+    }
+}
+
+/**
+ * How many KEYCODE_DEL events delete the same text as
+ * `deleteSurroundingText(units, 0)` — the fallback path for editors that
+ * refuse delta deletions (bug #5 review: OneNote/Word class).
+ *
+ * One DEL deletes one CHARACTER (a codepoint), not one UTF-16 unit: a
+ * surrogate pair (e.g. any emoji — this IME ships an Emoji alphabet) is two
+ * units but ONE DEL. Sending `units` DELs would over-delete into the
+ * preceding character, so the count is derived from the actual text before
+ * the caret.
+ *
+ * @param units UTF-16 units the engine wants deleted
+ * @param beforeCursor the field text actually before the caret, at least
+ *   `units` long from a cooperative editor — shorter text is clamped (the
+ *   editor truncated the read; deleting what it reported is the best move)
+ * @return the DEL count, or null when no safe count exists (editor returned
+ *   no text — connection effectively dead)
+ */
+fun delKeyEventCount(units: Int, beforeCursor: String?): Int? {
+    if (units <= 0) return 0
+    if (beforeCursor == null) return null
+    val from = (beforeCursor.length - units).coerceAtLeast(0)
+    return Character.codePointCount(beforeCursor, from, beforeCursor.length)
 }

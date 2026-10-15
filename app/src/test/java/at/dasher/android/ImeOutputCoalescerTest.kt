@@ -96,4 +96,71 @@ class ImeOutputCoalescerTest {
         c.onEngineOutput(1, "")
         assertNull(c.takeFlush())
     }
+
+    @Test
+    fun separate_deletes_accumulate() {
+        val c = ImeOutputCoalescer()
+        c.onEngineOutput(1, "a")
+        c.onEngineOutput(1, "b")
+        assertEquals(ImeOutputCoalescer.Flush(2, ""), c.takeFlush())
+    }
+
+    @Test
+    fun interleaved_delete_commit_delete_spanning() {
+        // Field flushed "hello" last frame. This frame: engine deletes "lo",
+        // commits "p", then deletes "op" — the last delete spans the pending
+        // "p" (1 unit) and 1 flushed unit. Net: delete 2, insert nothing.
+        val c = ImeOutputCoalescer()
+        c.onEngineOutput(1, "lo")   // D=2
+        c.onEngineOutput(0, "p")    // P="p"
+        c.onEngineOutput(1, "op")   // spans: D += 2-1, P=""
+        assertEquals(ImeOutputCoalescer.Flush(3, ""), c.takeFlush())
+    }
+
+    @Test
+    fun clear_drops_pending_deltas() {
+        // Review I2: a field switch must never deliver the previous field's
+        // deltas to the new one.
+        val c = ImeOutputCoalescer()
+        c.onEngineOutput(0, "orphan")
+        c.onEngineOutput(1, "x")
+        c.clear()
+        assertNull(c.takeFlush())
+    }
+
+    // ── delKeyEventCount: DEL events count CHARACTERS, not UTF-16 units ──
+
+    @Test
+    fun del_count_for_plain_text_matches_units() {
+        assertEquals(3, delKeyEventCount(3, "abcde"))
+    }
+
+    @Test
+    fun del_count_collapses_surrogate_pairs() {
+        // Deleting "a😀" = 3 UTF-16 units but 2 CHARACTERS — sending 3 DELs
+        // would eat the character before the emoji (review C1).
+        assertEquals(2, delKeyEventCount(3, "xya😀"))
+    }
+
+    @Test
+    fun del_count_all_emoji_is_half_the_units() {
+        assertEquals(2, delKeyEventCount(4, "ab😀😀"))
+    }
+
+    @Test
+    fun del_count_null_before_cursor_is_unknown() {
+        // Editor returned no text — no safe count exists.
+        assertNull(delKeyEventCount(2, null))
+    }
+
+    @Test
+    fun del_count_clamps_when_editor_returned_less_text() {
+        // Editor truncated the read — delete what it reported, char-wise.
+        assertEquals(2, delKeyEventCount(5, "ab"))
+    }
+
+    @Test
+    fun del_count_zero_units_is_zero() {
+        assertEquals(0, delKeyEventCount(0, "anything"))
+    }
 }

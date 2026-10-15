@@ -11,6 +11,7 @@ import android.inputmethodservice.InputMethodService
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.text.InputType
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -558,6 +559,9 @@ class DasherImeService : InputMethodService() {
         // Output deltas are COALESCED, not applied — see flushOutputToTarget
         // (bug #5: OneNote/Word jumbled unbatched per-delta edits).
         eng.setOutputListener { type, text ->
+            if (type != 0 && type != 1 && type != 2) {
+                Log.w(TAG, "Unknown engine output event type $type (text='${text.take(32)}')")
+            }
             outputCoalescer.onEngineOutput(type, text)
         }
         eng.setMessageListener { _, msg ->
@@ -578,12 +582,16 @@ class DasherImeService : InputMethodService() {
      *
      * Deletion strategy: deleteSurroundingText first; if the editor reports
      * it did not handle it (WebView/custom editors — precisely the
-     * OneNote/Word class), fall back to KEYCODE_DEL key events, which go
-     * through the target's own key pipeline where a delta would be dropped
-     * (the same principle as Dasher-Windows #17's deletion forwarding).
+     * OneNote/Word class), fall back to KEYCODE_DEL key events through the
+     * target's own key pipeline (the same principle as Dasher-Windows #17's
+     * deletion forwarding). DELs count CHARACTERS, not UTF-16 units
+     * (delKeyEventCount), and are capped: a bulk control-mode delete must
+     * not flood the target with hundreds of key events (jank/ANR) — beyond
+     * the cap the deletion is skipped with a log rather than corrupt text.
      *
      * No connection yet (field switch in flight): keep the deltas pending —
-     * the next frame flushes them once a field is served.
+     * the next frame flushes them once a field is served. (Stranded deltas
+     * are dropped on a fresh field start — onStartInput.)
      */
     private fun flushOutputToTarget() {
         val ic = currentInputConnection ?: return
@@ -592,9 +600,18 @@ class DasherImeService : InputMethodService() {
         try {
             if (flush.deleteUnits > 0) {
                 if (!ic.deleteSurroundingText(flush.deleteUnits, 0)) {
-                    repeat(flush.deleteUnits) {
-                        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
-                        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
+                    val dels = delKeyEventCount(
+                        flush.deleteUnits,
+                        ic.getTextBeforeCursor(flush.deleteUnits, 0)?.toString()
+                    )
+                    if (dels == null || dels > MAX_DEL_KEY_EVENTS) {
+                        Log.w(TAG, "DEL fallback skipped (dels=$dels, units=${flush.deleteUnits}) — " +
+                            "no safe count or bulk delete over the ${MAX_DEL_KEY_EVENTS}-event cap")
+                    } else {
+                        repeat(dels) {
+                            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+                            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
+                        }
                     }
                 }
             }
@@ -633,14 +650,26 @@ class DasherImeService : InputMethodService() {
      * nobody asked. We serve motor-impaired AAC users who always want the
      * soft keyboard, so ask ourselves on every fresh focus of a real text
      * field (TYPE_NULL fields are non-editing views and stay untouched).
+     *
+     * Deliberate consequence (review M1): the Hide button dismisses the
+     * keyboard only until the next field focus — on hardware-keyboard devices
+     * nothing else would ever bring it back, and "keyboard follows focus" is
+     * the accessibility stance this IME already takes. Hide still works
+     * within a field (re-focuses of the same field arrive as restarting=true).
      */
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
         super.onStartInput(info, restarting)
-        if (!restarting && info != null &&
-            info.inputType != android.text.InputType.TYPE_NULL &&
-            !isInputViewShown
-        ) {
-            requestShowSelf(0)
+        if (!restarting) {
+            // Fresh target field: any deltas still pending from the previous
+            // field must NEVER land here (review I2 — for an AAC user, text
+            // appearing in the wrong app's field is a trust failure).
+            outputCoalescer.clear()
+            if (info != null &&
+                info.inputType != InputType.TYPE_NULL &&
+                !isInputViewShown
+            ) {
+                requestShowSelf(0)
+            }
         }
     }
 
@@ -692,5 +721,13 @@ class DasherImeService : InputMethodService() {
         const val TAG = "DasherImeService"
         private val MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT
         private val WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT
+
+        /**
+         * Upper bound on KEYCODE_DEL fallback events per flush (review C2):
+         * each is a key event the target must process — a bulk control-mode
+         * delete beyond this cap is skipped with a log (engine/field desync
+         * is recoverable; an ANR or an editor dropping half the flood is not).
+         */
+        const val MAX_DEL_KEY_EVENTS = 64
     }
 }
