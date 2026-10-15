@@ -220,6 +220,19 @@ class DasherImeService : InputMethodService() {
 
         Handler(Looper.getMainLooper()).post {
             createEngine()
+            // Self-heal a stale floating state BEFORE evaluating the saved
+            // preference (#73). onCreateInputView can run again on a LIVE
+            // instance (configuration change; some OEM IME-switch flows keep
+            // the service alive) — `floating` is then still true from the
+            // previous view generation while the overlay holds a dead canvas,
+            // and the restore below would early-return inside
+            // enterFloatingMode(): the keyboard presented as floating over a
+            // full-height docked root. Heide (v0.1.21): "The IME still starts
+            // in float mode, then you have to tap on dock. Then it's fine
+            // unless you switch keyboards." Exit to a clean docked state
+            // first (without touching the saved preference — that is decided
+            // right after), then let the preference speak.
+            if (floating) exitFloatingMode(persist = false)
             // Restore the user's last mode. Only when the overlay permission
             // is already granted — without it enterFloatingMode would bounce
             // the user to system settings on every keyboard show (the
@@ -399,10 +412,24 @@ class DasherImeService : InputMethodService() {
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
     }
 
-    private fun exitFloatingMode() {
+    /**
+     * @param persist also write "docked" to the saved start mode (default).
+     *   Pass false when the exit is not the user's choice — self-healing a
+     *   stale state (#73) or unbinding (#73): the saved mode stays what the
+     *   user last chose deliberately.
+     */
+    private fun exitFloatingMode(persist: Boolean = true) {
         if (!floating) return
-        val fv = floatingView ?: return
-        try { windowManager.removeView(fv) } catch (_: Exception) {}
+        // The overlay window may already be gone (removeView failure on an
+        // earlier exit — Samsung overlay quirks, cf. #46 — or a system
+        // teardown). Never early-return on that (#73): the mode state and
+        // the docked layout must be restored regardless, or a dead overlay
+        // keeps presenting over every subsequent show.
+        floatingView?.let { fv ->
+            try { windowManager.removeView(fv) } catch (e: Exception) {
+                Log.w(TAG, "Floating overlay removeView failed: ${e.message}")
+            }
+        }
         // Detach the toolbar from floating; re-insert at the TOP of the
         // docked root (index 0, above the Float/Hide bar — where it was
         // before floating). Review I1: the toolbar was being orphaned.
@@ -417,7 +444,7 @@ class DasherImeService : InputMethodService() {
         setDockedHeight(imeHeightPx())
         floatingView = null
         floating = false
-        saveStartMode(false)
+        if (persist) saveStartMode(false)
         floatDockBtn?.text = "Float"
         floatDockBtn?.setOnClickListener { enterFloatingMode() }
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
@@ -426,6 +453,14 @@ class DasherImeService : InputMethodService() {
     // ── Engine ─────────────────────────────────────────────────────────────
 
     private fun createEngine() {
+        // Re-entry guard (#73): onCreateInputView can run again on a LIVE
+        // instance (configuration change; some OEM IME-switch flows keep the
+        // service alive). The engine is per-process by design ("created once
+        // per process", #53/#56) — a second one would leak the first with
+        // BOTH running dasher_frame loops into the same canvas. Reuse it;
+        // the new canvas wires itself through the fields, and its size
+        // callback reaches the engine (it is no longer null here).
+        if (engine != null) return
         val dataDir = DataInstaller.ensureInstalled(this)
         // User state (settings, training) lives outside the data dir so a
         // data re-extraction can never wipe it.
@@ -668,6 +703,18 @@ class DasherImeService : InputMethodService() {
      * the accessibility stance this IME already takes. Hide still works
      * within a field (re-focuses of the same field arrive as restarting=true).
      */
+    /**
+     * The input binding is going away — an IME switch, or the served app
+     * finished. Some OEMs keep the IME service alive across switches (#73):
+     * the floating overlay must not keep hovering over whatever comes next
+     * (another keyboard, the home screen). persist=false — the saved mode
+     * stays the user's deliberate choice; it is re-evaluated on the next show.
+     */
+    override fun onUnbindInput() {
+        super.onUnbindInput()
+        if (floating) exitFloatingMode(persist = false)
+    }
+
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
         super.onStartInput(info, restarting)
         if (!restarting) {
