@@ -11,9 +11,11 @@ import android.inputmethodservice.InputMethodService
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.text.InputType
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +36,12 @@ import at.dasher.android.ui.DasherCanvasView
 class DasherImeService : InputMethodService() {
 
     private var engine: DasherEngine? = null
+
+    // Bug #5 ("letters get completely jumbled up in OneNote and Word"):
+    // engine deltas coalesce here and flush ONCE per frame as one atomic
+    // batch edit — see ImeOutputCoalescer.
+    private val outputCoalescer = ImeOutputCoalescer()
+
     private var canvasView: DasherCanvasView? = null
     private var canvasHost: android.widget.FrameLayout? = null
     private var dockedRoot: LinearLayout? = null
@@ -424,6 +432,10 @@ class DasherImeService : InputMethodService() {
         val userDir = DataInstaller.userDir(this).apply { mkdirs() }
         val eng = DasherEngine.create(dataDir, userDir.absolutePath) { commands, strings ->
             canvasView?.submitFrame(commands, strings)
+            // All of this frame's engine deltas have now fired — apply them
+            // to the target field as ONE atomic edit (bug #5: unbatched
+            // deltas garble text in OneNote/Word's async editors).
+            flushOutputToTarget()
         }
         if (eng == null) {
             Log.e(TAG, "IME engine creation failed (dataDir=$dataDir)")
@@ -544,12 +556,13 @@ class DasherImeService : InputMethodService() {
         // Per-engine-instance listeners (#56): the JNI dispatch passes the
         // handle; only THIS engine's listener is called. No cross-talk with
         // the main app's engine.
+        // Output deltas are COALESCED, not applied — see flushOutputToTarget
+        // (bug #5: OneNote/Word jumbled unbatched per-delta edits).
         eng.setOutputListener { type, text ->
-            val ic = currentInputConnection
-            if (ic != null) {
-                if (type == 0) ic.commitText(text, 1)
-                else if (text.isNotEmpty()) ic.deleteSurroundingText(text.length, 0)
+            if (type != 0 && type != 1 && type != 2) {
+                Log.w(TAG, "Unknown engine output event type $type (text='${text.take(32)}')")
             }
+            outputCoalescer.onEngineOutput(type, text)
         }
         eng.setMessageListener { _, msg ->
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
@@ -559,6 +572,64 @@ class DasherImeService : InputMethodService() {
             cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
         }
         eng.clearSpeakListener() // IME doesn't speak (the app does)
+    }
+
+    /**
+     * Applies the coalesced frame output to the target field as one atomic
+     * batch edit (bug #5): first the deletion, then the insertion, inside a
+     * beginBatchEdit/endBatchEdit pair so the editor cannot reformat between
+     * the two halves.
+     *
+     * Deletion strategy: deleteSurroundingText first; if the editor reports
+     * it did not handle it (WebView/custom editors — precisely the
+     * OneNote/Word class), fall back to KEYCODE_DEL key events through the
+     * target's own key pipeline (the same principle as Dasher-Windows #17's
+     * deletion forwarding). DELs count CHARACTERS, not UTF-16 units
+     * (delKeyEventCount), and are capped (delFallbackPlan): a bulk
+     * control-mode delete must not flood the target with hundreds of key
+     * events (jank/ANR). A skipped deletion re-anchors the engine from the
+     * field (reanchorEngineToTarget) so the mismatch doesn't compound.
+     *
+     * No connection yet (field switch in flight): keep the deltas pending —
+     * the next frame flushes them once a field is served. (Stranded deltas
+     * are dropped on a fresh field start — onStartInput.)
+     */
+    private fun flushOutputToTarget() {
+        val ic = currentInputConnection ?: return
+        val flush = outputCoalescer.takeFlush() ?: return
+        var skippedDeletion = false
+        ic.beginBatchEdit()
+        try {
+            if (flush.deleteUnits > 0) {
+                if (!ic.deleteSurroundingText(flush.deleteUnits, 0)) {
+                    val dels = delKeyEventCount(
+                        flush.deleteUnits,
+                        ic.getTextBeforeCursor(flush.deleteUnits, 0)?.toString()
+                    )
+                    when (val plan = delFallbackPlan(dels, MAX_DEL_KEY_EVENTS)) {
+                        is DelFallback.Send ->
+                            repeat(plan.keyEvents) {
+                                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+                                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
+                            }
+                        is DelFallback.SkipOverCap ->
+                            Log.w(TAG, "DEL fallback skipped: $plan — bulk delete over the " +
+                                "${MAX_DEL_KEY_EVENTS}-event flood cap")
+                        DelFallback.SkipNoText ->
+                            Log.w(TAG, "DEL fallback skipped: editor returned no text before caret")
+                    }
+                    if (dels == null || dels > MAX_DEL_KEY_EVENTS) skippedDeletion = true
+                }
+            }
+            if (flush.insert.isNotEmpty()) ic.commitText(flush.insert, 1)
+        } finally {
+            ic.endBatchEdit()
+        }
+        // Review M-1: a skipped deletion leaves engine and field desynced —
+        // re-anchor from the field so the mismatch doesn't compound on every
+        // later delete (seedBuffer re-reads the field and fires the type-2
+        // clear, dropping any stale pending state).
+        if (skippedDeletion) reanchorEngineToTarget()
     }
 
     // API 36+ (Android 16): measure the actual docked-root position in the
@@ -579,6 +650,38 @@ class DasherImeService : InputMethodService() {
         outInsets.contentTopInsets = loc[1]
         outInsets.visibleTopInsets = loc[1]
         outInsets.touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
+    }
+
+    /**
+     * Bug #5b ("Dasher wouldn't pop up on Chrome… on the MuMu emulator, I had
+     * to switch to Firefox"): while a hardware keyboard is attached (emulators
+     * default to one), Chrome never asks the system to show the IME when a
+     * field gains focus — Firefox asks regardless, which is why it worked
+     * there. onEvaluateInputViewShown()=true only helps when something asks;
+     * nobody asked. We serve motor-impaired AAC users who always want the
+     * soft keyboard, so ask ourselves on every fresh focus of a real text
+     * field (TYPE_NULL fields are non-editing views and stay untouched).
+     *
+     * Deliberate consequence (review M1): the Hide button dismisses the
+     * keyboard only until the next field focus — on hardware-keyboard devices
+     * nothing else would ever bring it back, and "keyboard follows focus" is
+     * the accessibility stance this IME already takes. Hide still works
+     * within a field (re-focuses of the same field arrive as restarting=true).
+     */
+    override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInput(info, restarting)
+        if (!restarting) {
+            // Fresh target field: any deltas still pending from the previous
+            // field must NEVER land here (review I2 — for an AAC user, text
+            // appearing in the wrong app's field is a trust failure).
+            outputCoalescer.clear()
+            if (info != null &&
+                info.inputType != InputType.TYPE_NULL &&
+                !isInputViewShown
+            ) {
+                requestShowSelf(0)
+            }
+        }
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -629,5 +732,13 @@ class DasherImeService : InputMethodService() {
         const val TAG = "DasherImeService"
         private val MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT
         private val WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT
+
+        /**
+         * Upper bound on KEYCODE_DEL fallback events per flush (review C2):
+         * each is a key event the target must process — a bulk control-mode
+         * delete beyond this cap is skipped with a log (engine/field desync
+         * is recoverable; an ANR or an editor dropping half the flood is not).
+         */
+        const val MAX_DEL_KEY_EVENTS = 64
     }
 }
