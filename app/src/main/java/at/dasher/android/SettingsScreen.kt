@@ -160,6 +160,9 @@ fun SettingsScreen(
                                 onSelect = onInputModeSelected
                             )
                         }
+                        // #75: the IME's dock/float start behaviour — read by the
+                        // keyboard from the shared dasher_ime prefs.
+                        item { KeyboardStartSection() }
                     }
                     if (tabGroup == "Customization") {
                         item { AppearanceSection(engine, bump) }
@@ -245,6 +248,43 @@ private fun PrivacyContent(context: android.content.Context) {
  * sensor; joystick with a connected gamepad), mirroring Apple's Access settings
  * compatibility filter.
  */
+
+/**
+ * #75: IME start behaviour. The keyboard normally reopens in its last-used
+ * mode (docked or floating); users who want it docked EVERY time —
+ * regardless of any earlier Float use — pin that here. Written to the
+ * shared `dasher_ime` prefs, read by [DasherImeService.startModeIsFloating].
+ */
+@Composable
+private fun KeyboardStartSection() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember {
+        context.getSharedPreferences("dasher_ime", android.content.Context.MODE_PRIVATE)
+    }
+    var alwaysDocked by remember { mutableStateOf(prefs.getBoolean("always_docked", false)) }
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Keyboard always starts docked", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "The Dasher keyboard reopens docked at the bottom of the screen every time, " +
+                        "even if you floated it before. Turn off to reopen in the last-used mode.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = alwaysDocked, onCheckedChange = { v ->
+                prefs.edit().putBoolean("always_docked", v).apply()
+                alwaysDocked = v
+            })
+        }
+    }
+}
+
 @Composable
 private fun InputMethodRow(
     current: InputMode,
