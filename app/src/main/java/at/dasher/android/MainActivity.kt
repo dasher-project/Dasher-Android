@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
     // via the dasher_ime prefs — toggle in the app, restore in the keyboard,
     // and vice versa.
     private var emojiReturnAlphabet: String? = null
-    private val imePrefs get() = getSharedPreferences("dasher_ime", MODE_PRIVATE)
+    private val imePrefs get() = getSharedPreferences(ImePrefs.NAME, MODE_PRIVATE)
     private var palettes by mutableStateOf<List<String>>(emptyList())
     private var currentPalette by mutableStateOf("")
     private var speedPercent by mutableStateOf(100)
@@ -469,10 +469,10 @@ class MainActivity : ComponentActivity() {
                 eng.setAlphabet(target)
             }
             emojiReturnAlphabet = null
-            imePrefs.edit().remove("emoji_return_alphabet").apply()
+            imePrefs.edit().remove(ImePrefs.EMOJI_RETURN_ALPHABET).apply()
         } else {
             emojiReturnAlphabet = current
-            imePrefs.edit().putString("emoji_return_alphabet", current).apply()
+            imePrefs.edit().putString(ImePrefs.EMOJI_RETURN_ALPHABET, current).apply()
             eng.setAlphabet("Emoji")
         }
         currentAlphabet = eng.getCurrentAlphabet()

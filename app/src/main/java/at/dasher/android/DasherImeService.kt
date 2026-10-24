@@ -55,21 +55,30 @@ class DasherImeService : InputMethodService() {
 
     // Last-used mode (dock/float), restored on the next keyboard show so
     // the IME opens where the user left it (Heide: "start it directly as
-    // docked, like other keyboards do"). Docked is the default.
-    private val imePrefs get() = getSharedPreferences("dasher_ime", MODE_PRIVATE)
+    // docked, like other keyboards do"). Docked is the default. Keys and
+    // values: [ImePrefs] — shared with MainActivity and SettingsScreen.
+    private val imePrefs get() = getSharedPreferences(ImePrefs.NAME, MODE_PRIVATE)
 
     private fun saveStartMode(floatingNow: Boolean) {
         Log.d(TAG, "saveStartMode($floatingNow)")
-        imePrefs.edit().putString("start_mode", if (floatingNow) "floating" else "docked").apply()
+        imePrefs.edit().putString(
+            ImePrefs.START_MODE,
+            if (floatingNow) ImePrefs.START_MODE_FLOATING else ImePrefs.START_MODE_DOCKED
+        ).apply()
     }
 
-    private fun startModeIsFloating(): Boolean {
-        // #75 escape hatch: users who ALWAYS want docked (Heide reported the
-        // float restore three times) pin it in Settings → Input; any saved
-        // float preference is then ignored on every keyboard show.
-        if (imePrefs.getBoolean("always_docked", false)) return false
-        return imePrefs.getString("start_mode", "docked") == "floating"
-    }
+    /**
+     * #75 escape hatch: users who ALWAYS want docked (Heide reported the
+     * float restore three times) pin it in Settings → Input; any saved
+     * float preference is then ignored on every keyboard show. The decision
+     * itself is [shouldRestoreFloating] (pure, unit-tested).
+     */
+    private fun startModeIsFloating(): Boolean =
+        shouldRestoreFloating(
+            savedMode = imePrefs.getString(ImePrefs.START_MODE, null),
+            alwaysDocked = imePrefs.getBoolean(ImePrefs.ALWAYS_DOCKED, false),
+            overlayPermissionGranted = android.provider.Settings.canDrawOverlays(this),
+        )
 
     // ── Emoji alphabet toggle (#61 option 2) ───────────────────────────────
 
@@ -93,7 +102,7 @@ class DasherImeService : InputMethodService() {
                 eng.setAlphabet(target)
             }
             emojiReturnAlphabet = null
-            imePrefs.edit().remove("emoji_return_alphabet").apply()
+            imePrefs.edit().remove(ImePrefs.EMOJI_RETURN_ALPHABET).apply()
             btn.text = "😀"
             btn.contentDescription = "Switch to emoji keyboard"
             // The alphabet switch rebuilt the model from scratch — re-seed
@@ -102,7 +111,7 @@ class DasherImeService : InputMethodService() {
             reanchorEngineToTarget()
         } else {
             emojiReturnAlphabet = current
-            imePrefs.edit().putString("emoji_return_alphabet", current).apply()
+            imePrefs.edit().putString(ImePrefs.EMOJI_RETURN_ALPHABET, current).apply()
             eng.setAlphabet("Emoji")
             btn.text = "Abc"
             btn.contentDescription = "Switch back to text keyboard"
@@ -248,23 +257,27 @@ class DasherImeService : InputMethodService() {
             // unless you switch keyboards." Exit to a clean docked state
             // first (without touching the saved preference — that is decided
             // right after), then let the preference speak.
-            if (floating) exitFloatingMode(persist = false, reason = "selfheal")
+            // Capture the PRE-self-heal state (#75 review I-1): the stale
+            // floating flag is the single most valuable signal for the next
+            // report (#73's exact path) — reading it after the exit below
+            // would always report false.
+            val floatingBefore = floating
+            if (floatingBefore) exitFloatingMode(persist = false, reason = "selfheal")
             // Restore the user's last mode. Only when the overlay permission
             // is already granted — without it enterFloatingMode would bounce
             // the user to system settings on every keyboard show (the
             // permission prompt belongs to an explicit Float tap).
-            val alwaysDocked = imePrefs.getBoolean("always_docked", false)
-            val restoreFloating = startModeIsFloating() &&
-                android.provider.Settings.canDrawOverlays(this)
-            Log.d(TAG, "mode restore: pref=${imePrefs.getString("start_mode", "<unset>")}, " +
-                "alwaysDocked=$alwaysDocked, restoreFloating=$restoreFloating")
+            val alwaysDocked = imePrefs.getBoolean(ImePrefs.ALWAYS_DOCKED, false)
+            val restoreFloating = startModeIsFloating()
+            Log.d(TAG, "mode restore: pref=${imePrefs.getString(ImePrefs.START_MODE, "<unset>")}, " +
+                "alwaysDocked=$alwaysDocked, floatingBefore=$floatingBefore, restoreFloating=$restoreFloating")
             // #75 diagnostics: three user reports could not be reproduced on
             // an emulator — capture the decision inputs so the next report
             // comes with the actual state machine. No-op unless opted in.
             AnalyticsService.capture("ime_mode_restore", mapOf(
-                "saved_mode" to (imePrefs.getString("start_mode", "<unset>") ?: "<unset>"),
+                "saved_mode" to (imePrefs.getString(ImePrefs.START_MODE, "<unset>") ?: "<unset>"),
                 "always_docked" to alwaysDocked,
-                "floating_before" to floating,
+                "floating_before" to floatingBefore,
                 "restored_floating" to restoreFloating,
                 "overlay_perm" to android.provider.Settings.canDrawOverlays(this),
             ))
@@ -558,7 +571,7 @@ class DasherImeService : InputMethodService() {
         emojiToggleBtn?.visibility = if (emojiAvailable) View.VISIBLE else View.GONE
         if (emojiAvailable && eng.getCurrentAlphabet() == "Emoji") {
             if (emojiReturnAlphabet == null) {
-                emojiReturnAlphabet = imePrefs.getString("emoji_return_alphabet", null)
+                emojiReturnAlphabet = imePrefs.getString(ImePrefs.EMOJI_RETURN_ALPHABET, null)
             }
             emojiToggleBtn?.text = "Abc"
             emojiToggleBtn?.contentDescription = "Switch back to text keyboard"

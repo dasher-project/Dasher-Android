@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
@@ -253,34 +255,46 @@ private fun PrivacyContent(context: android.content.Context) {
  * #75: IME start behaviour. The keyboard normally reopens in its last-used
  * mode (docked or floating); users who want it docked EVERY time —
  * regardless of any earlier Float use — pin that here. Written to the
- * shared `dasher_ime` prefs, read by [DasherImeService.startModeIsFloating].
+ * shared [ImePrefs] store, read by [DasherImeService.startModeIsFloating].
  */
 @Composable
 private fun KeyboardStartSection() {
     val context = androidx.compose.ui.platform.LocalContext.current
     val prefs = remember {
-        context.getSharedPreferences("dasher_ime", android.content.Context.MODE_PRIVATE)
+        context.getSharedPreferences(ImePrefs.NAME, android.content.Context.MODE_PRIVATE)
     }
-    var alwaysDocked by remember { mutableStateOf(prefs.getBoolean("always_docked", false)) }
+    var alwaysDocked by remember { mutableStateOf(prefs.getBoolean(ImePrefs.ALWAYS_DOCKED, false)) }
+    val onToggle: (Boolean) -> Unit = { v ->
+        prefs.edit().putBoolean(ImePrefs.ALWAYS_DOCKED, v).apply()
+        alwaysDocked = v
+        // #75 review M7: how many users need the escape hatch is the
+        // strongest signal about whether the default behaviour is wrong.
+        AnalyticsService.capture("ime_always_docked_changed", mapOf("enabled" to v))
+    }
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        // Accessible toggle (#75 review M8): the whole row is the touch
+        // target (motor-impaired users) and TalkBack announces label +
+        // state as one element; the Switch itself has no separate handler.
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .toggleable(
+                    value = alwaysDocked,
+                    role = Role.Switch,
+                    onValueChange = onToggle,
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Keyboard always starts docked", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.always_docked_title), style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    "The Dasher keyboard reopens docked at the bottom of the screen every time, " +
-                        "even if you floated it before. Turn off to reopen in the last-used mode.",
+                    stringResource(R.string.always_docked_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Switch(checked = alwaysDocked, onCheckedChange = { v ->
-                prefs.edit().putBoolean("always_docked", v).apply()
-                alwaysDocked = v
-            })
+            Switch(checked = alwaysDocked, onCheckedChange = null)
         }
     }
 }
