@@ -1,7 +1,5 @@
 package at.dasher.android
 
-import android.content.Context
-
 /**
  * SharedPreferences contract shared by the IME service, MainActivity and the
  * Settings screen (#75). One definition — a typo'd literal in any one of the

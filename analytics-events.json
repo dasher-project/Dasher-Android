@@ -80,7 +80,7 @@
       "description": "The IME left floating mode. Android only.",
       "properties": {
         "persist": { "type": "boolean", "description": "false = system-driven cleanup, the saved preference is unchanged" },
-        "reason": { "type": "string", "enum": ["button", "selfheal", "unbind"], "description": "button = user tapped Dock; selfheal = stale-state cleanup at show; unbind = input binding went away (IME switch)" }
+        "reason": { "type": "string", "enum": ["button", "selfheal", "unbind", "destroy"], "description": "button = user tapped Dock; selfheal = stale-state cleanup at show; unbind = input binding went away (IME switch); destroy = the IME service was destroyed while floating" }
       },
       "pii": false
     },

@@ -41,7 +41,9 @@ class ImePrefsTest {
     }
 
     @Test
-    fun unset_saved_mode_never_restores_even_without_the_pin() {
-        assertFalse(shouldRestoreFloating(null, alwaysDocked = false, overlayPermissionGranted = true))
+    fun unset_saved_mode_never_restores_even_with_the_pin_redundant() {
+        // Same inputs as default_state_stays_docked but WITH the pin set:
+        // the pin must not somehow force floating (name true to inputs).
+        assertFalse(shouldRestoreFloating(null, alwaysDocked = true, overlayPermissionGranted = true))
     }
 }

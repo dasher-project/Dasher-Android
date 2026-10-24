@@ -268,18 +268,25 @@ class DasherImeService : InputMethodService() {
             // the user to system settings on every keyboard show (the
             // permission prompt belongs to an explicit Float tap).
             val alwaysDocked = imePrefs.getBoolean(ImePrefs.ALWAYS_DOCKED, false)
-            val restoreFloating = startModeIsFloating()
-            Log.d(TAG, "mode restore: pref=${imePrefs.getString(ImePrefs.START_MODE, "<unset>")}, " +
+            val overlayPerm = android.provider.Settings.canDrawOverlays(this)
+            val savedModeRaw = imePrefs.getString(ImePrefs.START_MODE, null)
+            val restoreFloating = shouldRestoreFloating(
+                savedMode = savedModeRaw,
+                alwaysDocked = alwaysDocked,
+                overlayPermissionGranted = overlayPerm,
+            )
+            val savedMode = savedModeRaw ?: "<unset>"
+            Log.d(TAG, "mode restore: pref=$savedMode, " +
                 "alwaysDocked=$alwaysDocked, floatingBefore=$floatingBefore, restoreFloating=$restoreFloating")
             // #75 diagnostics: three user reports could not be reproduced on
             // an emulator — capture the decision inputs so the next report
             // comes with the actual state machine. No-op unless opted in.
             AnalyticsService.capture("ime_mode_restore", mapOf(
-                "saved_mode" to (imePrefs.getString(ImePrefs.START_MODE, "<unset>") ?: "<unset>"),
+                "saved_mode" to savedMode,
                 "always_docked" to alwaysDocked,
                 "floating_before" to floatingBefore,
                 "restored_floating" to restoreFloating,
-                "overlay_perm" to android.provider.Settings.canDrawOverlays(this),
+                "overlay_perm" to overlayPerm,
             ))
             if (restoreFloating) {
                 enterFloatingMode(reason = "restore")
@@ -805,6 +812,12 @@ class DasherImeService : InputMethodService() {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy (floating=$floating)")
         if (floating) {
+            // Event balance (#75 review M3): a destroy while floating ends
+            // the float session without the unbind/button exit paths —
+            // emit the exit so enter/exit correlation stays meaningful.
+            AnalyticsService.capture("ime_float_exit", mapOf(
+                "persist" to false, "reason" to "destroy",
+            ))
             floatingView?.let { fv -> try { windowManager.removeView(fv) } catch (_: Exception) {} }
         }
         // Per-engine-instance cleanup (#56): destroy() unregisters all
