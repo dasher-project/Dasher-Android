@@ -17,6 +17,8 @@
     <string name="toolbar_settings">Settings</string>
     <string name="input_method_title">Input method</string>
     <string name="input_method_touch">Touch (drag on the canvas)</string>
+    <string name="always_docked_title">Keyboard always starts docked</string>
+    <string name="always_docked_desc">The Dasher keyboard reopens docked at the bottom of the screen every time, even if you floated it before. While typing, tapping Float still floats the keyboard until you dock it again — this setting only decides where the keyboard starts.</string>
     <string name="input_method_tilt">Tilt (hold the device, tilt to steer)</string>
     <string name="input_method_joystick">Joystick / gamepad (deflect a stick to steer)</string>
 

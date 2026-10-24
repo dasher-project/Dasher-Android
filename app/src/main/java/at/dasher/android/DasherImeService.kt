@@ -55,15 +55,30 @@ class DasherImeService : InputMethodService() {
 
     // Last-used mode (dock/float), restored on the next keyboard show so
     // the IME opens where the user left it (Heide: "start it directly as
-    // docked, like other keyboards do"). Docked is the default.
-    private val imePrefs get() = getSharedPreferences("dasher_ime", MODE_PRIVATE)
+    // docked, like other keyboards do"). Docked is the default. Keys and
+    // values: [ImePrefs] — shared with MainActivity and SettingsScreen.
+    private val imePrefs get() = getSharedPreferences(ImePrefs.NAME, MODE_PRIVATE)
 
     private fun saveStartMode(floatingNow: Boolean) {
-        imePrefs.edit().putString("start_mode", if (floatingNow) "floating" else "docked").apply()
+        Log.d(TAG, "saveStartMode($floatingNow)")
+        imePrefs.edit().putString(
+            ImePrefs.START_MODE,
+            if (floatingNow) ImePrefs.START_MODE_FLOATING else ImePrefs.START_MODE_DOCKED
+        ).apply()
     }
 
+    /**
+     * #75 escape hatch: users who ALWAYS want docked (Heide reported the
+     * float restore three times) pin it in Settings → Input; any saved
+     * float preference is then ignored on every keyboard show. The decision
+     * itself is [shouldRestoreFloating] (pure, unit-tested).
+     */
     private fun startModeIsFloating(): Boolean =
-        imePrefs.getString("start_mode", "docked") == "floating"
+        shouldRestoreFloating(
+            savedMode = imePrefs.getString(ImePrefs.START_MODE, null),
+            alwaysDocked = imePrefs.getBoolean(ImePrefs.ALWAYS_DOCKED, false),
+            overlayPermissionGranted = android.provider.Settings.canDrawOverlays(this),
+        )
 
     // ── Emoji alphabet toggle (#61 option 2) ───────────────────────────────
 
@@ -87,7 +102,7 @@ class DasherImeService : InputMethodService() {
                 eng.setAlphabet(target)
             }
             emojiReturnAlphabet = null
-            imePrefs.edit().remove("emoji_return_alphabet").apply()
+            imePrefs.edit().remove(ImePrefs.EMOJI_RETURN_ALPHABET).apply()
             btn.text = "😀"
             btn.contentDescription = "Switch to emoji keyboard"
             // The alphabet switch rebuilt the model from scratch — re-seed
@@ -96,7 +111,7 @@ class DasherImeService : InputMethodService() {
             reanchorEngineToTarget()
         } else {
             emojiReturnAlphabet = current
-            imePrefs.edit().putString("emoji_return_alphabet", current).apply()
+            imePrefs.edit().putString(ImePrefs.EMOJI_RETURN_ALPHABET, current).apply()
             eng.setAlphabet("Emoji")
             btn.text = "Abc"
             btn.contentDescription = "Switch back to text keyboard"
@@ -107,8 +122,17 @@ class DasherImeService : InputMethodService() {
     // decor. setLayoutParams performs NO type conversion — LinearLayout
     // .LayoutParams survives until the next measure pass casts them and
     // crashes (PostHog #43). This helper makes the wrong type impossible.
+    //
+    // Gravity.BOTTOM is load-bearing (#75): a no-gravity FrameLayout child
+    // lands TOP|START in the decor — on edge-to-edge-enforced Android
+    // (15/16) nothing re-docks it, so the "docked" keyboard rendered as a
+    // ~250px strip at the TOP of the screen over the app. To users that
+    // presented exactly as "the IME still starts in float mode" (Heide,
+    // three consecutive reports, repro'd on the API 35 emulator).
     private fun setDockedHeight(heightPx: Int) {
-        dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(MATCH_PARENT, heightPx)
+        dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(
+            MATCH_PARENT, heightPx, Gravity.BOTTOM
+        )
     }
 
     // Shared height formula (was duplicated between onCreateInputView and
@@ -123,6 +147,7 @@ class DasherImeService : InputMethodService() {
     private var editingToolbar: EditingToolbar? = null
 
     override fun onCreateInputView(): View {
+        Log.d(TAG, "onCreateInputView (instance=${System.identityHashCode(this)}, floating=$floating)")
         val density = resources.displayMetrics.density
         val nightMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
@@ -232,15 +257,39 @@ class DasherImeService : InputMethodService() {
             // unless you switch keyboards." Exit to a clean docked state
             // first (without touching the saved preference — that is decided
             // right after), then let the preference speak.
-            if (floating) exitFloatingMode(persist = false)
+            // Capture the PRE-self-heal state (#75 review I-1): the stale
+            // floating flag is the single most valuable signal for the next
+            // report (#73's exact path) — reading it after the exit below
+            // would always report false.
+            val floatingBefore = floating
+            if (floatingBefore) exitFloatingMode(persist = false, reason = "selfheal")
             // Restore the user's last mode. Only when the overlay permission
             // is already granted — without it enterFloatingMode would bounce
             // the user to system settings on every keyboard show (the
             // permission prompt belongs to an explicit Float tap).
-            if (startModeIsFloating() &&
-                android.provider.Settings.canDrawOverlays(this)
-            ) {
-                enterFloatingMode()
+            val alwaysDocked = imePrefs.getBoolean(ImePrefs.ALWAYS_DOCKED, false)
+            val overlayPerm = android.provider.Settings.canDrawOverlays(this)
+            val savedModeRaw = imePrefs.getString(ImePrefs.START_MODE, null)
+            val restoreFloating = shouldRestoreFloating(
+                savedMode = savedModeRaw,
+                alwaysDocked = alwaysDocked,
+                overlayPermissionGranted = overlayPerm,
+            )
+            val savedMode = savedModeRaw ?: "<unset>"
+            Log.d(TAG, "mode restore: pref=$savedMode, " +
+                "alwaysDocked=$alwaysDocked, floatingBefore=$floatingBefore, restoreFloating=$restoreFloating")
+            // #75 diagnostics: three user reports could not be reproduced on
+            // an emulator — capture the decision inputs so the next report
+            // comes with the actual state machine. No-op unless opted in.
+            AnalyticsService.capture("ime_mode_restore", mapOf(
+                "saved_mode" to savedMode,
+                "always_docked" to alwaysDocked,
+                "floating_before" to floatingBefore,
+                "restored_floating" to restoreFloating,
+                "overlay_perm" to overlayPerm,
+            ))
+            if (restoreFloating) {
+                enterFloatingMode(reason = "restore")
             }
         }
         return root
@@ -248,8 +297,9 @@ class DasherImeService : InputMethodService() {
 
     // ── Floating mode ──────────────────────────────────────────────────────
 
-    private fun enterFloatingMode() {
+    private fun enterFloatingMode(reason: String = "button") {
         if (floating) return
+        Log.d(TAG, "enterFloatingMode(reason=$reason)")
         // Floating mode draws over other apps (TYPE_APPLICATION_OVERLAY) —
         // a special-app-access permission the user must grant. Without it
         // addView throws BadTokenException and the tap silently did nothing.
@@ -350,6 +400,7 @@ class DasherImeService : InputMethodService() {
         // FrameLayout decor — LinearLayout.LayoutParams crash on re-measure.
         setDockedHeight(dp(40, density))
         saveStartMode(true)
+        AnalyticsService.capture("ime_float_enter", mapOf("reason" to reason))
         floatDockBtn?.text = "Dock"
         floatDockBtn?.setOnClickListener { exitFloatingMode() }
 
@@ -418,8 +469,9 @@ class DasherImeService : InputMethodService() {
      *   stale state (#73) or unbinding (#73): the saved mode stays what the
      *   user last chose deliberately.
      */
-    private fun exitFloatingMode(persist: Boolean = true) {
+    private fun exitFloatingMode(persist: Boolean = true, reason: String = "button") {
         if (!floating) return
+        Log.d(TAG, "exitFloatingMode(persist=$persist, reason=$reason, hadOverlay=${floatingView != null})")
         // The overlay window may already be gone (removeView failure on an
         // earlier exit — Samsung overlay quirks, cf. #46 — or a system
         // teardown). Never early-return on that (#73): the mode state and
@@ -445,6 +497,9 @@ class DasherImeService : InputMethodService() {
         floatingView = null
         floating = false
         if (persist) saveStartMode(false)
+        AnalyticsService.capture("ime_float_exit", mapOf(
+            "persist" to persist, "reason" to reason,
+        ))
         floatDockBtn?.text = "Float"
         floatDockBtn?.setOnClickListener { enterFloatingMode() }
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
@@ -523,7 +578,7 @@ class DasherImeService : InputMethodService() {
         emojiToggleBtn?.visibility = if (emojiAvailable) View.VISIBLE else View.GONE
         if (emojiAvailable && eng.getCurrentAlphabet() == "Emoji") {
             if (emojiReturnAlphabet == null) {
-                emojiReturnAlphabet = imePrefs.getString("emoji_return_alphabet", null)
+                emojiReturnAlphabet = imePrefs.getString(ImePrefs.EMOJI_RETURN_ALPHABET, null)
             }
             emojiToggleBtn?.text = "Abc"
             emojiToggleBtn?.contentDescription = "Switch back to text keyboard"
@@ -712,7 +767,8 @@ class DasherImeService : InputMethodService() {
      */
     override fun onUnbindInput() {
         super.onUnbindInput()
-        if (floating) exitFloatingMode(persist = false)
+        Log.d(TAG, "onUnbindInput (floating=$floating)")
+        if (floating) exitFloatingMode(persist = false, reason = "unbind")
     }
 
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
@@ -733,6 +789,7 @@ class DasherImeService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        Log.d(TAG, "onStartInputView(restarting=$restarting, floating=$floating)")
         // Re-assert ALL IME-owned static listeners — the main app may have
         // overwritten them (#53: output, clipboard, messages, speak).
         installImeListeners()
@@ -753,7 +810,14 @@ class DasherImeService : InputMethodService() {
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "onDestroy (floating=$floating)")
         if (floating) {
+            // Event balance (#75 review M3): a destroy while floating ends
+            // the float session without the unbind/button exit paths —
+            // emit the exit so enter/exit correlation stays meaningful.
+            AnalyticsService.capture("ime_float_exit", mapOf(
+                "persist" to false, "reason" to "destroy",
+            ))
             floatingView?.let { fv -> try { windowManager.removeView(fv) } catch (_: Exception) {} }
         }
         // Per-engine-instance cleanup (#56): destroy() unregisters all
