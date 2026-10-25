@@ -509,13 +509,25 @@ class DasherImeService : InputMethodService() {
 
     private fun createEngine() {
         // Re-entry guard (#73): onCreateInputView can run again on a LIVE
-        // instance (configuration change; some OEM IME-switch flows keep the
-        // service alive). The engine is per-process by design ("created once
-        // per process", #53/#56) — a second one would leak the first with
-        // BOTH running dasher_frame loops into the same canvas. Reuse it;
-        // the new canvas wires itself through the fields, and its size
-        // callback reaches the engine (it is no longer null here).
-        if (engine != null) return
+        // instance (configuration change — rotation, fold, MuMu's resizable
+        // window; some OEM IME-switch flows keep the service alive). The
+        // engine is per-process by design ("created once per process",
+        // #53/#56) — a second one would leak the first with BOTH running
+        // dasher_frame loops into the same canvas. Reuse it.
+        if (engine != null) {
+            // #76: the recreated view tree built a FRESH loading overlay
+            // (visible by default) — the hide at the end of this function
+            // sits below the guard and never ran, so the keyboard came up
+            // as a dead, overlay-covered panel ("a big float-like window
+            // you can't type on"; repro'd via rotation on the API 33
+            // emulator: zero colorful canvas pixels). Hide it now and
+            // re-push the canvas geometry to the surviving engine.
+            loadingOverlay?.visibility = View.GONE
+            canvasView?.let { v ->
+                if (v.width > 0 && v.height > 0) engine?.onSurfaceSizeChanged(v.width, v.height)
+            }
+            return
+        }
         val dataDir = DataInstaller.ensureInstalled(this)
         // User state (settings, training) lives outside the data dir so a
         // data re-extraction can never wipe it.
@@ -651,6 +663,9 @@ class DasherImeService : InputMethodService() {
         eng.setOutputListener { type, text ->
             if (type != 0 && type != 1 && type != 2) {
                 Log.w(TAG, "Unknown engine output event type $type (text='${text.take(32)}')")
+            }
+            if (text.isNotEmpty()) {
+                Log.d(TAG, "output event type=$type len=${text.length}")
             }
             outputCoalescer.onEngineOutput(type, text)
         }
