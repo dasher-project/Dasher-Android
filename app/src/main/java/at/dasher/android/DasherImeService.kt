@@ -214,11 +214,8 @@ class DasherImeService : InputMethodService() {
             setPadding(dp(10, density), dp(8, density), dp(10, density), dp(8, density))
             textSize = 15f
             setTextColor(topBarTint())
-            background = GradientDrawable().apply {
-                cornerRadius = dp(8, density).toFloat()
-                setColor(0)
-                setStroke(1, topBarBorder())
-            }
+            background = pillBackground()
+            tooltipTextCompat("Switch to emoji keyboard")
             setOnClickListener { toggleEmojiMode() }
         }
         emojiToggleBtn = emojiBtn
@@ -747,6 +744,13 @@ class DasherImeService : InputMethodService() {
         if (skippedDeletion) reanchorEngineToTarget()
     }
 
+    // Always docked, never Android's fullscreen extract mode: in landscape
+    // the default IMS behavior replaces the whole screen with the IME and
+    // hides the app's text field ("I get fullscreen Dasher but I can't see
+    // search field"). The docked canvas is the product (Heide: "start it
+    // directly as docked") — landscape docks at the bottom like portrait.
+    override fun onEvaluateFullscreenMode(): Boolean = false
+
     // API 36+ (Android 16): measure the actual docked-root position in the
     // window so the insets animation has a concrete target (review C1/C3:
     // imeHeightPx() is a HEIGHT, not an offset — a constant created a dead
@@ -880,13 +884,35 @@ class DasherImeService : InputMethodService() {
             contentDescription = description
             scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
             setImageDrawable(LucideIcons.tinted(context, iconRes, topBarTint()))
-            background = GradientDrawable().apply {
-                cornerRadius = dp(8, density).toFloat()
-                setColor(0)
-                setStroke(1, topBarBorder())
-            }
+            background = pillBackground()
+            tooltipTextCompat(description)
             setOnClickListener { onClick() }
         }
+    }
+
+    /**
+     * The toolbars' bordered pill with a real pressed state (design tokens:
+     * rounded.md 8dp, border-light/dark, highlight-light/dark as the press
+     * fill) — the border-only GradientDrawable gave no touch feedback.
+     */
+    private fun pillBackground(cornerRadiusDp: Int = 8): android.graphics.drawable.StateListDrawable {
+        val density = resources.displayMetrics.density
+        val r = dp(cornerRadiusDp, density).toFloat()
+        return android.graphics.drawable.StateListDrawable().apply {
+            addState(
+                intArrayOf(android.R.attr.state_pressed),
+                GradientDrawable().apply { cornerRadius = r; setColor(pressFill()) }
+            )
+            addState(
+                intArrayOf(),
+                GradientDrawable().apply { cornerRadius = r; setColor(0); setStroke(1, topBarBorder()) }
+            )
+        }
+    }
+
+    /** Long-press tooltip (API 26+; the Windows/macOS hover label equivalent on touch). */
+    private fun android.view.View.tooltipTextCompat(text: String) {
+        if (android.os.Build.VERSION.SDK_INT >= 26) tooltipText = text
     }
 
     /** The Float⇄Dock toggle: icon + description + action swap with state. */
@@ -901,6 +927,7 @@ class DasherImeService : InputMethodService() {
             )
         )
         btn.contentDescription = if (docked) "Float the keyboard" else "Dock the keyboard"
+        btn.tooltipTextCompat(btn.contentDescription.toString())
         btn.setOnClickListener { if (docked) enterFloatingMode() else exitFloatingMode() }
     }
 
@@ -909,6 +936,10 @@ class DasherImeService : InputMethodService() {
 
     private fun topBarBorder(): Int =
         if (isNightMode()) 0xFF3A4550.toInt() else 0xFFB8C4C8.toInt()
+
+    /** Design-token highlight (press feedback): highlight-light/dark. */
+    private fun pressFill(): Int =
+        if (isNightMode()) 0xFF1D2D35.toInt() else 0xFFE9F2F1.toInt()
 
     private fun isNightMode(): Boolean =
         (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==

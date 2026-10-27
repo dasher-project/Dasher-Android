@@ -34,10 +34,11 @@ class EditingToolbar(
         android.content.res.Configuration.UI_MODE_NIGHT_YES
 
     // Design-guide tokens (dasher-design-guide DESIGN.md): border-light/dark,
-    // rounded md = 8, text/onSurface navy. OnSurface ints live here because
-    // the View layer has no MaterialTheme to read from.
+    // rounded md = 8, highlight as press fill, text/onSurface navy. OnSurface
+    // ints live here because the View layer has no MaterialTheme to read from.
     private val onSurface = if (nightMode) 0xFFE6EDF3.toInt() else 0xFF0F4B75.toInt()
     private val border = if (nightMode) 0xFF3A4550.toInt() else 0xFFB8C4C8.toInt()
+    private val pressFill = if (nightMode) 0xFF1D2D35.toInt() else 0xFFE9F2F1.toInt()
 
     init {
         orientation = HORIZONTAL
@@ -67,11 +68,20 @@ class EditingToolbar(
             contentDescription = tooltip
             scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
             setImageDrawable(LucideIcons.tinted(context, iconRes, onSurface))
-            background = GradientDrawable().apply {
-                cornerRadius = dp(8).toFloat() // design token rounded.md
-                setColor(0)
-                setStroke(1, border)
+            // Bordered pill with a real pressed state — the flat
+            // GradientDrawable gave no touch feedback ("can't tell what
+            // the icons mean / no hover state").
+            background = android.graphics.drawable.StateListDrawable().apply {
+                addState(
+                    intArrayOf(android.R.attr.state_pressed),
+                    GradientDrawable().apply { cornerRadius = dp(8).toFloat(); setColor(pressFill) }
+                )
+                addState(
+                    intArrayOf(),
+                    GradientDrawable().apply { cornerRadius = dp(8).toFloat(); setColor(0); setStroke(1, border) }
+                )
             }
+            if (android.os.Build.VERSION.SDK_INT >= 26) tooltipText = tooltip
         }
     }
 
