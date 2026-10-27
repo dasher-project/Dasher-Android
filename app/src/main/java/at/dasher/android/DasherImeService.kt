@@ -130,6 +130,12 @@ class DasherImeService : InputMethodService() {
     // presented exactly as "the IME still starts in float mode" (Heide,
     // three consecutive reports, repro'd on the API 35 emulator).
     private fun setDockedHeight(heightPx: Int) {
+        dockedRoot?.let { root ->
+            // #76 diagnostics: which container the IME decor actually gives
+            // us determines the LayoutParams type that will be honoured.
+            Log.d(TAG, "setDockedHeight($heightPx): parent=${root.parent?.javaClass?.simpleName}, " +
+                "lp=${root.layoutParams?.javaClass?.simpleName}(${root.layoutParams?.width}x${root.layoutParams?.height})")
+        }
         dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(
             MATCH_PARENT, heightPx, Gravity.BOTTOM
         )
@@ -254,6 +260,20 @@ class DasherImeService : InputMethodService() {
         floatBtn.setOnClickListener { enterFloatingMode() }
 
         Handler(Looper.getMainLooper()).post {
+            // #76 (the real one): the IME framework STAMPS its own
+            // MATCH_PARENT×MATCH_PARENT LayoutParams over our view when it
+            // attaches it to the decor — the height/gravity we set in
+            // onCreateInputView (before attachment, parent=null) is
+            // discarded. Measured symptom on API 35: the "docked" root
+            // laid out full-screen at [0,0] — toolbar over the app's
+            // status bar, canvas swallowing everything (Heide's "big
+            // float-like window you can't type on" and Will's "fullscreen
+            // Dasher, can't see the search field" are both THIS). Re-apply
+            // now — post-attachment, post-stamp — while parent is real.
+            setDockedHeight(imeHeightPx())
+            Log.d(TAG, "after-layout: root=${dockedRoot?.width}x${dockedRoot?.height} " +
+                "at (${dockedRoot?.let { r -> IntArray(2).also { r.getLocationInWindow(it) } }?.contentToString()}), " +
+                "parent=${dockedRoot?.parent?.javaClass?.simpleName}")
             createEngine()
             // Self-heal a stale floating state BEFORE evaluating the saved
             // preference (#73). onCreateInputView can run again on a LIVE
@@ -636,6 +656,13 @@ class DasherImeService : InputMethodService() {
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
         super.onConfigurationChanged(newConfig)
+        // RFC 0007: dark/light mode flips mid-session must re-derive the
+        // engine palette — setSystemAppearance was only pushed at engine
+        // creation, so the toolbar went dark while the canvas stayed light
+        // (E2E sweep finding). Same re-push MainActivity does.
+        val night = (newConfig.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        engine?.setSystemAppearance(night)
         // #48: fold/unfold changes the screen dimensions — recompute the
         // docked height so the adaptive fraction (35%/42%) matches the
         // current device state. Only when not floating (floating has its
@@ -707,8 +734,10 @@ class DasherImeService : InputMethodService() {
      * are dropped on a fresh field start — onStartInput.)
      */
     private fun flushOutputToTarget() {
-        val ic = currentInputConnection ?: return
-        val flush = outputCoalescer.takeFlush() ?: return
+        val ic = currentInputConnection
+        val flush = outputCoalescer.takeFlush()
+        Log.d(TAG, "flush: ic=${ic != null} ${flush ?: "(nothing pending)"}")
+        if (ic == null || flush == null) return
         var skippedDeletion = false
         ic.beginBatchEdit()
         try {
