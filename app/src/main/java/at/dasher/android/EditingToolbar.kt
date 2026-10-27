@@ -3,10 +3,6 @@ package at.dasher.android
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
-import android.view.KeyEvent
-import android.view.View
-import android.view.inputmethod.InputConnection
-import android.widget.Button
 import android.widget.LinearLayout
 
 /**
@@ -14,16 +10,21 @@ import android.widget.LinearLayout
  * and clipboard actions — the tools Heide needs so she doesn't "go back
  * and forth with SwiftKey" to fix mistakes.
  *
- * All actions go through [InputConnection] against the TARGET app's field.
+ * All actions go through InputConnection against the TARGET app's field.
  * After each action, [onBufferChanged] fires so the IME can re-anchor the
  * engine (re-read the target text and re-seed — RFC 0015 tier 2).
  *
  * Edit actions ONLY: mode toggles (emoji, float/dock) live in the IME's
  * top bar so this strip stays a predictable editing cluster.
+ *
+ * Icons: Lucide (RFC 0002), rasterised for these classic Views via
+ * [LucideIcons] — text labels ("⌫", "Sel", "Cp", "Ps") read as clutter and
+ * depended on glyph coverage; the icon set matches the main app and the
+ * cross-platform design guide. Touch targets stay ≥48dp (#48).
  */
 class EditingToolbar(
     context: Context,
-    private val inputConnection: () -> InputConnection?,
+    private val inputConnection: () -> android.view.inputmethod.InputConnection?,
     private val onBufferChanged: () -> Unit,
 ) : LinearLayout(context) {
 
@@ -31,6 +32,12 @@ class EditingToolbar(
     private val nightMode = (context.resources.configuration.uiMode and
         android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
         android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+    // Design-guide tokens (dasher-design-guide DESIGN.md): border-light/dark,
+    // rounded md = 8, text/onSurface navy. OnSurface ints live here because
+    // the View layer has no MaterialTheme to read from.
+    private val onSurface = if (nightMode) 0xFFE6EDF3.toInt() else 0xFF0F4B75.toInt()
+    private val border = if (nightMode) 0xFF3A4550.toInt() else 0xFFB8C4C8.toInt()
 
     init {
         orientation = HORIZONTAL
@@ -41,42 +48,36 @@ class EditingToolbar(
         // Buffer-mutating actions re-anchor the engine (buffer changed);
         // non-mutating (Copy, Select All) don't — replacing the edit buffer
         // on every action would reset the model mid-sentence (review 2).
-        addTool("←", "Move cursor left", mutates = true) { moveCursor(-1) }
-        addTool("→", "Move cursor right", mutates = true) { moveCursor(1) }
+        addTool(R.drawable.ic_lucide_arrow_left, "Move cursor left", mutates = true) { moveCursor(-1) }
+        addTool(R.drawable.ic_lucide_arrow_right, "Move cursor right", mutates = true) { moveCursor(1) }
         addSpacer(dp(8))
-        addTool("⌫", "Delete", large = true, mutates = true) { backspace() }
+        addTool(R.drawable.ic_lucide_delete, "Delete", large = true, mutates = true) { backspace() }
         addSpacer(dp(8))
-        addTool("Sel", "Select all", mutates = false) { performAction(android.R.id.selectAll) }
-        addTool("Cp", "Copy", mutates = false) { performAction(android.R.id.copy) }
-        addTool("Ps", "Paste", mutates = true) { performAction(android.R.id.paste) }
+        addTool(R.drawable.ic_lucide_text_select, "Select all", mutates = false) { performAction(android.R.id.selectAll) }
+        addTool(R.drawable.ic_lucide_copy, "Copy", mutates = false) { performAction(android.R.id.copy) }
+        addTool(R.drawable.ic_lucide_clipboard_paste, "Paste", mutates = true) { performAction(android.R.id.paste) }
     }
 
     private fun dp(v: Int) = (v * density).toInt()
 
-    private fun toolButton(label: String, tooltip: String, large: Boolean): Button {
-        val width = if (large) dp(56) else dp(48)
-        return Button(context).apply {
-            text = label
-            textSize = if (large) 20f else 14f
-            isAllCaps = false
-            minimumWidth = width // exact width; LayoutParams below uses this
-            minimumHeight = dp(48) // #48: 48dp minimum touch target for motor-impaired users
-            setPadding(dp(4), dp(2), dp(4), dp(2))
+    private fun toolButton(@Suppress("SameParameterValue") iconRes: Int, tooltip: String, large: Boolean): android.widget.ImageButton {
+        val size = dp(if (large) 56 else 48)
+        return android.widget.ImageButton(context).apply {
+            layoutParams = LayoutParams(size, size).apply { marginEnd = dp(2) }
             contentDescription = tooltip
+            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+            setImageDrawable(LucideIcons.tinted(context, iconRes, onSurface))
             background = GradientDrawable().apply {
-                cornerRadius = dp(6).toFloat()
+                cornerRadius = dp(8).toFloat() // design token rounded.md
                 setColor(0)
-                setStroke(1, if (nightMode) 0xFF3A4550.toInt() else 0xFFB8C4C8.toInt())
-            }
-            layoutParams = LayoutParams(width, LayoutParams.WRAP_CONTENT).apply {
-                marginEnd = dp(2)
+                setStroke(1, border)
             }
         }
     }
 
-    private fun addTool(label: String, tooltip: String, large: Boolean = false,
-                        mutates: Boolean = true, action: () -> Unit) {
-        addView(toolButton(label, tooltip, large).apply {
+    private fun addTool(iconRes: Int, tooltip: String,
+                        large: Boolean = false, mutates: Boolean = true, action: () -> Unit) {
+        addView(toolButton(iconRes, tooltip, large).apply {
             setOnClickListener {
                 action()
                 if (mutates) onBufferChanged()
@@ -85,7 +86,7 @@ class EditingToolbar(
     }
 
     private fun addSpacer(widthPx: Int) {
-        addView(View(context).apply {
+        addView(android.view.View(context).apply {
             layoutParams = LayoutParams(widthPx, 1)
         })
     }
@@ -111,9 +112,9 @@ class EditingToolbar(
     /** Move the cursor one position left/right via the target's key handler (#50). */
     private fun moveCursor(direction: Int) {
         val ic = inputConnection() ?: return
-        val keyCode = if (direction < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
-        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+        val keyCode = if (direction < 0) android.view.KeyEvent.KEYCODE_DPAD_LEFT else android.view.KeyEvent.KEYCODE_DPAD_RIGHT
+        ic.sendKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, keyCode))
+        ic.sendKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_UP, keyCode))
     }
 
     /** Clipboard bridge: Select All / Copy / Paste via the target's context menu (#50). */

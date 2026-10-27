@@ -50,7 +50,7 @@ class DasherImeService : InputMethodService() {
     // Floating mode
     private var floating = false
     private var floatingView: LinearLayout? = null
-    private var floatDockBtn: Button? = null
+    private var floatDockBtn: android.widget.ImageButton? = null
     private var emojiToggleBtn: Button? = null
 
     // Last-used mode (dock/float), restored on the next keyboard show so
@@ -191,25 +191,38 @@ class DasherImeService : InputMethodService() {
         // Top bar (shared look): Float toggle + emoji mode + Hide. Mode
         // controls cluster here so the editing strip below stays a pure
         // edit-action row (Heide feedback: too many buttons up top).
+        // RFC 0002: Lucide icons on compact 48dp targets — the default
+        // Material text pills rendered huge next to the icon toolbar
+        // ("the dock buttons are massive").
         val top = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
             setPadding(dp(8, density), dp(2, density), dp(8, density), dp(2, density))
         }
-        val floatBtn = Button(this).apply { text = "Float" }
+        val floatBtn = iconButton(R.drawable.ic_lucide_picture_in_picture_2, "Float the keyboard") { enterFloatingMode() }
         // Emoji toggle (#61 option 2): GONE until createEngine() confirms
         // the data bundle ships the Emoji alphabet (DasherCore b00a4c8a+).
+        // Text (not icon): the label IS the state — "😀" invites into emoji
+        // mode, "Abc" promises the way back.
         val emojiBtn = Button(this).apply {
             text = "😀"
             contentDescription = "Switch to emoji keyboard"
             visibility = View.GONE
+            isAllCaps = false
+            minWidth = 0; minHeight = 0
+            minimumWidth = 0; minimumHeight = 0
+            setPadding(dp(10, density), dp(8, density), dp(10, density), dp(8, density))
+            textSize = 15f
+            setTextColor(topBarTint())
+            background = GradientDrawable().apply {
+                cornerRadius = dp(8, density).toFloat()
+                setColor(0)
+                setStroke(1, topBarBorder())
+            }
             setOnClickListener { toggleEmojiMode() }
         }
         emojiToggleBtn = emojiBtn
-        val hideBtn = Button(this).apply {
-            text = "Hide"
-            setOnClickListener { requestHideSelf(0) }
-        }
+        val hideBtn = iconButton(R.drawable.ic_lucide_keyboard_off, "Hide the keyboard") { requestHideSelf(0) }
         top.addView(floatBtn)
         top.addView(emojiBtn)
         top.addView(hideBtn)
@@ -332,7 +345,7 @@ class DasherImeService : InputMethodService() {
             setBackgroundColor(if (nightMode) 0xFF2A353D.toInt() else 0xFFE0E6E8.toInt())
             setPadding(dp(8, density), dp(4, density), dp(8, density), dp(4, density))
         }
-        val dockBtn = Button(this).apply { text = "Dock" }
+        val dockBtn = iconButton(R.drawable.ic_lucide_panel_bottom, "Dock the keyboard") { exitFloatingMode() }
         dragBar.addView(dockBtn)
         // Resize handle (#49): drag right/bottom edge to grow, left/top to shrink.
         val resizeHandle = Button(this).apply {
@@ -401,8 +414,7 @@ class DasherImeService : InputMethodService() {
         setDockedHeight(dp(40, density))
         saveStartMode(true)
         AnalyticsService.capture("ime_float_enter", mapOf("reason" to reason))
-        floatDockBtn?.text = "Dock"
-        floatDockBtn?.setOnClickListener { exitFloatingMode() }
+        setFloatDockButton(docked = false)
 
         // Drag handling. Gravity.TOP or Gravity.LEFT — LEFT is explicit;
         // START can resolve to RIGHT on Samsung (overlay windows), inverting
@@ -429,7 +441,6 @@ class DasherImeService : InputMethodService() {
         }
         // Also wire the dock button.
         dockBtn.setOnClickListener { exitFloatingMode() }
-
         // Resize handling (#49): drag the ⟷ handle to adjust the floating
         // window's width (height follows proportionally). Pin the handle's
         // initial touch position and the window's initial size; the delta
@@ -500,8 +511,7 @@ class DasherImeService : InputMethodService() {
         AnalyticsService.capture("ime_float_exit", mapOf(
             "persist" to persist, "reason" to reason,
         ))
-        floatDockBtn?.text = "Float"
-        floatDockBtn?.setOnClickListener { enterFloatingMode() }
+        setFloatDockButton(docked = true)
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
     }
 
@@ -851,6 +861,58 @@ class DasherImeService : InputMethodService() {
     }
 
     // ── Utils ──────────────────────────────────────────────────────────────
+
+    /**
+     * RFC 0002 icon buttons for the IME's classic-View bars: compact 48dp
+     * target (design-guide touch-target token), Lucide glyph, no default
+     * Material pill chrome (which rendered oversized next to these rows).
+     */
+    private fun iconButton(
+        iconRes: Int,
+        description: String,
+        onClick: () -> Unit,
+    ): android.widget.ImageButton {
+        val density = resources.displayMetrics.density
+        return android.widget.ImageButton(this).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(48, density), dp(48, density)).apply {
+                marginStart = dp(2, density)
+            }
+            contentDescription = description
+            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+            setImageDrawable(LucideIcons.tinted(context, iconRes, topBarTint()))
+            background = GradientDrawable().apply {
+                cornerRadius = dp(8, density).toFloat()
+                setColor(0)
+                setStroke(1, topBarBorder())
+            }
+            setOnClickListener { onClick() }
+        }
+    }
+
+    /** The Float⇄Dock toggle: icon + description + action swap with state. */
+    private fun setFloatDockButton(docked: Boolean) {
+        val btn = floatDockBtn ?: return
+        btn.setImageDrawable(
+            LucideIcons.tinted(
+                this,
+                if (docked) R.drawable.ic_lucide_picture_in_picture_2
+                else R.drawable.ic_lucide_panel_bottom,
+                topBarTint()
+            )
+        )
+        btn.contentDescription = if (docked) "Float the keyboard" else "Dock the keyboard"
+        btn.setOnClickListener { if (docked) enterFloatingMode() else exitFloatingMode() }
+    }
+
+    private fun topBarTint(): Int =
+        if (isNightMode()) 0xFFE6EDF3.toInt() else 0xFF0F4B75.toInt()
+
+    private fun topBarBorder(): Int =
+        if (isNightMode()) 0xFF3A4550.toInt() else 0xFFB8C4C8.toInt()
+
+    private fun isNightMode(): Boolean =
+        (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
 
     private fun dp(value: Int, density: Float) = (value * density).toInt()
 
