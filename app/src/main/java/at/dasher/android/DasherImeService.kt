@@ -627,6 +627,11 @@ class DasherImeService : InputMethodService() {
             }
             emojiToggleBtn?.text = "Abc"
             emojiToggleBtn?.contentDescription = "Switch back to text keyboard"
+            // Review loop-2 M2: the third emoji-label site (process death
+            // mid-emoji-mode restore) — keep the tooltip in step too.
+            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                emojiToggleBtn?.tooltipText = emojiToggleBtn?.contentDescription
+            }
         }
         eng.start()
     }
@@ -942,9 +947,9 @@ class DasherImeService : InputMethodService() {
      * token itself (#E0E6E8/#2A353D): the token doubles as the toolbar
      * strip background, and a same-colour stroke on it is invisible.
      */
-    private fun pillBackground(cornerRadiusDp: Int = 8): android.graphics.drawable.StateListDrawable {
+    private fun pillBackground(): android.graphics.drawable.StateListDrawable {
         val density = resources.displayMetrics.density
-        val r = dp(cornerRadiusDp, density).toFloat()
+        val r = dp(8, density).toFloat() // design token rounded.md
         return android.graphics.drawable.StateListDrawable().apply {
             addState(
                 intArrayOf(android.R.attr.state_pressed),

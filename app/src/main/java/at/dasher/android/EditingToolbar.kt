@@ -2,6 +2,9 @@ package at.dasher.android
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.view.KeyEvent
+import android.view.inputmethod.InputConnection
+import android.widget.ImageButton
 import android.view.Gravity
 import android.widget.LinearLayout
 
@@ -24,7 +27,7 @@ import android.widget.LinearLayout
  */
 class EditingToolbar(
     context: Context,
-    private val inputConnection: () -> android.view.inputmethod.InputConnection?,
+    private val inputConnection: () -> InputConnection?,
     private val onBufferChanged: () -> Unit,
 ) : LinearLayout(context) {
 
@@ -60,9 +63,9 @@ class EditingToolbar(
 
     private fun dp(v: Int) = (v * density).toInt()
 
-    private fun toolButton(iconRes: Int, tooltip: String, large: Boolean): android.widget.ImageButton {
+    private fun toolButton(iconRes: Int, tooltip: String, large: Boolean): ImageButton {
         val size = dp(if (large) 56 else 48)
-        return android.widget.ImageButton(context).apply {
+        return ImageButton(context).apply {
             layoutParams = LayoutParams(size, size).apply { marginEnd = dp(2) }
             contentDescription = tooltip
             scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
@@ -121,9 +124,9 @@ class EditingToolbar(
     /** Move the cursor one position left/right via the target's key handler (#50). */
     private fun moveCursor(direction: Int) {
         val ic = inputConnection() ?: return
-        val keyCode = if (direction < 0) android.view.KeyEvent.KEYCODE_DPAD_LEFT else android.view.KeyEvent.KEYCODE_DPAD_RIGHT
-        ic.sendKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, keyCode))
-        ic.sendKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_UP, keyCode))
+        val keyCode = if (direction < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
+        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
     }
 
     /** Clipboard bridge: Select All / Copy / Paste via the target's context menu (#50). */
