@@ -92,6 +92,9 @@ class DasherImeService : InputMethodService() {
         val eng = engine ?: return
         val btn = emojiToggleBtn ?: return
         val current = eng.getCurrentAlphabet()
+        // RFC 0001 amendment: the cross-platform aggregate (the IME's own
+        // alphabet events already capture the alphabet switch itself).
+        UiTelemetry.action("ime_topbar", "emoji_toggle", if (current == "Emoji") "text" else "emoji")
         if (current == "Emoji") {
             val target = emojiReturnAlphabet
             if (target.isNullOrEmpty() || target == "Emoji") {
@@ -936,8 +939,19 @@ class DasherImeService : InputMethodService() {
             setImageDrawable(LucideIcons.tinted(context, iconRes, topBarTint()))
             background = pillBackground()
             tooltipTextCompat(description)
-            setOnClickListener { onClick() }
+            setOnClickListener {
+                UiTelemetry.action("ime_topbar", topbarActionIdFor(description))
+                onClick()
+            }
         }
+    }
+
+    /** RFC 0001 amendment vocabulary for the IME top bar. */
+    private fun topbarActionIdFor(description: String): String = when (description) {
+        "Float the keyboard" -> "float"
+        "Dock the keyboard" -> "dock"
+        "Hide the keyboard" -> "hide"
+        else -> description.lowercase().replace(' ', '_')
     }
 
     /**

@@ -386,10 +386,14 @@ class MainActivity : ComponentActivity() {
                         },
                         onSpeedChanged = { pct ->
                             speedPercent = pct; engine?.setSpeedPercent(pct); engine?.saveSettings()
+                            // RFC 0001 amendment: speed from the status bar vs.
+                            // settings answers different UX questions.
+                            UiTelemetry.setting("Speed Percent", pct.toLong(), "main_ui")
                         },
                         onAutoSpeedChanged = { v ->
                             autoSpeed = v
                             if (autoSpeedKey >= 0) { engine?.setBoolValue(autoSpeedKey, v); engine?.saveSettings() }
+                            UiTelemetry.setting("Auto Speed", v, "main_ui")
                         },
                         onOpenSettings = { showSettings = true },
                         onOpen = { openOutput() },
@@ -479,6 +483,10 @@ class MainActivity : ComponentActivity() {
         eng.saveSettings()
         pinAlphabetChoice()
         AnalyticsService.capture("emoji_toggled", mapOf("active" to (currentAlphabet == "Emoji")))
+        // RFC 0001 2026-10-28 amendment vocabulary (emoji_toggled stays for
+        // continuity; ui_action is the cross-platform aggregate).
+        UiTelemetry.action("status_bar", "emoji_toggle",
+            if (currentAlphabet == "Emoji") "emoji" else "text")
     }
 
     /**
@@ -858,26 +866,53 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                ToolbarButton(Lucide.FilePlus, stringResource(R.string.toolbar_new), onClear)
-                ToolbarButton(Lucide.FolderOpen, stringResource(R.string.toolbar_open), onOpen)
+                ToolbarButton(Lucide.FilePlus, stringResource(R.string.toolbar_new), onClear) {
+                    UiTelemetry.action("main_toolbar", "new")
+                }
+                ToolbarButton(Lucide.FolderOpen, stringResource(R.string.toolbar_open), onOpen) {
+                    UiTelemetry.action("main_toolbar", "open")
+                }
                 ToolbarButton(if (isPlaying) Lucide.Pause else Lucide.Play,
                     stringResource(if (isPlaying) R.string.toolbar_pause else R.string.toolbar_play),
-                    onTogglePlay)
-                ToolbarButton(Lucide.ClipboardCopy, stringResource(R.string.toolbar_copy), onCopyAll)
-                ToolbarButton(Lucide.Save, stringResource(R.string.toolbar_save), onSave)
-                ToolbarButton(Lucide.Share2, stringResource(R.string.toolbar_share), onShare)
+                    onTogglePlay) {
+                    // state before the toggle: 'playing' means the user just paused
+                    UiTelemetry.action("main_toolbar", "pause_play",
+                        if (isPlaying) "paused" else "playing")
+                }
+                ToolbarButton(Lucide.ClipboardCopy, stringResource(R.string.toolbar_copy), onCopyAll) {
+                    UiTelemetry.action("main_toolbar", "copy")
+                }
+                ToolbarButton(Lucide.Save, stringResource(R.string.toolbar_save), onSave) {
+                    UiTelemetry.action("main_toolbar", "save")
+                }
+                ToolbarButton(Lucide.Share2, stringResource(R.string.toolbar_share), onShare) {
+                    UiTelemetry.action("main_toolbar", "share")
+                }
                 Spacer(Modifier.weight(1f))
                 ToolbarButton(Lucide.Gamepad2,
                     stringResource(if (gameMode) R.string.toolbar_game_leave else R.string.toolbar_game),
-                    onToggleGame)
-                ToolbarButton(Lucide.Settings, stringResource(R.string.toolbar_settings), onOpenSettings)
+                    onToggleGame) {
+                    UiTelemetry.action("main_toolbar", "game_mode",
+                        if (gameMode) "off" else "on")
+                }
+                ToolbarButton(Lucide.Settings, stringResource(R.string.toolbar_settings), onOpenSettings) {
+                    UiTelemetry.action("main_toolbar", "settings")
+                }
             }
         }
     }
 
     @Composable
-    private fun ToolbarButton(icon: ImageVector, description: String, onClick: () -> Unit) {
-        IconButton(onClick = onClick) {
+    private fun ToolbarButton(
+        icon: ImageVector,
+        description: String,
+        onClick: () -> Unit,
+        onTelemetry: (() -> Unit)? = null,
+    ) {
+        IconButton(onClick = {
+            onTelemetry?.invoke()
+            onClick()
+        }) {
             Icon(icon, contentDescription = description, tint = MaterialTheme.colorScheme.onSurface)
         }
     }
