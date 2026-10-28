@@ -90,6 +90,25 @@
         "enabled": { "type": "boolean" }
       },
       "pii": false
+    },
+    "ui_action": {
+      "description": "User activated a control in the main UI (outside settings windows) — RFC 0001 2026-10-28 amendment. Answers 'where should main-UI focus go'.",
+      "properties": {
+        "surface": { "type": "string", "enum": ["main_toolbar", "status_bar", "ime_toolbar", "ime_topbar"] },
+        "action": { "type": "string", "description": "Fixed vocabulary; new identifiers require a schema update", "examples": ["new", "open", "save", "pause_play", "game_mode", "settings", "copy", "share", "emoji_toggle", "speed_up", "speed_down", "layout", "float", "dock", "hide", "cursor_left", "cursor_right", "backspace", "select_all", "paste"] },
+        "state": { "type": "string", "enum": ["on", "off", "paused", "playing", "text", "emoji"], "description": "Optional — for toggles" }
+      },
+      "pii": false
+    },
+    "setting_changed": {
+      "description": "User committed a settings change — RFC 0001 2026-10-28 amendment. Answers 'which settings are the priority'. Fires at the widget commit site only (never for programmatic engine changes).",
+      "properties": {
+        "setting_id": { "type": "string", "description": "Canonical identifier: DasherCore parameter name or frontend setting key", "examples": ["Max Bitrate", "output_font_size"] },
+        "value_type": { "type": "string", "enum": ["bool", "number", "enum", "string"] },
+        "value": { "type": ["boolean", "number", "string"], "description": "Present ONLY for bool/number/enum (fixed vocabularies). NEVER for string settings — free text is not collected" },
+        "surface": { "type": "string", "enum": ["settings", "main_ui", "ime"] }
+      },
+      "pii": false
     }
   },
   "explicitly_not_collected": [

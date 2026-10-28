@@ -270,6 +270,8 @@ private fun KeyboardStartSection() {
         // #75 review M7: how many users need the escape hatch is the
         // strongest signal about whether the default behaviour is wrong.
         AnalyticsService.capture("ime_always_docked_changed", mapOf("enabled" to v))
+        // RFC 0001 amendment: the cross-platform aggregate for the UX team.
+        UiTelemetry.setting("Keyboard always starts docked", v, "settings")
     }
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
         // Accessible toggle (#75 review M8): the whole row is the touch
@@ -318,6 +320,8 @@ private fun InputMethodRow(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.input_method_title), style = MaterialTheme.typography.bodyLarge)
+            // RFC 0001 amendment note: the aggregate lives in setting_changed;
+            // input_method_changed (v1 schema) stays for continuity.
             Text("How you steer the Dasher pointer. Other modes appear when the hardware supports them.",
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
@@ -346,6 +350,15 @@ private fun InputMethodRow(
                         onClick = {
                             onSelect(mode)
                             expanded = false
+                            UiTelemetry.setting(
+                                "Input Method",
+                                when (mode) {
+                                    InputMode.TOUCH -> "touch"
+                                    InputMode.TILT -> "tilt"
+                                    InputMode.JOYSTICK -> "joystick"
+                                },
+                                "settings",
+                            )
                         }
                     )
                 }
@@ -517,7 +530,10 @@ private fun PaletteSwatchRow(
                     modifier = Modifier
                         .height(40.dp)
                         .width(56.dp)
-                        .then(Modifier.clickable { onSelect(p.name) })
+                        .then(Modifier.clickable {
+                            onSelect(p.name)
+                            UiTelemetry.setting("Colour Palette", p.name, "settings")
+                        })
                         .border(
                             width = if (isSelected) 2.dp else 1.dp,
                             color = if (isSelected) MaterialTheme.colorScheme.primary
@@ -653,16 +669,24 @@ private fun OutputFontSection(
                     options.forEach { (value, name) ->
                         DropdownMenuItem(
                             text = { Text(name) },
-                            onClick = { onChange(value, size); expanded = false }
+                            onClick = {
+                                onChange(value, size); expanded = false
+                                UiTelemetry.setting("output_font_family", value.ifEmpty { "System" }, "settings")
+                            }
                         )
                     }
                 }
             }
         }
         Text("Size: ${size.toInt()}", style = MaterialTheme.typography.bodyLarge)
+        var pendingSize by remember { mutableStateOf(size) }
         Slider(
             value = size,
-            onValueChange = { onChange(family, it) },
+            onValueChange = { pendingSize = it; onChange(family, it) },
+            onValueChangeFinished = {
+                // RFC 0001 amendment: one event per committed drag, not per frame.
+                UiTelemetry.setting("output_font_size", pendingSize.toInt().toLong(), "settings")
+            },
             valueRange = 10f..48f,
             steps = 0
         )
@@ -686,7 +710,7 @@ private fun ParameterRow(engine: DasherEngine, p: ParameterInfo, version: Int, o
             }
         }
         when {
-            p.isBool -> BoolControl(engine, p.key, onChange)
+            p.isBool -> BoolControl(engine, p, onChange)
             p.isLong -> LongControl(engine, p, onChange)
             p.isString -> StringControl(engine, p, onChange)
         }
@@ -694,16 +718,19 @@ private fun ParameterRow(engine: DasherEngine, p: ParameterInfo, version: Int, o
 }
 
 @Composable
-private fun BoolControl(engine: DasherEngine, key: Int, onChange: () -> Unit) {
-    var checked by remember { mutableStateOf(engine.boolValue(key)) }
-    Switch(checked = checked, onCheckedChange = { v -> checked = v; engine.setBoolValue(key, v); onChange() })
+private fun BoolControl(engine: DasherEngine, p: ParameterInfo, onChange: () -> Unit) {
+    var checked by remember { mutableStateOf(engine.boolValue(p.key)) }
+    Switch(checked = checked, onCheckedChange = { v ->
+        checked = v; engine.setBoolValue(p.key, v); onChange()
+        UiTelemetry.setting(p.name, v, "settings")
+    })
 }
 
 @Composable
 private fun LongControl(engine: DasherEngine, p: ParameterInfo, onChange: () -> Unit) {
     val enums = remember(p.key) { engine.enumValues(p.key) }
     when {
-        enums.isNotEmpty() -> EnumDropdown(engine, p.key, enums, onChange)
+        enums.isNotEmpty() -> EnumDropdown(engine, p, enums, onChange)
         p.max > p.min -> LongSlider(engine, p, onChange)
         else -> Text("${engine.longValue(p.key)}", style = MaterialTheme.typography.bodyMedium)
     }
@@ -717,7 +744,10 @@ private fun LongSlider(engine: DasherEngine, p: ParameterInfo, onChange: () -> U
         Slider(
             value = value,
             onValueChange = { value = it },
-            onValueChangeFinished = { engine.setLongValue(p.key, value.toLong()); onChange() },
+            onValueChangeFinished = {
+                engine.setLongValue(p.key, value.toLong()); onChange()
+                UiTelemetry.setting(p.name, value.toLong(), "settings")
+            },
             valueRange = p.min.toFloat()..p.max.toFloat(),
             steps = if (p.step > 0) ((p.max - p.min) / p.step).coerceAtLeast(1).toInt() - 1 else 0
         )
@@ -726,10 +756,10 @@ private fun LongSlider(engine: DasherEngine, p: ParameterInfo, onChange: () -> U
 
 @Composable
 private fun EnumDropdown(
-    engine: DasherEngine, key: Int, options: List<Pair<String, Int>>, onChange: () -> Unit
+    engine: DasherEngine, p: ParameterInfo, options: List<Pair<String, Int>>, onChange: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var current by remember { mutableStateOf(engine.longValue(key).toInt()) }
+    var current by remember { mutableStateOf(engine.longValue(p.key).toInt()) }
     val label = options.firstOrNull { it.second == current }?.first ?: "$current"
     Box {
         OutlinedButton(onClick = { expanded = true }) { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) }
@@ -737,7 +767,11 @@ private fun EnumDropdown(
             options.forEach { (name, value) ->
                 DropdownMenuItem(
                     text = { Text(name) },
-                    onClick = { current = value; engine.setLongValue(key, value.toLong()); expanded = false; onChange() }
+                    onClick = {
+                        current = value; engine.setLongValue(p.key, value.toLong()); expanded = false; onChange()
+                        // Engine enums are fixed vocabularies (permitted values)
+                        UiTelemetry.setting(p.name, name, "settings")
+                    }
                 )
             }
         }
@@ -754,7 +788,7 @@ private fun StringControl(engine: DasherEngine, p: ParameterInfo, onChange: () -
         remember(p.key) { engine.stringValues(p.key) }.map { it to it }
     }
     if (options.isNotEmpty()) {
-        StringDropdown(engine, p.key, options, onChange)
+        StringDropdown(engine, p, options, onChange)
     } else {
         Text(engine.stringValue(p.key), style = MaterialTheme.typography.bodyMedium, maxLines = 1)
     }
@@ -762,10 +796,10 @@ private fun StringControl(engine: DasherEngine, p: ParameterInfo, onChange: () -
 
 @Composable
 private fun StringDropdown(
-    engine: DasherEngine, key: Int, options: List<Pair<String, String>>, onChange: () -> Unit
+    engine: DasherEngine, p: ParameterInfo, options: List<Pair<String, String>>, onChange: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var current by remember { mutableStateOf(engine.stringValue(key)) }
+    var current by remember { mutableStateOf(engine.stringValue(p.key)) }
     val label = options.firstOrNull { it.first == current }?.second ?: current.ifEmpty { "Default" }
     Box {
         OutlinedButton(onClick = { expanded = true }) { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) }
@@ -773,7 +807,12 @@ private fun StringDropdown(
             options.forEach { (value, name) ->
                 DropdownMenuItem(
                     text = { Text(name) },
-                    onClick = { current = value; engine.setStringValue(key, value); expanded = false; onChange() }
+                    onClick = {
+                        current = value; engine.setStringValue(p.key, value); expanded = false; onChange()
+                        // Options come from fixed vocabularies (fonts, permitted
+                        // values) — RFC 0001 amendment allows enum values.
+                        UiTelemetry.setting(p.name, value.ifEmpty { "System" }, "settings")
+                    }
                 )
             }
         }

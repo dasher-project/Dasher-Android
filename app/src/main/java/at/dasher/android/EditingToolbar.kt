@@ -91,10 +91,23 @@ class EditingToolbar(
                         large: Boolean = false, mutates: Boolean = true, action: () -> Unit) {
         addView(toolButton(iconRes, tooltip, large).apply {
             setOnClickListener {
+                // RFC 0001 amendment: which IME editing tools are actually
+                // used (Heide's SwiftKey round-trips suggested these matter).
+                UiTelemetry.action("ime_toolbar", actionIdFor(tooltip))
                 action()
                 if (mutates) onBufferChanged()
             }
         })
+    }
+
+    private fun actionIdFor(tooltip: String): String = when (tooltip) {
+        "Move cursor left" -> "cursor_left"
+        "Move cursor right" -> "cursor_right"
+        "Delete" -> "backspace"
+        "Select all" -> "select_all"
+        "Copy" -> "copy"
+        "Paste" -> "paste"
+        else -> tooltip.lowercase().replace(' ', '_')
     }
 
     private fun addSpacer(widthPx: Int) {
