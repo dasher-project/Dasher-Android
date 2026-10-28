@@ -33,12 +33,11 @@ class EditingToolbar(
         android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
         android.content.res.Configuration.UI_MODE_NIGHT_YES
 
-    // Design-guide tokens (dasher-design-guide DESIGN.md): border-light/dark,
-    // rounded md = 8, highlight as press fill, text/onSurface navy. OnSurface
-    // ints live here because the View layer has no MaterialTheme to read from.
-    private val onSurface = if (nightMode) 0xFFE6EDF3.toInt() else 0xFF0F4B75.toInt()
-    private val border = if (nightMode) 0xFF3A4550.toInt() else 0xFFB8C4C8.toInt()
-    private val pressFill = if (nightMode) 0xFF1D2D35.toInt() else 0xFFE9F2F1.toInt()
+    // Design-guide tokens via the shared palette (#78 review M4): see
+    // ImeToolbarPalette — one definition, used by both IME toolbars.
+    private val onSurface = ImeToolbarPalette.onSurface(nightMode)
+    private val border = ImeToolbarPalette.border(nightMode)
+    private val pressFill = ImeToolbarPalette.pressFill(nightMode)
 
     init {
         orientation = HORIZONTAL
@@ -61,7 +60,7 @@ class EditingToolbar(
 
     private fun dp(v: Int) = (v * density).toInt()
 
-    private fun toolButton(@Suppress("SameParameterValue") iconRes: Int, tooltip: String, large: Boolean): android.widget.ImageButton {
+    private fun toolButton(iconRes: Int, tooltip: String, large: Boolean): android.widget.ImageButton {
         val size = dp(if (large) 56 else 48)
         return android.widget.ImageButton(context).apply {
             layoutParams = LayoutParams(size, size).apply { marginEnd = dp(2) }

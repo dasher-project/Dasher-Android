@@ -105,6 +105,7 @@ class DasherImeService : InputMethodService() {
             imePrefs.edit().remove(ImePrefs.EMOJI_RETURN_ALPHABET).apply()
             btn.text = "😀"
             btn.contentDescription = "Switch to emoji keyboard"
+            if (android.os.Build.VERSION.SDK_INT >= 26) btn.tooltipText = btn.contentDescription
             // The alphabet switch rebuilt the model from scratch — re-seed
             // from the target field so predictions continue mid-sentence
             // (same machinery as the editing actions, RFC 0015 tier 2).
@@ -115,6 +116,7 @@ class DasherImeService : InputMethodService() {
             eng.setAlphabet("Emoji")
             btn.text = "Abc"
             btn.contentDescription = "Switch back to text keyboard"
+            if (android.os.Build.VERSION.SDK_INT >= 26) btn.tooltipText = btn.contentDescription
         }
     }
 
@@ -215,9 +217,12 @@ class DasherImeService : InputMethodService() {
             contentDescription = "Switch to emoji keyboard"
             visibility = View.GONE
             isAllCaps = false
-            minWidth = 0; minHeight = 0
-            minimumWidth = 0; minimumHeight = 0
+            minWidth = 0
             setPadding(dp(10, density), dp(8, density), dp(10, density), dp(8, density))
+            // 48dp minimum touch target (#48) even though the pill renders
+            // compact (#78 review I1): the hit area is the target, not the glyph.
+            minimumWidth = dp(48, density)
+            minimumHeight = dp(48, density)
             textSize = 15f
             setTextColor(topBarTint())
             background = pillBackground()
@@ -256,8 +261,9 @@ class DasherImeService : InputMethodService() {
         setDockedHeight(imeHeightPx())
         root.minimumHeight = imeHeightPx()
 
+        // iconButton() already wired the click; only the field ref is needed
+        // here (setFloatDockButton swaps icon/description/action with state).
         floatDockBtn = floatBtn
-        floatBtn.setOnClickListener { enterFloatingMode() }
 
         Handler(Looper.getMainLooper()).post {
             // #76 (the real one): the IME framework STAMPS its own
@@ -734,10 +740,14 @@ class DasherImeService : InputMethodService() {
      * are dropped on a fresh field start — onStartInput.)
      */
     private fun flushOutputToTarget() {
-        val ic = currentInputConnection
-        val flush = outputCoalescer.takeFlush()
-        Log.d(TAG, "flush: ic=${ic != null} ${flush ?: "(nothing pending)"}")
-        if (ic == null || flush == null) return
+        // Gate consumption on the connection (#78 review C1): takeFlush()
+        // RESETS the coalescer, so calling it when the connection is
+        // momentarily null (WebView focus churn — see ImeOutputCoalescer's
+        // type-2 note) would discard the user's pending text. Hold it for
+        // the next frame instead, exactly as the contract below documents.
+        val ic = currentInputConnection ?: return
+        val flush = outputCoalescer.takeFlush() ?: return
+        Log.d(TAG, "flush: ${flush.deleteUnits}u del + ${flush.insert.length}ch")
         var skippedDeletion = false
         ic.beginBatchEdit()
         try {
@@ -848,6 +858,12 @@ class DasherImeService : InputMethodService() {
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         Log.d(TAG, "onStartInputView(restarting=$restarting, floating=$floating)")
+        // #78 review I2 — defense-in-depth for the LayoutParams stamp: the
+        // framework replaces our docked-root LayoutParams on attach; the
+        // posted-handler re-apply covers the attach, this covers any later
+        // re-attach/edge the post could miss. Every show re-asserts the
+        // docked geometry while docked (no-op when already correct).
+        if (!floating) setDockedHeight(imeHeightPx())
         // Re-assert ALL IME-owned static listeners — the main app may have
         // overwritten them (#53: output, clipboard, messages, speak).
         installImeListeners()
@@ -920,9 +936,11 @@ class DasherImeService : InputMethodService() {
     }
 
     /**
-     * The toolbars' bordered pill with a real pressed state (design tokens:
-     * rounded.md 8dp, border-light/dark, highlight-light/dark as the press
-     * fill) — the border-only GradientDrawable gave no touch feedback.
+     * The toolbars' bordered pill with a real pressed state — rounded.md 8dp
+     * and the highlight tokens for the press fill. The STROKE deliberately
+     * uses a darkened border variant (#B8C4C8/#3A4550), not the border
+     * token itself (#E0E6E8/#2A353D): the token doubles as the toolbar
+     * strip background, and a same-colour stroke on it is invisible.
      */
     private fun pillBackground(cornerRadiusDp: Int = 8): android.graphics.drawable.StateListDrawable {
         val density = resources.displayMetrics.density
@@ -960,15 +978,9 @@ class DasherImeService : InputMethodService() {
         btn.setOnClickListener { if (docked) enterFloatingMode() else exitFloatingMode() }
     }
 
-    private fun topBarTint(): Int =
-        if (isNightMode()) 0xFFE6EDF3.toInt() else 0xFF0F4B75.toInt()
-
-    private fun topBarBorder(): Int =
-        if (isNightMode()) 0xFF3A4550.toInt() else 0xFFB8C4C8.toInt()
-
-    /** Design-token highlight (press feedback): highlight-light/dark. */
-    private fun pressFill(): Int =
-        if (isNightMode()) 0xFF1D2D35.toInt() else 0xFFE9F2F1.toInt()
+    private fun topBarTint(): Int = ImeToolbarPalette.onSurface(isNightMode())
+    private fun topBarBorder(): Int = ImeToolbarPalette.border(isNightMode())
+    private fun pressFill(): Int = ImeToolbarPalette.pressFill(isNightMode())
 
     private fun isNightMode(): Boolean =
         (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
