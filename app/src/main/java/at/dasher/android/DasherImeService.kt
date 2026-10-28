@@ -50,7 +50,7 @@ class DasherImeService : InputMethodService() {
     // Floating mode
     private var floating = false
     private var floatingView: LinearLayout? = null
-    private var floatDockBtn: Button? = null
+    private var floatDockBtn: android.widget.ImageButton? = null
     private var emojiToggleBtn: Button? = null
 
     // Last-used mode (dock/float), restored on the next keyboard show so
@@ -105,6 +105,7 @@ class DasherImeService : InputMethodService() {
             imePrefs.edit().remove(ImePrefs.EMOJI_RETURN_ALPHABET).apply()
             btn.text = "😀"
             btn.contentDescription = "Switch to emoji keyboard"
+            if (android.os.Build.VERSION.SDK_INT >= 26) btn.tooltipText = btn.contentDescription
             // The alphabet switch rebuilt the model from scratch — re-seed
             // from the target field so predictions continue mid-sentence
             // (same machinery as the editing actions, RFC 0015 tier 2).
@@ -115,6 +116,7 @@ class DasherImeService : InputMethodService() {
             eng.setAlphabet("Emoji")
             btn.text = "Abc"
             btn.contentDescription = "Switch back to text keyboard"
+            if (android.os.Build.VERSION.SDK_INT >= 26) btn.tooltipText = btn.contentDescription
         }
     }
 
@@ -130,6 +132,12 @@ class DasherImeService : InputMethodService() {
     // presented exactly as "the IME still starts in float mode" (Heide,
     // three consecutive reports, repro'd on the API 35 emulator).
     private fun setDockedHeight(heightPx: Int) {
+        dockedRoot?.let { root ->
+            // #76 diagnostics: which container the IME decor actually gives
+            // us determines the LayoutParams type that will be honoured.
+            Log.d(TAG, "setDockedHeight($heightPx): parent=${root.parent?.javaClass?.simpleName}, " +
+                "lp=${root.layoutParams?.javaClass?.simpleName}(${root.layoutParams?.width}x${root.layoutParams?.height})")
+        }
         dockedRoot?.layoutParams = android.widget.FrameLayout.LayoutParams(
             MATCH_PARENT, heightPx, Gravity.BOTTOM
         )
@@ -191,25 +199,38 @@ class DasherImeService : InputMethodService() {
         // Top bar (shared look): Float toggle + emoji mode + Hide. Mode
         // controls cluster here so the editing strip below stays a pure
         // edit-action row (Heide feedback: too many buttons up top).
+        // RFC 0002: Lucide icons on compact 48dp targets — the default
+        // Material text pills rendered huge next to the icon toolbar
+        // ("the dock buttons are massive").
         val top = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
             setPadding(dp(8, density), dp(2, density), dp(8, density), dp(2, density))
         }
-        val floatBtn = Button(this).apply { text = "Float" }
+        val floatBtn = iconButton(R.drawable.ic_lucide_picture_in_picture_2, "Float the keyboard") { enterFloatingMode() }
         // Emoji toggle (#61 option 2): GONE until createEngine() confirms
         // the data bundle ships the Emoji alphabet (DasherCore b00a4c8a+).
+        // Text (not icon): the label IS the state — "😀" invites into emoji
+        // mode, "Abc" promises the way back.
         val emojiBtn = Button(this).apply {
             text = "😀"
             contentDescription = "Switch to emoji keyboard"
             visibility = View.GONE
+            isAllCaps = false
+            minWidth = 0
+            setPadding(dp(10, density), dp(8, density), dp(10, density), dp(8, density))
+            // 48dp minimum touch target (#48) even though the pill renders
+            // compact (#78 review I1): the hit area is the target, not the glyph.
+            minimumWidth = dp(48, density)
+            minimumHeight = dp(48, density)
+            textSize = 15f
+            setTextColor(topBarTint())
+            background = pillBackground()
+            tooltipTextCompat("Switch to emoji keyboard")
             setOnClickListener { toggleEmojiMode() }
         }
         emojiToggleBtn = emojiBtn
-        val hideBtn = Button(this).apply {
-            text = "Hide"
-            setOnClickListener { requestHideSelf(0) }
-        }
+        val hideBtn = iconButton(R.drawable.ic_lucide_keyboard_off, "Hide the keyboard") { requestHideSelf(0) }
         top.addView(floatBtn)
         top.addView(emojiBtn)
         top.addView(hideBtn)
@@ -240,10 +261,25 @@ class DasherImeService : InputMethodService() {
         setDockedHeight(imeHeightPx())
         root.minimumHeight = imeHeightPx()
 
+        // iconButton() already wired the click; only the field ref is needed
+        // here (setFloatDockButton swaps icon/description/action with state).
         floatDockBtn = floatBtn
-        floatBtn.setOnClickListener { enterFloatingMode() }
 
         Handler(Looper.getMainLooper()).post {
+            // #76 (the real one): the IME framework STAMPS its own
+            // MATCH_PARENT×MATCH_PARENT LayoutParams over our view when it
+            // attaches it to the decor — the height/gravity we set in
+            // onCreateInputView (before attachment, parent=null) is
+            // discarded. Measured symptom on API 35: the "docked" root
+            // laid out full-screen at [0,0] — toolbar over the app's
+            // status bar, canvas swallowing everything (Heide's "big
+            // float-like window you can't type on" and Will's "fullscreen
+            // Dasher, can't see the search field" are both THIS). Re-apply
+            // now — post-attachment, post-stamp — while parent is real.
+            setDockedHeight(imeHeightPx())
+            Log.d(TAG, "after-layout: root=${dockedRoot?.width}x${dockedRoot?.height} " +
+                "at (${dockedRoot?.let { r -> IntArray(2).also { r.getLocationInWindow(it) } }?.contentToString()}), " +
+                "parent=${dockedRoot?.parent?.javaClass?.simpleName}")
             createEngine()
             // Self-heal a stale floating state BEFORE evaluating the saved
             // preference (#73). onCreateInputView can run again on a LIVE
@@ -332,7 +368,7 @@ class DasherImeService : InputMethodService() {
             setBackgroundColor(if (nightMode) 0xFF2A353D.toInt() else 0xFFE0E6E8.toInt())
             setPadding(dp(8, density), dp(4, density), dp(8, density), dp(4, density))
         }
-        val dockBtn = Button(this).apply { text = "Dock" }
+        val dockBtn = iconButton(R.drawable.ic_lucide_panel_bottom, "Dock the keyboard") { exitFloatingMode() }
         dragBar.addView(dockBtn)
         // Resize handle (#49): drag right/bottom edge to grow, left/top to shrink.
         val resizeHandle = Button(this).apply {
@@ -401,8 +437,7 @@ class DasherImeService : InputMethodService() {
         setDockedHeight(dp(40, density))
         saveStartMode(true)
         AnalyticsService.capture("ime_float_enter", mapOf("reason" to reason))
-        floatDockBtn?.text = "Dock"
-        floatDockBtn?.setOnClickListener { exitFloatingMode() }
+        setFloatDockButton(docked = false)
 
         // Drag handling. Gravity.TOP or Gravity.LEFT — LEFT is explicit;
         // START can resolve to RIGHT on Samsung (overlay windows), inverting
@@ -429,7 +464,6 @@ class DasherImeService : InputMethodService() {
         }
         // Also wire the dock button.
         dockBtn.setOnClickListener { exitFloatingMode() }
-
         // Resize handling (#49): drag the ⟷ handle to adjust the floating
         // window's width (height follows proportionally). Pin the handle's
         // initial touch position and the window's initial size; the delta
@@ -500,8 +534,7 @@ class DasherImeService : InputMethodService() {
         AnalyticsService.capture("ime_float_exit", mapOf(
             "persist" to persist, "reason" to reason,
         ))
-        floatDockBtn?.text = "Float"
-        floatDockBtn?.setOnClickListener { enterFloatingMode() }
+        setFloatDockButton(docked = true)
         canvasView?.let { if (it.width > 0 && it.height > 0) engine?.onSurfaceSizeChanged(it.width, it.height) }
     }
 
@@ -594,6 +627,11 @@ class DasherImeService : InputMethodService() {
             }
             emojiToggleBtn?.text = "Abc"
             emojiToggleBtn?.contentDescription = "Switch back to text keyboard"
+            // Review loop-2 M2: the third emoji-label site (process death
+            // mid-emoji-mode restore) — keep the tooltip in step too.
+            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                emojiToggleBtn?.tooltipText = emojiToggleBtn?.contentDescription
+            }
         }
         eng.start()
     }
@@ -629,6 +667,13 @@ class DasherImeService : InputMethodService() {
 
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
         super.onConfigurationChanged(newConfig)
+        // RFC 0007: dark/light mode flips mid-session must re-derive the
+        // engine palette — setSystemAppearance was only pushed at engine
+        // creation, so the toolbar went dark while the canvas stayed light
+        // (E2E sweep finding). Same re-push MainActivity does.
+        val night = (newConfig.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        engine?.setSystemAppearance(night)
         // #48: fold/unfold changes the screen dimensions — recompute the
         // docked height so the adaptive fraction (35%/42%) matches the
         // current device state. Only when not floating (floating has its
@@ -700,8 +745,14 @@ class DasherImeService : InputMethodService() {
      * are dropped on a fresh field start — onStartInput.)
      */
     private fun flushOutputToTarget() {
+        // Gate consumption on the connection (#78 review C1): takeFlush()
+        // RESETS the coalescer, so calling it when the connection is
+        // momentarily null (WebView focus churn — see ImeOutputCoalescer's
+        // type-2 note) would discard the user's pending text. Hold it for
+        // the next frame instead, exactly as the contract below documents.
         val ic = currentInputConnection ?: return
         val flush = outputCoalescer.takeFlush() ?: return
+        Log.d(TAG, "flush: ${flush.deleteUnits}u del + ${flush.insert.length}ch")
         var skippedDeletion = false
         ic.beginBatchEdit()
         try {
@@ -736,6 +787,13 @@ class DasherImeService : InputMethodService() {
         // clear, dropping any stale pending state).
         if (skippedDeletion) reanchorEngineToTarget()
     }
+
+    // Always docked, never Android's fullscreen extract mode: in landscape
+    // the default IMS behavior replaces the whole screen with the IME and
+    // hides the app's text field ("I get fullscreen Dasher but I can't see
+    // search field"). The docked canvas is the product (Heide: "start it
+    // directly as docked") — landscape docks at the bottom like portrait.
+    override fun onEvaluateFullscreenMode(): Boolean = false
 
     // API 36+ (Android 16): measure the actual docked-root position in the
     // window so the insets animation has a concrete target (review C1/C3:
@@ -805,6 +863,12 @@ class DasherImeService : InputMethodService() {
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         Log.d(TAG, "onStartInputView(restarting=$restarting, floating=$floating)")
+        // #78 review I2 — defense-in-depth for the LayoutParams stamp: the
+        // framework replaces our docked-root LayoutParams on attach; the
+        // posted-handler re-apply covers the attach, this covers any later
+        // re-attach/edge the post could miss. Every show re-asserts the
+        // docked geometry while docked (no-op when already correct).
+        if (!floating) setDockedHeight(imeHeightPx())
         // Re-assert ALL IME-owned static listeners — the main app may have
         // overwritten them (#53: output, clipboard, messages, speak).
         installImeListeners()
@@ -851,6 +915,81 @@ class DasherImeService : InputMethodService() {
     }
 
     // ── Utils ──────────────────────────────────────────────────────────────
+
+    /**
+     * RFC 0002 icon buttons for the IME's classic-View bars: compact 48dp
+     * target (design-guide touch-target token), Lucide glyph, no default
+     * Material pill chrome (which rendered oversized next to these rows).
+     */
+    private fun iconButton(
+        iconRes: Int,
+        description: String,
+        onClick: () -> Unit,
+    ): android.widget.ImageButton {
+        val density = resources.displayMetrics.density
+        return android.widget.ImageButton(this).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(48, density), dp(48, density)).apply {
+                marginStart = dp(2, density)
+            }
+            contentDescription = description
+            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+            setImageDrawable(LucideIcons.tinted(context, iconRes, topBarTint()))
+            background = pillBackground()
+            tooltipTextCompat(description)
+            setOnClickListener { onClick() }
+        }
+    }
+
+    /**
+     * The toolbars' bordered pill with a real pressed state — rounded.md 8dp
+     * and the highlight tokens for the press fill. The STROKE deliberately
+     * uses a darkened border variant (#B8C4C8/#3A4550), not the border
+     * token itself (#E0E6E8/#2A353D): the token doubles as the toolbar
+     * strip background, and a same-colour stroke on it is invisible.
+     */
+    private fun pillBackground(): android.graphics.drawable.StateListDrawable {
+        val density = resources.displayMetrics.density
+        val r = dp(8, density).toFloat() // design token rounded.md
+        return android.graphics.drawable.StateListDrawable().apply {
+            addState(
+                intArrayOf(android.R.attr.state_pressed),
+                GradientDrawable().apply { cornerRadius = r; setColor(pressFill()) }
+            )
+            addState(
+                intArrayOf(),
+                GradientDrawable().apply { cornerRadius = r; setColor(0); setStroke(1, topBarBorder()) }
+            )
+        }
+    }
+
+    /** Long-press tooltip (API 26+; the Windows/macOS hover label equivalent on touch). */
+    private fun android.view.View.tooltipTextCompat(text: String) {
+        if (android.os.Build.VERSION.SDK_INT >= 26) tooltipText = text
+    }
+
+    /** The Float⇄Dock toggle: icon + description + action swap with state. */
+    private fun setFloatDockButton(docked: Boolean) {
+        val btn = floatDockBtn ?: return
+        btn.setImageDrawable(
+            LucideIcons.tinted(
+                this,
+                if (docked) R.drawable.ic_lucide_picture_in_picture_2
+                else R.drawable.ic_lucide_panel_bottom,
+                topBarTint()
+            )
+        )
+        btn.contentDescription = if (docked) "Float the keyboard" else "Dock the keyboard"
+        btn.tooltipTextCompat(btn.contentDescription.toString())
+        btn.setOnClickListener { if (docked) enterFloatingMode() else exitFloatingMode() }
+    }
+
+    private fun topBarTint(): Int = ImeToolbarPalette.onSurface(isNightMode())
+    private fun topBarBorder(): Int = ImeToolbarPalette.border(isNightMode())
+    private fun pressFill(): Int = ImeToolbarPalette.pressFill(isNightMode())
+
+    private fun isNightMode(): Boolean =
+        (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
 
     private fun dp(value: Int, density: Float) = (value * density).toInt()
 
