@@ -22,14 +22,22 @@ class ImeBackspaceTest {
         private val selected: CharSequence? = null,
         private val beforeCursor: CharSequence? = null,
         private val commitAccepts: Boolean = true,
+        /** Bug-#5 editor class: commitText returns true AND the selection
+         *  survives (the async-editor lie the review loop flagged). */
+        private val selectionSurvivesCommit: Boolean = false,
     ) : InputConnection {
         val calls = mutableListOf<String>()
-        override fun getSelectedText(flags: Int): CharSequence? = selected
-        override fun getTextBeforeCursor(n: Int, flags: Int): CharSequence? = beforeCursor
+        private var committed = false
+        override fun getSelectedText(flags: Int): CharSequence? =
+            if (committed) { if (selectionSurvivesCommit) selected else null } else selected
+        // Real windowing semantics (review M2): the last n UTF-16 units
+        override fun getTextBeforeCursor(n: Int, flags: Int): CharSequence? = beforeCursor?.takeLast(n)
         override fun commitText(text: CharSequence, newCursorPosition: Int): Boolean {
             calls += "commitText(${text.length})"
+            committed = true
             return commitAccepts
         }
+
         override fun deleteSurroundingText(beforeLength: Int, afterLength: Int): Boolean {
             calls += "deleteSurroundingText($beforeLength)"
             return true
@@ -67,14 +75,24 @@ class ImeBackspaceTest {
     @Test
     fun selection_is_deleted_with_an_empty_commit() {
         val ic = FakeIc(selected = "everything or partial")
-        performImeBackspace(ic)
+        val outcome = performImeBackspace(ic)
+        assertEquals(ImeBackspaceOutcome.SelectionDeleted, outcome)
         assertEquals(listOf("commitText(0)"), ic.calls)
     }
 
     @Test
     fun selection_refusing_editor_gets_del_keyevent_fallback() {
         val ic = FakeIc(selected = "sel", commitAccepts = false)
-        performImeBackspace(ic)
+        assertEquals(ImeBackspaceOutcome.SelectionDeleted, performImeBackspace(ic))
+        assertEquals(listOf("commitText(0)", "sendKeyEvent", "sendKeyEvent"), ic.calls)
+    }
+
+    @Test
+    fun lying_editor_true_commit_but_selection_survives_gets_del_fallback() {
+        // Review loop 1 (I1): the bug-#5 editor class returns TRUE while
+        // doing nothing. The re-verify must catch it and fire the fallback.
+        val ic = FakeIc(selected = "sel", commitAccepts = true, selectionSurvivesCommit = true)
+        assertEquals(ImeBackspaceOutcome.SelectionDeleted, performImeBackspace(ic))
         assertEquals(listOf("commitText(0)", "sendKeyEvent", "sendKeyEvent"), ic.calls)
     }
 

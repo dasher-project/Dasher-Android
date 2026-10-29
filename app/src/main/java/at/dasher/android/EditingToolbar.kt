@@ -54,8 +54,16 @@ class EditingToolbar(
         addTool(R.drawable.ic_lucide_arrow_left, "Move cursor left", mutates = true) { moveCursor(-1) }
         addTool(R.drawable.ic_lucide_arrow_right, "Move cursor right", mutates = true) { moveCursor(1) }
         addSpacer(dp(8))
-        addTool(R.drawable.ic_lucide_delete, "Delete", large = true, mutates = true) {
-            inputConnection()?.let { performImeBackspace(it) }
+        addTool(R.drawable.ic_lucide_delete, "Delete", large = true, mutates = true, logTelemetry = false) {
+            val ic = inputConnection() ?: return@addTool
+            // Telemetry distinguishes selection-delete from caret backspace
+            // (review M4 — the distinction that motivated this fix).
+            val state = when (performImeBackspace(ic)) {
+                ImeBackspaceOutcome.SelectionDeleted -> "selection"
+                ImeBackspaceOutcome.CaretDeleted -> "char"
+                ImeBackspaceOutcome.Noop -> "none"
+            }
+            UiTelemetry.action("ime_toolbar", "backspace", state)
         }
         addSpacer(dp(8))
         addTool(R.drawable.ic_lucide_text_select, "Select all", mutates = false) { performAction(android.R.id.selectAll) }
@@ -90,12 +98,15 @@ class EditingToolbar(
     }
 
     private fun addTool(iconRes: Int, tooltip: String,
-                        large: Boolean = false, mutates: Boolean = true, action: () -> Unit) {
+                        large: Boolean = false, mutates: Boolean = true,
+                        logTelemetry: Boolean = true, action: () -> Unit) {
         addView(toolButton(iconRes, tooltip, large).apply {
             setOnClickListener {
-                // RFC 0001 amendment: which IME editing tools are actually
-                // used (Heide's SwiftKey round-trips suggested these matter).
-                UiTelemetry.action("ime_toolbar", actionIdFor(tooltip))
+                if (logTelemetry) {
+                    // RFC 0001 amendment: which IME editing tools are actually
+                    // used (Heide's SwiftKey round-trips suggested these matter).
+                    UiTelemetry.action("ime_toolbar", actionIdFor(tooltip))
+                }
                 action()
                 if (mutates) onBufferChanged()
             }
@@ -141,28 +152,46 @@ class EditingToolbar(
  * Two cases (Heide, 2026-10-29: "if you select something, the delete button
  * doesn't do anything — it only works when you don't have anything
  * selected"):
- * - SELECTION: [InputConnection.deleteSurroundingText] deletes around the
- *   caret and ignores (or no-ops on) an active selection — including one our
- *   own Select All made. Committing empty text replaces the selection with
- *   nothing (the canonical IME move); a DEL key event is the fallback for
- *   editors that refuse the empty commit.
+ * - SELECTION: [InputConnection.deleteSurroundingText] cannot affect a
+ *   selection (it deletes BEFORE the selection start — a precise no-op when
+ *   the selection starts at the field beginning, i.e. Select All).
+ *   commitText("") replaces the selection with nothing. Review loop 1 (I1):
+ *   the editors documented hostile in bug #5 return TRUE while doing
+ *   nothing, so a true commit is re-verified — if the selection survived,
+ *   the DEL key-event fallback fires anyway (at worst a lying editor that
+ *   DID delete gets one extra char — the lesser evil vs. a dead ⌫).
  * - CARET: one codepoint back — deleteSurroundingText with UTF-16 unit
  *   counts (a surrogate pair, e.g. any emoji, is 2).
+ *
+ * @return the outcome, for telemetry (selection vs caret distinction).
  */
-fun performImeBackspace(ic: InputConnection) {
+sealed interface ImeBackspaceOutcome {
+    /** The selection (if any) was deleted. */
+    object SelectionDeleted : ImeBackspaceOutcome
+    /** One codepoint before the caret was deleted. */
+    object CaretDeleted : ImeBackspaceOutcome
+    /** Nothing to delete (empty selection + empty before-cursor). */
+    object Noop : ImeBackspaceOutcome
+}
+
+fun performImeBackspace(ic: InputConnection): ImeBackspaceOutcome {
     val selected = ic.getSelectedText(0)
     if (selected != null && selected.isNotEmpty()) {
-        if (!ic.commitText("", 1)) {
+        val committed = ic.commitText("", 1)
+        // Bug #5's lesson: a `true` return does not mean it happened.
+        val survived = ic.getSelectedText(0)
+        if (!committed || (survived != null && survived.isNotEmpty())) {
             ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
             ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
         }
-        return
+        return ImeBackspaceOutcome.SelectionDeleted
     }
     val before = ic.getTextBeforeCursor(2, 0)
     val units = when {
-        before == null || before.isEmpty() -> return
+        before == null || before.isEmpty() -> return ImeBackspaceOutcome.Noop
         before.length >= 2 && Character.isHighSurrogate(before[before.length - 2]) -> 2
         else -> 1
     }
     ic.deleteSurroundingText(units, 0)
+    return ImeBackspaceOutcome.CaretDeleted
 }
