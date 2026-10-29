@@ -97,6 +97,15 @@ class ImeBackspaceTest {
     }
 
     @Test
+    fun empty_surviving_selection_is_success_no_fallback() {
+        // Post-commit re-verify: a non-null but EMPTY selection means the
+        // delete landed — no DEL fallback may fire.
+        val ic = FakeIc(selected = "sel", selectionSurvivesCommit = false)
+        assertEquals(ImeBackspaceOutcome.SelectionDeleted, performImeBackspace(ic))
+        assertEquals(listOf("commitText(0)"), ic.calls)
+    }
+
+    @Test
     fun empty_selection_falls_through_to_caret_backspace() {
         // Some editors return "" rather than null with no selection
         val ic = FakeIc(selected = "", beforeCursor = "ab")
@@ -116,6 +125,13 @@ class ImeBackspaceTest {
         val ic = FakeIc(selected = null, beforeCursor = "a😀")
         performImeBackspace(ic)
         assertEquals(listOf("deleteSurroundingText(2)"), ic.calls)
+    }
+
+    @Test
+    fun telemetry_state_mapping_is_pinned() {
+        assertEquals("selection", ImeBackspaceOutcome.SelectionDeleted.telemetryState)
+        assertEquals("char", ImeBackspaceOutcome.CaretDeleted.telemetryState)
+        assertEquals("none", ImeBackspaceOutcome.Noop.telemetryState)
     }
 
     @Test

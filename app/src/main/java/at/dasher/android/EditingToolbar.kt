@@ -55,15 +55,13 @@ class EditingToolbar(
         addTool(R.drawable.ic_lucide_arrow_right, "Move cursor right", mutates = true) { moveCursor(1) }
         addSpacer(dp(8))
         addTool(R.drawable.ic_lucide_delete, "Delete", large = true, mutates = true, logTelemetry = false) {
-            val ic = inputConnection() ?: return@addTool
-            // Telemetry distinguishes selection-delete from caret backspace
-            // (review M4 — the distinction that motivated this fix).
-            val state = when (performImeBackspace(ic)) {
-                ImeBackspaceOutcome.SelectionDeleted -> "selection"
-                ImeBackspaceOutcome.CaretDeleted -> "char"
-                ImeBackspaceOutcome.Noop -> "none"
-            }
-            UiTelemetry.action("ime_toolbar", "backspace", state)
+            val ic = inputConnection()
+            // Telemetry symmetry (review NEW-2): every other tool emits
+            // before acting — a dead ⌫ from a missing connection is exactly
+            // the symptom class worth seeing in the data.
+            val state = if (ic == null) "no_connection"
+                else performImeBackspace(ic).telemetryState
+            UiTelemetry.action("ime_toolbar", actionIdFor(tooltip = "Delete"), state)
         }
         addSpacer(dp(8))
         addTool(R.drawable.ic_lucide_text_select, "Select all", mutates = false) { performAction(android.R.id.selectAll) }
@@ -159,26 +157,31 @@ class EditingToolbar(
  *   the editors documented hostile in bug #5 return TRUE while doing
  *   nothing, so a true commit is re-verified — if the selection survived,
  *   the DEL key-event fallback fires anyway (at worst a lying editor that
- *   DID delete gets one extra char — the lesser evil vs. a dead ⌫).
+ *   DID delete loses extra text — the lesser evil vs. a dead ⌫).
  * - CARET: one codepoint back — deleteSurroundingText with UTF-16 unit
  *   counts (a surrogate pair, e.g. any emoji, is 2).
- *
- * @return the outcome, for telemetry (selection vs caret distinction).
  */
 sealed interface ImeBackspaceOutcome {
+    /**
+     * The ui_action state string for this outcome (review NEW-3: the
+     * mapping lives with the type, testable, not duplicated at call sites).
+     */
+    abstract val telemetryState: String
+
     /** The selection (if any) was deleted. */
-    object SelectionDeleted : ImeBackspaceOutcome
+    object SelectionDeleted : ImeBackspaceOutcome { override val telemetryState = "selection" }
     /** One codepoint before the caret was deleted. */
-    object CaretDeleted : ImeBackspaceOutcome
+    object CaretDeleted : ImeBackspaceOutcome { override val telemetryState = "char" }
     /** Nothing to delete (empty selection + empty before-cursor). */
-    object Noop : ImeBackspaceOutcome
+    object Noop : ImeBackspaceOutcome { override val telemetryState = "none" }
 }
 
 fun performImeBackspace(ic: InputConnection): ImeBackspaceOutcome {
     val selected = ic.getSelectedText(0)
     if (selected != null && selected.isNotEmpty()) {
         val committed = ic.commitText("", 1)
-        // Bug #5's lesson: a `true` return does not mean it happened.
+        // Bug #5's lesson: a `true` return does not mean it happened. An
+        // empty (non-null) surviving selection is success — no fallback.
         val survived = ic.getSelectedText(0)
         if (!committed || (survived != null && survived.isNotEmpty())) {
             ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))

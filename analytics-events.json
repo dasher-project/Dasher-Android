@@ -5,97 +5,39 @@
   "default_properties": {
     "description": "Automatically appended to every event from every frontend",
     "properties": {
-      "platform": {
-        "type": "string",
-        "examples": [
-          "windows",
-          "macos",
-          "ios",
-          "visionos",
-          "linux",
-          "android"
-        ]
-      },
-      "app_variant": {
-        "type": "string",
-        "examples": [
-          "dasher-windows",
-          "dasher-mac",
-          "dasher-ios",
-          "dasher-gtk",
-          "dasher-android"
-        ]
-      },
-      "app_version": {
-        "type": "string",
-        "example": "0.1.0-preview9"
-      },
-      "os_version": {
-        "type": "string",
-        "example": "Microsoft Windows 10.0.19045"
-      },
-      "$geoip_disable": {
-        "type": "boolean",
-        "const": true,
-        "description": "Sent on every event (including crashes): PostHog Cloud must not derive location from the client IP (RFC 0001: no location data)."
-      }
+      "platform": { "type": "string", "examples": ["windows", "macos", "ios", "visionos", "linux", "android"] },
+      "app_variant": { "type": "string", "examples": ["dasher-windows", "dasher-mac", "dasher-ios", "dasher-gtk", "dasher-android"] },
+      "app_version": { "type": "string", "example": "0.1.0-preview9" },
+      "os_version": { "type": "string", "example": "Microsoft Windows 10.0.19045" },
+      "$geoip_disable": { "type": "boolean", "const": true, "description": "Sent on every event (including crashes): PostHog Cloud must not derive location from the client IP (RFC 0001: no location data)." }
     }
   },
   "events": {
     "app_launched": {
       "description": "App starts (after opt-in)",
       "properties": {
-        "locale": {
-          "type": "string",
-          "example": "en-GB"
-        }
+        "locale": { "type": "string", "example": "en-GB" }
       },
       "pii": false
     },
     "input_method_changed": {
       "description": "User selects input method",
       "properties": {
-        "method": {
-          "type": "string",
-          "enum": [
-            "pointer",
-            "touch",
-            "switch",
-            "joystick",
-            "eye_gaze",
-            "tilt"
-          ]
-        }
+        "method": { "type": "string", "enum": ["pointer", "touch", "switch", "joystick", "eye_gaze", "tilt"] }
       },
       "pii": false
     },
     "alphabet_selected": {
       "description": "User picks alphabet",
       "properties": {
-        "alphabet_id": {
-          "type": "string",
-          "example": "English with limited punctuation"
-        }
+        "alphabet_id": { "type": "string", "example": "English with limited punctuation" }
       },
       "pii": false
     },
     "settings_viewed": {
       "description": "User opens a settings tab",
       "properties": {
-        "tab_name": {
-          "type": "string",
-          "enum": [
-            "Input",
-            "Language",
-            "Customization",
-            "Speed",
-            "Output",
-            "Speech",
-            "Privacy",
-            "Appearance",
-            "Advanced"
-          ]
-        }
+        "tab_name": { "type": "string", "enum": ["Input", "Language", "Customization", "Speed", "Output", "Speech", "Privacy", "Appearance", "Advanced"] }
       },
       "pii": false
     },
@@ -112,178 +54,59 @@
     "crash": {
       "description": "Uncaught exception",
       "properties": {
-        "stack_trace": {
-          "type": "string",
-          "note": "May contain file paths but not user text"
-        }
+        "stack_trace": { "type": "string", "note": "May contain file paths but not user text" }
       },
       "pii": false
     },
     "ime_mode_restore": {
       "description": "The IME decided which mode (docked/floating) to open in — every input-view creation. Android only. Decision inputs for the dock/float lifecycle debugging (Dasher-Android #73/#75).",
       "properties": {
-        "saved_mode": {
-          "type": "string",
-          "enum": [
-            "docked",
-            "floating",
-            "<unset>"
-          ]
-        },
-        "always_docked": {
-          "type": "boolean",
-          "description": "The Settings → Input escape hatch is enabled"
-        },
-        "floating_before": {
-          "type": "boolean",
-          "description": "Stale floating state present BEFORE self-healing (true = the #73 path)"
-        },
-        "restored_floating": {
-          "type": "boolean",
-          "description": "The decision: the keyboard opened floating"
-        },
-        "overlay_perm": {
-          "type": "boolean",
-          "description": "SYSTEM_ALERT_WINDOW permission granted"
-        }
+        "saved_mode": { "type": "string", "enum": ["docked", "floating", "<unset>"] },
+        "always_docked": { "type": "boolean", "description": "The Settings → Input escape hatch is enabled" },
+        "floating_before": { "type": "boolean", "description": "Stale floating state present BEFORE self-healing (true = the #73 path)" },
+        "restored_floating": { "type": "boolean", "description": "The decision: the keyboard opened floating" },
+        "overlay_perm": { "type": "boolean", "description": "SYSTEM_ALERT_WINDOW permission granted" }
       },
       "pii": false
     },
     "ime_float_enter": {
       "description": "The IME entered floating mode. Android only.",
       "properties": {
-        "reason": {
-          "type": "string",
-          "enum": [
-            "button",
-            "restore"
-          ],
-          "description": "button = explicit user tap; restore = saved-preference restore on keyboard show"
-        }
+        "reason": { "type": "string", "enum": ["button", "restore"], "description": "button = explicit user tap; restore = saved-preference restore on keyboard show" }
       },
       "pii": false
     },
     "ime_float_exit": {
       "description": "The IME left floating mode. Android only.",
       "properties": {
-        "persist": {
-          "type": "boolean",
-          "description": "false = system-driven cleanup, the saved preference is unchanged"
-        },
-        "reason": {
-          "type": "string",
-          "enum": [
-            "button",
-            "selfheal",
-            "unbind",
-            "destroy"
-          ],
-          "description": "button = user tapped Dock; selfheal = stale-state cleanup at show; unbind = input binding went away (IME switch); destroy = the IME service was destroyed while floating"
-        }
+        "persist": { "type": "boolean", "description": "false = system-driven cleanup, the saved preference is unchanged" },
+        "reason": { "type": "string", "enum": ["button", "selfheal", "unbind", "destroy"], "description": "button = user tapped Dock; selfheal = stale-state cleanup at show; unbind = input binding went away (IME switch); destroy = the IME service was destroyed while floating" }
       },
       "pii": false
     },
     "ime_always_docked_changed": {
       "description": "User toggled Settings → Input → 'Keyboard always starts docked'. Android only. Adoption of this escape hatch is the signal for whether last-mode restore is the right default.",
       "properties": {
-        "enabled": {
-          "type": "boolean"
-        }
+        "enabled": { "type": "boolean" }
       },
       "pii": false
     },
     "ui_action": {
       "description": "User activated a control in the main UI (outside settings windows) — RFC 0001 2026-10-28 amendment. Answers 'where should main-UI focus go'.",
       "properties": {
-        "surface": {
-          "type": "string",
-          "enum": [
-            "main_toolbar",
-            "status_bar",
-            "ime_toolbar",
-            "ime_topbar"
-          ]
-        },
-        "action": {
-          "type": "string",
-          "description": "Fixed vocabulary; new identifiers require a schema update",
-          "examples": [
-            "new",
-            "open",
-            "save",
-            "pause_play",
-            "game_mode",
-            "settings",
-            "copy",
-            "share",
-            "emoji_toggle",
-            "speed_up",
-            "speed_down",
-            "layout",
-            "float",
-            "dock",
-            "hide",
-            "cursor_left",
-            "cursor_right",
-            "backspace",
-            "select_all",
-            "paste"
-          ]
-        },
-        "state": {
-          "type": "string",
-          "enum": [
-            "on",
-            "off",
-            "paused",
-            "playing",
-            "text",
-            "emoji",
-            "selection",
-            "char",
-            "none"
-          ],
-          "description": "Optional — for toggles"
-        }
+        "surface": { "type": "string", "enum": ["main_toolbar", "status_bar", "ime_toolbar", "ime_topbar"] },
+        "action": { "type": "string", "description": "Fixed vocabulary; new identifiers require a schema update", "examples": ["new", "open", "save", "pause_play", "game_mode", "settings", "copy", "share", "emoji_toggle", "speed_up", "speed_down", "layout", "float", "dock", "hide", "cursor_left", "cursor_right", "backspace", "select_all", "paste"] },
+        "state": { "type": "string", "enum": ["on", "off", "paused", "playing", "text", "emoji", "selection", "char", "none", "no_connection"], "description": "Optional — toggle states, or the delete kind for the backspace action" }
       },
       "pii": false
     },
     "setting_changed": {
       "description": "User committed a settings change — RFC 0001 2026-10-28 amendment. Answers 'which settings are the priority'. Fires at the widget commit site only (never for programmatic engine changes).",
       "properties": {
-        "setting_id": {
-          "type": "string",
-          "description": "Canonical identifier: DasherCore parameter name or frontend setting key",
-          "examples": [
-            "Max Bitrate",
-            "output_font_size"
-          ]
-        },
-        "value_type": {
-          "type": "string",
-          "enum": [
-            "bool",
-            "number",
-            "enum",
-            "string"
-          ]
-        },
-        "value": {
-          "type": [
-            "boolean",
-            "number",
-            "string"
-          ],
-          "description": "Present ONLY for bool/number/enum (fixed vocabularies). NEVER for string settings — free text is not collected"
-        },
-        "surface": {
-          "type": "string",
-          "enum": [
-            "settings",
-            "main_ui",
-            "ime"
-          ]
-        }
+        "setting_id": { "type": "string", "description": "Canonical identifier: DasherCore parameter name or frontend setting key", "examples": ["Max Bitrate", "output_font_size"] },
+        "value_type": { "type": "string", "enum": ["bool", "number", "enum", "string"] },
+        "value": { "type": ["boolean", "number", "string"], "description": "Present ONLY for bool/number/enum (fixed vocabularies). NEVER for string settings — free text is not collected" },
+        "surface": { "type": "string", "enum": ["settings", "main_ui", "ime"] }
       },
       "pii": false
     }
