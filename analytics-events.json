@@ -96,7 +96,7 @@
       "properties": {
         "surface": { "type": "string", "enum": ["main_toolbar", "status_bar", "ime_toolbar", "ime_topbar"] },
         "action": { "type": "string", "description": "Fixed vocabulary; new identifiers require a schema update", "examples": ["new", "open", "save", "pause_play", "game_mode", "settings", "copy", "share", "emoji_toggle", "speed_up", "speed_down", "layout", "float", "dock", "hide", "cursor_left", "cursor_right", "backspace", "select_all", "paste"] },
-        "state": { "type": "string", "enum": ["on", "off", "paused", "playing", "text", "emoji"], "description": "Optional — for toggles" }
+        "state": { "type": "string", "enum": ["on", "off", "paused", "playing", "text", "emoji", "selection", "char", "none", "no_connection"], "description": "Optional — toggle states, or the delete kind for the backspace action" }
       },
       "pii": false
     },
