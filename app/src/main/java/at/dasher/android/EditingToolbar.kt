@@ -54,7 +54,9 @@ class EditingToolbar(
         addTool(R.drawable.ic_lucide_arrow_left, "Move cursor left", mutates = true) { moveCursor(-1) }
         addTool(R.drawable.ic_lucide_arrow_right, "Move cursor right", mutates = true) { moveCursor(1) }
         addSpacer(dp(8))
-        addTool(R.drawable.ic_lucide_delete, "Delete", large = true, mutates = true) { backspace() }
+        addTool(R.drawable.ic_lucide_delete, "Delete", large = true, mutates = true) {
+            inputConnection()?.let { performImeBackspace(it) }
+        }
         addSpacer(dp(8))
         addTool(R.drawable.ic_lucide_text_select, "Select all", mutates = false) { performAction(android.R.id.selectAll) }
         addTool(R.drawable.ic_lucide_copy, "Copy", mutates = false) { performAction(android.R.id.copy) }
@@ -118,22 +120,6 @@ class EditingToolbar(
 
     // ── Actions ────────────────────────────────────────────────────────────
 
-    /**
-     * Delete one codepoint before the cursor (#50: Heide's #1 request).
-     * [InputConnection.deleteSurroundingText] expects UTF-16 code-unit
-     * counts; a surrogate pair (emoji, CJK beyond BMP) is 2 units.
-     */
-    private fun backspace() {
-        val ic = inputConnection() ?: return
-        val before = ic.getTextBeforeCursor(2, 0)
-        val units = when {
-            before == null || before.isEmpty() -> return
-            before.length >= 2 && Character.isHighSurrogate(before[before.length - 2]) -> 2
-            else -> 1
-        }
-        ic.deleteSurroundingText(units, 0)
-    }
-
     /** Move the cursor one position left/right via the target's key handler (#50). */
     private fun moveCursor(direction: Int) {
         val ic = inputConnection() ?: return
@@ -146,4 +132,37 @@ class EditingToolbar(
     private fun performAction(actionId: Int) {
         inputConnection()?.performContextMenuAction(actionId)
     }
+}
+
+/**
+ * The toolbar ⌫, extracted so its contract is unit-testable with a fake
+ * [InputConnection] (the EditorSync.kt / ImeOutputCoalescer.kt pattern).
+ *
+ * Two cases (Heide, 2026-10-29: "if you select something, the delete button
+ * doesn't do anything — it only works when you don't have anything
+ * selected"):
+ * - SELECTION: [InputConnection.deleteSurroundingText] deletes around the
+ *   caret and ignores (or no-ops on) an active selection — including one our
+ *   own Select All made. Committing empty text replaces the selection with
+ *   nothing (the canonical IME move); a DEL key event is the fallback for
+ *   editors that refuse the empty commit.
+ * - CARET: one codepoint back — deleteSurroundingText with UTF-16 unit
+ *   counts (a surrogate pair, e.g. any emoji, is 2).
+ */
+fun performImeBackspace(ic: InputConnection) {
+    val selected = ic.getSelectedText(0)
+    if (selected != null && selected.isNotEmpty()) {
+        if (!ic.commitText("", 1)) {
+            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
+        }
+        return
+    }
+    val before = ic.getTextBeforeCursor(2, 0)
+    val units = when {
+        before == null || before.isEmpty() -> return
+        before.length >= 2 && Character.isHighSurrogate(before[before.length - 2]) -> 2
+        else -> 1
+    }
+    ic.deleteSurroundingText(units, 0)
 }
