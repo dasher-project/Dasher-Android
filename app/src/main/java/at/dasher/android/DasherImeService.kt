@@ -51,6 +51,27 @@ class DasherImeService : InputMethodService() {
     private var floating = false
     private var floatingView: LinearLayout? = null
     private var floatDockBtn: android.widget.ImageButton? = null
+
+    /**
+     * RFC 0012 direct-entry clause (2026-10-30 amendment): compact live WPM
+     * in the top bar. Refreshed at 2 Hz — the visibility is re-read each
+     * tick so toggling the setting takes effect without restarting the IME.
+     */
+    private var wpmView: android.widget.TextView? = null
+    private val wpmTicker = object : Runnable {
+        override fun run() {
+            val view = wpmView ?: return
+            val eng = engine
+            if (eng == null || !TypingRateSetting.isEnabled(this@DasherImeService)) {
+                view.visibility = View.GONE
+            } else {
+                view.text = "${eng.wpm().toInt()} wpm"
+                view.visibility = View.VISIBLE
+            }
+            handler.postDelayed(this, 500)
+        }
+    }
+    private val handler = Handler(Looper.getMainLooper())
     private var emojiToggleBtn: Button? = null
 
     // Last-used mode (dock/float), restored on the next keyboard show so
@@ -210,6 +231,18 @@ class DasherImeService : InputMethodService() {
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
             setPadding(dp(8, density), dp(2, density), dp(8, density), dp(2, density))
         }
+        // RFC 0012 (2026-10-30 amendment) direct-entry clause: compact live
+        // WPM in the IME's control strip, current rate only, ~2 Hz, visible
+        // only when Settings → Output → Show typing rate is on. The original
+        // exemption ("no persistent strip") predates the stable top bar.
+        wpmView = android.widget.TextView(this).apply {
+            textSize = 13f
+            setTextColor(topBarTint())
+            visibility = View.GONE
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                marginEnd = dp(6, density)
+            }
+        }
         val floatBtn = iconButton(R.drawable.ic_lucide_picture_in_picture_2, "Float the keyboard") { enterFloatingMode() }
         // Emoji toggle (#61 option 2): GONE until createEngine() confirms
         // the data bundle ships the Emoji alphabet (DasherCore b00a4c8a+).
@@ -234,6 +267,7 @@ class DasherImeService : InputMethodService() {
         }
         emojiToggleBtn = emojiBtn
         val hideBtn = iconButton(R.drawable.ic_lucide_keyboard_off, "Hide the keyboard") { requestHideSelf(0) }
+        top.addView(wpmView)
         top.addView(floatBtn)
         top.addView(emojiBtn)
         top.addView(hideBtn)
@@ -866,6 +900,9 @@ class DasherImeService : InputMethodService() {
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         Log.d(TAG, "onStartInputView(restarting=$restarting, floating=$floating)")
+        // RFC 0012: start the compact-WPM ticker with the keyboard.
+        handler.removeCallbacks(wpmTicker)
+        handler.postDelayed(wpmTicker, 500)
         // #78 review I2 — defense-in-depth for the LayoutParams stamp: the
         // framework replaces our docked-root LayoutParams on attach; the
         // posted-handler re-apply covers the attach, this covers any later
@@ -888,6 +925,8 @@ class DasherImeService : InputMethodService() {
 
     override fun onFinishInputView(finishingInput: Boolean) {
         super.onFinishInputView(finishingInput)
+        handler.removeCallbacks(wpmTicker)
+        wpmView?.visibility = View.GONE
         engine?.stop()
     }
 
