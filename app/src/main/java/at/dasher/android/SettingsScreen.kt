@@ -166,6 +166,11 @@ fun SettingsScreen(
                         // keyboard from the shared dasher_ime prefs.
                         item { KeyboardStartSection() }
                     }
+                    if (tabGroup == "Output") {
+                        // RFC 0012 (2026-10-30 amendment): the opt-in toggle —
+                        // gates the main-app readout AND the IME's compact WPM.
+                        item { TypingRateSection() }
+                    }
                     if (tabGroup == "Customization") {
                         item { AppearanceSection(engine, bump) }
                         // Output-pane font lives with the other appearance
@@ -250,6 +255,44 @@ private fun PrivacyContent(context: android.content.Context) {
  * sensor; joystick with a connected gamepad), mirroring Apple's Access settings
  * compatibility filter.
  */
+
+/**
+ * RFC 0012: the typing-rate opt-in. One toggle governs both surfaces (the
+ * main status-bar readout and the IME top bar's compact live-WPM — the
+ * 2026-10-30 amendment). Default OFF per the RFC.
+ */
+@Composable
+private fun TypingRateSection() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var enabled by remember { mutableStateOf(TypingRateSetting.isEnabled(context)) }
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .toggleable(
+                    value = enabled,
+                    role = Role.Switch,
+                    onValueChange = { v ->
+                        TypingRateSetting.setEnabled(context, v)
+                        enabled = v
+                        UiTelemetry.setting("Show typing rate", v, "settings")
+                    },
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Show typing rate", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "Live characters-per-second and words-per-minute while writing — in the status bar here, and a compact words-per-minute figure on the keyboard's top bar.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = enabled, onCheckedChange = null)
+        }
+    }
+}
 
 /**
  * #75: IME start behaviour. The keyboard normally reopens in its last-used

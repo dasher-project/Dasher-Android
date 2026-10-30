@@ -303,8 +303,16 @@ class MainActivity : ComponentActivity() {
                 // RFC 0012: typing-rate overlay — CPS + WPM from the engine's rolling
                 // window (dasher_get_cps / dasher_get_wpm), refreshed once a second
                 // while playing. Apple shows the same "X.X cps · N wpm" readout.
+                // Opt-in via Settings → Output (2026-10-30: was always-on; the
+                // RFC's toggle now governs this AND the IME's compact WPM).
                 var typingRate by remember { mutableStateOf("") }
-                LaunchedEffect(isPlaying) {
+                var typingRateEnabled by remember { mutableStateOf(TypingRateSetting.isEnabled(applicationContext)) }
+                val appCtx = applicationContext
+                LaunchedEffect(showSettings) { // re-read when Settings closes
+                    typingRateEnabled = TypingRateSetting.isEnabled(appCtx)
+                }
+                LaunchedEffect(isPlaying, typingRateEnabled) {
+                    if (!typingRateEnabled) { typingRate = ""; return@LaunchedEffect }
                     while (isPlaying) {
                         engine?.let { e ->
                             typingRate = getString(R.string.typing_rate, e.cps(), e.wpm().toInt())
