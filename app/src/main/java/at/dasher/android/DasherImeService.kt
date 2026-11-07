@@ -52,6 +52,28 @@ class DasherImeService : InputMethodService() {
     private var floatingView: LinearLayout? = null
     private var floatDockBtn: android.widget.ImageButton? = null
 
+    // Android #63: speed quick-control in the IME top bar (Heide: "the
+    // letters still pop up too fast… it's not unbearable" — she lived with
+    // it only because the slider was buried in the main app). −/+ nudges
+    // the engine's Speed Percent by one step from the range's declared step
+    // (see DasherEngine.speedRangePercent); persisted via the shared engine
+    // settings so the main app stays in sync.
+    private var speedPercent = 100
+    private var speedRange = 20..400
+    private val speedStep: Int get() = ((speedRange.last - speedRange.first) / 40).coerceAtLeast(10)
+    private var speedView: android.widget.TextView? = null
+
+    private fun nudgeSpeed(delta: Int) {
+        val eng = engine ?: return
+        val next = (speedPercent + delta).coerceIn(speedRange.first, speedRange.last)
+        if (next == speedPercent) return
+        eng.setSpeedPercent(next)
+        eng.saveSettings()
+        speedPercent = next
+        speedView?.text = "$speedPercent%"
+        UiTelemetry.setting("Speed Percent", next.toLong(), "ime")
+    }
+
     /**
      * RFC 0012 direct-entry clause (2026-10-30 amendment): compact live WPM
      * in the top bar. Refreshed at 2 Hz — the visibility is re-read each
@@ -235,6 +257,18 @@ class DasherImeService : InputMethodService() {
         // WPM in the IME's control strip, current rate only, ~2 Hz, visible
         // only when Settings → Output → Show typing rate is on. The original
         // exemption ("no persistent strip") predates the stable top bar.
+        // Android #63: [−][500%][+] cluster, left of the WPM readout.
+        speedView = android.widget.TextView(this).apply {
+            textSize = 13f
+            setTextColor(topBarTint())
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                marginStart = dp(6, density); marginEnd = dp(2, density)
+            }
+            tooltipTextCompat("Typing speed")
+        }
+        top.addView(iconButton(R.drawable.ic_lucide_minus, "Slower") { nudgeSpeed(-speedStep) })
+        top.addView(speedView)
+        top.addView(iconButton(R.drawable.ic_lucide_plus, "Faster") { nudgeSpeed(+speedStep) })
         wpmView = android.widget.TextView(this).apply {
             textSize = 13f
             setTextColor(topBarTint())
@@ -670,6 +704,10 @@ class DasherImeService : InputMethodService() {
                 emojiToggleBtn?.tooltipText = emojiToggleBtn?.contentDescription
             }
         }
+        // Android #63: read the persisted speed + engine range once.
+        speedPercent = eng.getSpeedPercent()
+        speedRange = eng.speedRangePercent()
+        speedView?.text = "$speedPercent%"
         eng.start()
     }
 
