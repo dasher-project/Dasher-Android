@@ -26,7 +26,12 @@ fun engineVersion(): String {
             .directory(File(rootDir, "third_party/DasherCore")).redirectErrorStream(true).start()
         p.inputStream.bufferedReader().readText().trim().also { p.waitFor() }
     } catch (_: Exception) { "" }
-    return describe.ifEmpty { "unknown" }
+    // CI checks out submodules shallow (no tags): describe then fails and its
+    // merged stderr would become the value — multi-line garbage that broke the
+    // generated BuildConfig string literal. Accept only a real describe
+    // ("vX.Y[.Z][-N-gSHA][-dirty]"); anything else degrades to "unknown".
+    return if (Regex("""^v\d+(\.\d+)*(-\d+-g[0-9a-f]+)?(-dirty)?$""").matches(describe)) describe
+    else "unknown"
 }
 
 fun gitVersionCode(base: Int, fallback: Int): Int {
