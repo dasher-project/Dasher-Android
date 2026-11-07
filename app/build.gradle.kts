@@ -45,11 +45,34 @@ fun gitVersionCode(base: Int, fallback: Int): Int {
     return base + (count ?: (fallback - base))
 }
 
+// RFC 0022 item 3: CAPI compatibility gate. The frontend declares the
+// minimum DasherCore C-API level it requires; the build FAILS if the pinned
+// engine's dasher.h is older — "can I bump the engine?" becomes a check
+// instead of changelog archaeology. Bump this only for engine versions whose
+// behavioural changes the frontend has adapted to (per DasherCore release
+// notes), not on every engine bump.
+fun requireCapiVersion(required: Int) {
+    val header = File(rootDir, "third_party/DasherCore/src/dasher.h")
+    if (!header.exists()) throw GradleException("CAPI gate: ${header} missing — submodule not checked out?")
+    val m = Regex("#define\\s+DASHER_CAPI_VERSION\\s+(\\d+)").find(header.readText())
+        ?: throw GradleException("CAPI gate: DASHER_CAPI_VERSION not found in the pinned dasher.h")
+    val pinned = m.groupValues[1].toInt()
+    if (pinned < required) {
+        throw GradleException(
+            "CAPI gate: pinned DasherCore exposes CAPI version $pinned, this frontend requires >= $required. " +
+            "Bump third_party/DasherCore (see .github/workflows/engine-bump.yml) or lower the requirement after adapting.")
+    }
+    logger.lifecycle("CAPI gate: pinned DasherCore CAPI version $pinned (required >= $required) — OK")
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
+
+// RFC 0022 item 3 — fails configuration when the pin is too old.
+requireCapiVersion(3)
 
 android {
     namespace = "at.dasher.android"
