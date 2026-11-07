@@ -6,6 +6,8 @@
     <string name="always_docked_desc">The Dasher keyboard reopens docked at the bottom of the screen every time, even if you floated it before. While typing, tapping Float still floats the keyboard until you dock it again — this setting only decides where the keyboard starts.</string>
     <string name="always_docked_title">Keyboard always starts docked</string>
     <string name="ime_name">Dasher Keyboard</string>
+    <string name="s_default">Default</string>
+    <string name="s_new">New</string>
     <string name="save_default_name">dasher.txt</string>
     <string name="settings_advanced">Advanced settings</string>
     <string name="settings_close">Close</string>
@@ -123,7 +125,6 @@ You can change this anytime in Settings &gt; Privacy.</string>
 </string>
     <string name="dead_zone_format">Dead zone: {0} px</string>
     <string name="decrease_speed">Decrease Speed</string>
-    <string name="s_default">Default</string>
     <string name="diag_alphabet_format">Alphabet: {0}</string>
     <string name="diag_colour_format">Colour: {0}</string>
     <string name="diag_speed_format">Speed: {0}</string>
@@ -222,7 +223,6 @@ You can change this anytime in Settings &gt; Privacy.</string>
     <string name="more">More</string>
     <string name="more_options">More options</string>
     <string name="move_your_eyes_while_pinching_to_steer">Move your eyes while pinching to steer</string>
-    <string name="s_new">New</string>
     <string name="new_document">New document</string>
     <string name="new_message">New Message</string>
     <string name="new_session_tooltip">New session (clear text and context)</string>
