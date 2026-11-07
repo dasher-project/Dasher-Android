@@ -34,6 +34,35 @@ jobs:
       - name: Install NDK + CMake (versions pinned in app/build.gradle.kts)
         run: yes | sdkmanager "ndk;27.0.12077973" "cmake;3.22.1" || true
 
+      # RFC 0022 item 7: inherit the engine changelog. Computes the DasherCore
+      # commit range between the previous release's submodule pin and this
+      # tag's, and appends it to the release body under "Engine changes" —
+      # the hand-written versions of this section (v0.1.22/0.1.23) are now
+      # generated. Skips gracefully on the first-ever release.
+      - name: Engine changelog (old pin → new pin)
+        run: |
+          set -euo pipefail
+          PREV_TAG=$(git tag --sort=-creatordate --merged origin/main | grep -v "^${GITHUB_REF_NAME}$" | head -1 || true)
+          {
+            if [ -n "$PREV_TAG" ]; then
+              OLD_PIN=$(git rev-parse "$PREV_TAG:third_party/DasherCore" 2>/dev/null || echo "")
+              NEW_PIN=$(git rev-parse "third_party/DasherCore")
+              if [ -n "$OLD_PIN" ] && [ "$OLD_PIN" != "$NEW_PIN" ]; then
+                (cd third_party/DasherCore && git fetch --quiet origin "$OLD_PIN" "$NEW_PIN" 2>/dev/null || git fetch --quiet --unshallow origin || true)
+                echo "## Engine changes (DasherCore, ${PREV_TAG} → ${GITHUB_REF_NAME})"
+                echo
+                echo '```'
+                git -C third_party/DasherCore log --oneline --no-decorate "$OLD_PIN..$NEW_PIN" | head -80
+                echo '```'
+              else
+                echo "## Engine changes"
+                echo
+                echo "No engine pin change since ${PREV_TAG}."
+              fi
+            fi
+          } > /tmp/engine-notes.md
+          cat /tmp/engine-notes.md || true
+
       - name: Build release APK
         run: ./gradlew :app:assembleRelease --no-daemon --stacktrace
 
@@ -73,4 +102,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
+          append_body: true
+          body_path: /tmp/engine-notes.md
           files: out/*.apk
