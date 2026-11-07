@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d wpm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d wpm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">Er is een crashrapport opgeslagen in ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Als je dit rapport kunt delen via een GitHub-issue, helpt dat ons om de bug te verhelpen.</string>
     <string name="about">Over</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="tts_no_credentials">Geen referenties vereist</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Typen in andere applicaties vereist toegang tot /dev/uinput, wat een sandboxed</string>
-    <string name="typing_rate">Typsnelheid</string>
     <string name="typing_rate_format">{cps} cps · {wpm} wpm</string>
     <string name="udp_port">UDP-poort</string>
     <string name="udp_tracker_help">UDP-tracker luistert naar STREAM_DATA- of GazePoint-berichten</string>

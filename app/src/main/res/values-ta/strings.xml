@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d wpm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d wpm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">செயலிழப்பு அறிக்கை ~/Library/Logs/DiagnosticReports/Dasher-*.ips என்ற கோப்பில் சேமிக்கப்பட்டுள்ளது. அதை நீங்கள் ஒரு GitHub சிக்கலாகப் பகிர்ந்தால், அந்தப் பிழையைச் சரிசெய்ய எங்களுக்கு அது உதவும்.</string>
     <string name="about">பற்றி</string>
     <string name="about_version_format">டாஷர் {0}</string>
@@ -374,7 +374,6 @@
     <string name="tts_no_credentials">அங்கீகாரங்கள் தேவையில்லை</string>
     <string name="turbo">டர்போ</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">மற்ற பயன்பாடுகளுக்கு டைப் செய்ய /dev/uinputக்கு அணுகல் தேவை, அது ஒரு சாம்sandboxed ஆகும்</string>
-    <string name="typing_rate">தட்டச்சு விகிதம்</string>
     <string name="typing_rate_format">{cps} cps · {wpm} wpm</string>
     <string name="udp_port">UDP Port</string>
     <string name="udp_tracker_help">UDP tracker listens for STREAM_DATA or GazePoint messages</string>

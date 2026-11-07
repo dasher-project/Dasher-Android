@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f نویسه در ثانیه · %2$d کلمه در دقیقه</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f نویسه در ثانیه · %2$d کلمه در دقیقه</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">یک گزارش خرابی در ~/Library/Logs/DiagnosticReports/Dasher-*.ips ذخیره شد. اگر بتوانید آن را در یک مشکل GitHub به اشتراک بگذارید، به ما در رفع اشکال کمک می‌کند.</string>
     <string name="about">درباره</string>
     <string name="about_version_format">دشر {0}</string>
@@ -374,7 +374,6 @@
     <string name="tts_no_credentials">نیاز به مدارک ندارد</string>
     <string name="turbo">توربو</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">تایپ کردن در برنامه‌های دیگر نیاز به دسترسی به /dev/uinput دارد، که در یک محیط سندباکس شده است</string>
-    <string name="typing_rate">نرخ تایپ</string>
     <string name="typing_rate_format">{cps} کاراکتر در ثانیه · {wpm} کلمه در دقیقه</string>
     <string name="udp_port">پورت UDP</string>
     <string name="udp_tracker_help">ردیاب UDP به پیام‌های STREAM_DATA یا GazePoint گوش می‌دهد</string>

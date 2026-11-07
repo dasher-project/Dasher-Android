@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$,1f cps · %2$d ppm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$,1f cps · %2$d ppm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">Um relatório de falha foi salvo em ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Se você puder compartilhá-lo em uma issue no GitHub, isso nos ajudará a corrigir o bug.</string>
     <string name="about">Sobre</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Você pode alterar isso a qualquer momento em Configurações &gt; Privacidade.<
     <string name="tts_no_credentials">Não são necessárias credenciais</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Digitar em outras aplicações necessita de acesso a /dev/uinput, o que uma sandboxed</string>
-    <string name="typing_rate">Taxa de digitação</string>
     <string name="typing_rate_format">{cps} cps · {wpm} ppm</string>
     <string name="udp_port">Porta UDP</string>
     <string name="udp_tracker_help">O rastreador UDP escuta mensagens STREAM_DATA ou GazePoint</string>

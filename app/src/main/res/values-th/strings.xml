@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f ตัวอักษรต่อวินาที · %2$d คำต่อวินาที</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f ตัวอักษรต่อวินาที · %2$d คำต่อวินาที</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">รายงานข้อผิดพลาดถูกบันทึกไว้ที่ ~/Library/Logs/DiagnosticReports/Dasher-*.ips หากคุณสามารถแชร์รายงานนี้ใน GitHub issue จะช่วยให้เราแก้ไขข้อผิดพลาดได้ง่ายขึ้น</string>
     <string name="about">เกี่ยวกับ</string>
     <string name="about_version_format">แดชเชอร์ {0}</string>
@@ -374,7 +374,6 @@
     <string name="tts_no_credentials">ไม่ต้องใช้ข้อมูลประจำตัว</string>
     <string name="turbo">เทอร์โบ</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">การพิมพ์ลงในแอปพลิเคชันอื่นต้องการการเข้าถึง /dev/uinput ซึ่งถูกจำกัดโดย sandbox</string>
-    <string name="typing_rate">อัตราการพิมพ์</string>
     <string name="typing_rate_format">{cps} อักขระต่อวินาที · {wpm} คำต่อนาที</string>
     <string name="udp_port">พอร์ต UDP</string>
     <string name="udp_tracker_help">ตัวติดตาม UDP ฟังข้อความ STREAM_DATA หรือ GazePoint</string>

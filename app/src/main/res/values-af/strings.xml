@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f kps · %2$d wpm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f kps · %2$d wpm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">\'n Ongeluksverslag is gestoor in ~/Library/Logs/DiagnosticReports/Dasher-*.ips. As jy dit in \'n GitHub-probleem kan deel, help dit ons om die fout reg te stel.</string>
     <string name="about">Oor</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="tts_no_credentials">Geen geloofsbriewe benodig nie</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Tik in ander toepassings benodig toegang tot /dev/uinput, wat \'n gesandboxte</string>
-    <string name="typing_rate">Te tik Tempo</string>
     <string name="typing_rate_format">{cps} sps · {wpm} wpm</string>
     <string name="udp_port">UDP-poort</string>
     <string name="udp_tracker_help">UDP-tracker luister vir STREAM_DATA of GazePoint-boodskappe</string>

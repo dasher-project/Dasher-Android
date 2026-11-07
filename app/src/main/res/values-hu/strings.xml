@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f karakter/s · %2$d szó/perc</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f karakter/s · %2$d szó/perc</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">Egy hibajelentés került mentésre a ~/Library/Logs/DiagnosticReports/Dasher-*.ips fájlba. Ha megosztod egy GitHub-hiba esetén, az segít nekünk a hiba kijavításában.</string>
     <string name="about">Névjegy</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="tts_no_credentials">Nincs szükség hitelesítő adatokra</string>
     <string name="turbo">Turbó</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Más alkalmazásokba történő gépeléshez hozzáférés szükséges a /dev/uinput-hoz, ami egy sandboxolt</string>
-    <string name="typing_rate">Gépelési sebesség</string>
     <string name="typing_rate_format">{cps} karakter/perc · {wpm} szó/perc</string>
     <string name="udp_port">UDP port</string>
     <string name="udp_tracker_help">Az UDP követő a STREAM_DATA vagy GazePoint üzenetekre figyel</string>

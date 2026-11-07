@@ -1,0 +1,29 @@
+name: Strings freshness
+
+# Android #82: the generator now lives here (vendored from Dasher-GTK) and
+# CI-gates its own output. --check regenerates in-memory and diffs; fails on
+# any stale values-*/strings.xml or the default file.
+
+on:
+  pull_request:
+    paths:
+      - "app/src/main/res/values*/**"
+      - "shared-resources/**"
+      - "Scripts/generate-strings.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify generated strings are fresh
+        run: python3 Scripts/generate-strings.py --with-default --check

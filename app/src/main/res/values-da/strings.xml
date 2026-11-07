@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d ord/minutte</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d ord/minutte</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">En nedbrudsrapport blev gemt i ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Hvis du kan dele den i et GitHub-problem, hjælper det os med at rette fejlen.</string>
     <string name="about">Om</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="tts_no_credentials">Ingen legitimationsoplysninger kræves</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">At skrive i andre programmer kræver adgang til /dev/uinput, hvilket en sandboxet</string>
-    <string name="typing_rate">Skrivehastighed</string>
     <string name="typing_rate_format">{cps} cps · {wpm} ord/min</string>
     <string name="udp_port">UDP-port</string>
     <string name="udp_tracker_help">UDP-tracker lytter efter STREAM_DATA- eller GazePoint-beskeder</string>

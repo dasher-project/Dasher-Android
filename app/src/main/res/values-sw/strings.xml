@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d wpm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d wpm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">Ripoti ya hitilafu ilihifadhiwa kwenye ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Ukiweza kuishiriki katika suala la GitHub, inatusaidia kurekebisha hitilafu.</string>
     <string name="about">Kuhusu</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -373,7 +373,6 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="tts_no_credentials">Hakuna cheti kinachohitajika</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Kuandika kwenye programu nyingine kunahitaji ufikiaji wa /dev/uinput, ambayo iko ndani ya kisanduku cha usalama</string>
-    <string name="typing_rate">Kiwango cha kuandika</string>
     <string name="typing_rate_format">{cps} cps · {wpm} wpm</string>
     <string name="udp_port">Mlango wa UDP</string>
     <string name="udp_tracker_help">Kirekodi cha UDP kinasikiliza ujumbe wa STREAM_DATA au GazePoint</string>

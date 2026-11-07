@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f merkintöjä sekunnissa · %2$d sanaa minuutissa</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f merkintöjä sekunnissa · %2$d sanaa minuutissa</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">Kaatumisraportti tallennettiin tiedostoon ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Jos voit jakaa sen GitHub-ongelmaraportissa, se auttaa meitä korjaamaan virheen.</string>
     <string name="about">Tietoa</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="tts_no_credentials">Ei vaadita tunnistetietoja</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Kirjoittaminen muihin sovelluksiin vaatii pääsyn /dev/uinputiin, mikä on hiekkalaatikossa</string>
-    <string name="typing_rate">Kirjoitusnopeus</string>
     <string name="typing_rate_format">{cps} merkkiä/s · {wpm} sanaa/min</string>
     <string name="udp_port">UDP-portti</string>
     <string name="udp_tracker_help">UDP-seuranta kuuntelee STREAM_DATA- tai GazePoint-viestejä</string>

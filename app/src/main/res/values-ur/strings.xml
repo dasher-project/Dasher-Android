@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d wpm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d wpm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">کریش رپورٹ ~/Library/Logs/DiagnosticReports/Dasher-*.ips میں محفوظ کی گئی تھی۔ اگر آپ اسے GitHub کے مسئلے میں شیئر کر سکتے ہیں، تو اس سے ہمیں بگ کو ٹھیک کرنے میں مدد ملتی ہے۔</string>
     <string name="about">کے بارے میں</string>
     <string name="about_version_format">ڈیشر {0}</string>
@@ -374,7 +374,6 @@
     <string name="tts_no_credentials">کوئی اسناد درکار نہیں</string>
     <string name="turbo">ٹربو</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">دوسری ایپلیکیشنز میں ٹائپ کرنے کے لیے /dev/uinput تک رسائی کی ضرورت ہوتی ہے، جو ایک سینڈباکسڈ ہے</string>
-    <string name="typing_rate">ٹائپنگ کی شرح</string>
     <string name="typing_rate_format">{cps} cps · {wpm} wpm</string>
     <string name="udp_port">UDP پورٹ</string>
     <string name="udp_tracker_help">UDP ٹریکر STREAM_DATA یا GazePoint پیغامات کے لیے سنتا ہے</string>

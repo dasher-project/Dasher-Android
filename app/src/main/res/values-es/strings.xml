@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d ppm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d ppm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">Se guardó un informe de error en ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Si puedes compartirlo en un problema de GitHub, nos ayudarás a solucionar el error.</string>
     <string name="about">Acerca de</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Puedes cambiar esta configuración en cualquier momento en Ajustes &gt; Privacid
     <string name="tts_no_credentials">No se requieren credenciales</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Escribir en otras aplicaciones necesita acceso a /dev/uinput, lo cual está en un entorno aislado</string>
-    <string name="typing_rate">Ratio de tecleo</string>
     <string name="typing_rate_format">{cps} cps · {wpm} ppm</string>
     <string name="udp_port">Puerto UDP</string>
     <string name="udp_tracker_help">El rastreador UDP escucha mensajes STREAM_DATA o GazePoint</string>

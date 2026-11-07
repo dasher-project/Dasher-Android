@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">0.1f نبضة في الثانية · d كلمة في الدقيقة</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">0.1f نبضة في الثانية · d كلمة في الدقيقة</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">تم حفظ تقرير الأعطال في المسار ~/Library/Logs/DiagnosticReports/Dasher-*.ips. إذا أمكنك مشاركته في مشكلة على GitHub، فسيساعدنا ذلك في إصلاح الخلل.</string>
     <string name="about">من نحن</string>
     <string name="about_version_format">داشر {0}</string>
@@ -374,7 +374,6 @@
     <string name="tts_no_credentials">لا تتطلب بيانات اعتماد</string>
     <string name="turbo">توربيني</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">الكتابة في تطبيقات أخرى تتطلب الوصول إلى /dev/uinput، وهو ما يتم في بيئة محصورة</string>
-    <string name="typing_rate">معدل الطباعة</string>
     <string name="typing_rate_format">{cps} حرف/ثانية · {wpm} كلمة/دقيقة</string>
     <string name="udp_port">منفذ UDP</string>
     <string name="udp_tracker_help">يستمع متعقّب UDP لرسائل STREAM_DATA أو GazePoint</string>

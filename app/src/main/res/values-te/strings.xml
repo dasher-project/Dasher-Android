@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d wpm</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d wpm</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">క్రాష్ రిపోర్ట్ ~/Library/Logs/DiagnosticReports/Dasher-*.ips లో సేవ్ చేయబడింది. మీరు దానిని గిట్‌హబ్ ఇష్యూలో పంచుకోగలిగితే, బగ్‌ను సరిచేయడానికి అది మాకు సహాయపడుతుంది.</string>
     <string name="about">గురించి</string>
     <string name="about_version_format">డాషర్ {0}</string>
@@ -374,7 +374,6 @@
     <string name="tts_no_credentials">క్రెడెన్షియల్స్ అవసరం లేదు</string>
     <string name="turbo">టర్బో</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">ఇతర అనువర్తనాల్లో టైపింగ్ చేయడానికి /dev/uinput కు యాక్సెస్ అవసరం, ఇది ఒక సాండ్‌బాక్స్‌లో ఉంచబడింది</string>
-    <string name="typing_rate">టైపింగ్ రేటు</string>
     <string name="typing_rate_format">{cps} cps · {wpm} wpm</string>
     <string name="udp_port">UDP పోర్ట్</string>
     <string name="udp_tracker_help">UDP ట్రాకర్ STREAM_DATA లేదా GazePoint సందేశాల కోసం వినేస్తుంది</string>

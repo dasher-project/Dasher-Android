@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f 字符/秒 · %2$d 单词/分钟</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f 字符/秒 · %2$d 单词/分钟</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">崩溃报告已保存到 ~/Library/Logs/DiagnosticReports/Dasher-*.ips。如果您可以在 GitHub 问题中分享它，它将帮助我们修复该错误。</string>
     <string name="about">关于</string>
     <string name="about_version_format">冲刺者{0}</string>
@@ -374,7 +374,6 @@
     <string name="tts_no_credentials">无需凭证</string>
     <string name="turbo">涡轮</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">在其他应用程序中输入需要访问 /dev/uinput，而这在沙箱环境中</string>
-    <string name="typing_rate">打字速度</string>
     <string name="typing_rate_format">{cps} 个字符每秒 · {wpm} 个单词每分钟</string>
     <string name="udp_port">UDP端口</string>
     <string name="udp_tracker_help">UDP 追踪器监听 STREAM_DATA 或 GazePoint 消息</string>

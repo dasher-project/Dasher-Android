@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f zn/s · %2$d sl/s</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f zn/s · %2$d sl/s</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">Zpráva o pádu byla uložena do souboru ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Pokud ji můžete sdílet v rámci problému na GitHubu, pomůže nám to chybu opravit.</string>
     <string name="about">O nás</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="tts_no_credentials">Nejsou potřeba žádné přihlašovací údaje</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Psaní do jiných aplikací vyžaduje přístup k /dev/uinput, který je izolovaný v sandboxu</string>
-    <string name="typing_rate">Rychlost psaní</string>
     <string name="typing_rate_format">{cps} cps · {wpm} slov za minutu</string>
     <string name="udp_port">UDP port</string>
     <string name="udp_tracker_help">UDP tracker naslouchá zprávám STREAM_DATA nebo GazePoint</string>

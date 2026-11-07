@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GENERATED from shared-resources/ui-strings.json — do not edit directly.
-         Edit the catalogue and run Scripts/generate-from-shared.py. -->
-    <string name="s_1_1f_cps_2_d_wpm">%1$.1f cps · %2$d ord/minut</string>
+         Edit the catalogue and run Scripts/generate-strings.py. -->
+    <string name="typing_rate">%1$.1f cps · %2$d ord/minut</string>
     <string name="a_crash_report_was_saved_to_library_logs_diagnosticreports_d">En kraschrapport sparades till ~/Library/Logs/DiagnosticReports/Dasher-*.ips. Om du kan dela den i ett GitHub-ärende hjälper det oss att åtgärda felet.</string>
     <string name="about">Om</string>
     <string name="about_version_format">Dasher {0}</string>
@@ -374,7 +374,6 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="tts_no_credentials">Inga inloggningsuppgifter krävs</string>
     <string name="turbo">Turbo</string>
     <string name="typing_into_other_applications_needs_access_to_dev_uinput_wh">Att skriva in i andra applikationer kräver åtkomst till /dev/uinput, vilket är sandlådat</string>
-    <string name="typing_rate">Skrivhastighet</string>
     <string name="typing_rate_format">{cps} cps · {wpm} wpm</string>
     <string name="udp_port">UDP-port</string>
     <string name="udp_tracker_help">UDP-spårare lyssnar på STREAM_DATA- eller GazePoint-meddelanden</string>
