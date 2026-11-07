@@ -84,6 +84,9 @@ object AnalyticsService {
             "app_variant" to "dasher-android",
             "app_version" to appVersion,
             "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})",
+            // RFC 0022 item 4: the bundled DasherCore's version (git describe of the
+            // pin) — makes engine drift visible in PostHog version adoption.
+            "engine_version" to BuildConfig.ENGINE_VERSION,
             // RFC 0001 promises no location data. PostHog Cloud derives $geoip_* (city,
             // postal code, lat/lon) from the client IP even with project IP
             // anonymisation on — this per-event flag is the only way to stop it.
@@ -203,6 +206,9 @@ object AnalyticsService {
             "thread" to thread,
             "app_version" to appVersion,
             "os_version" to "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})",
+            // RFC 0022 item 4: the bundled DasherCore's version (git describe of the
+            // pin) — makes engine drift visible in PostHog version adoption.
+            "engine_version" to BuildConfig.ENGINE_VERSION,
             "locale" to (appContext?.let { LocaleHelper.currentLanguageTag(it) } ?: "system"),
             // crash reports bypass capture()'s defaults — carry the flag here too (RFC 0001)
             "\$geoip_disable" to true

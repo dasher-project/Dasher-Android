@@ -16,6 +16,24 @@ fun gitVersionName(fallback: String): String {
     return if (describe.startsWith("v")) describe.removePrefix("v") else fallback
 }
 
+// RFC 0022 item 4: the running engine's version, derived from the pinned
+// submodule (the engine is bundled into the APK, so the pin IS what runs).
+// Report the exact describe string (e.g. "v0.2.24-4-gc7899b65") — pin commits
+// past a tag matter when triaging field reports.
+fun engineVersion(): String {
+    val describe = try {
+        val p = ProcessBuilder("git", "describe", "--tags")
+            .directory(File(rootDir, "third_party/DasherCore")).redirectErrorStream(true).start()
+        p.inputStream.bufferedReader().readText().trim().also { p.waitFor() }
+    } catch (_: Exception) { "" }
+    // CI checks out submodules shallow (no tags): describe then fails and its
+    // merged stderr would become the value — multi-line garbage that broke the
+    // generated BuildConfig string literal. Accept only a real describe
+    // ("vX.Y[.Z][-N-gSHA][-dirty]"); anything else degrades to "unknown".
+    return if (Regex("""^v\d+(\.\d+)*(-\d+-g[0-9a-f]+)?(-dirty)?$""").matches(describe)) describe
+    else "unknown"
+}
+
 fun gitVersionCode(base: Int, fallback: Int): Int {
     // Count commits since the first commit reachable from HEAD; the base keeps
     // historical codes (0.1.8 shipped as 8) below any git-derived value.
@@ -44,6 +62,7 @@ android {
         targetSdk = 36
         versionCode = gitVersionCode(base = 1000, fallback = 8)
         versionName = gitVersionName(fallback = "0.1.8")
+        buildConfigField("String", "ENGINE_VERSION", "\"${engineVersion()}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -89,6 +108,7 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
