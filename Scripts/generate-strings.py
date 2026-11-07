@@ -166,7 +166,6 @@ def generate_default(shared, current_default):
 
 def selftest():
     """Review I5: pin the collision-prone mapping logic without a pytest harness."""
-    import tempfile, shutil
     locales, shared = load_catalogue()
 
     # res_name: keyword + digit-initial keys
@@ -188,16 +187,18 @@ def selftest():
     for k in ANDROID_SKIP_KEYS:
         assert res_name(k) not in names or k in KEY_ALIASES.values(), f"skip key {k} collides"
 
-    # two-pass idempotence in a temp dir
-    tmp = tempfile.mkdtemp()
-    try:
-        outs = []
-        for _ in range(2):
-            body, _c = generate_xml("af", shared)
-            outs.append(body)
-        assert outs[0] == outs[1], "locale generation not idempotent"
-    finally:
-        shutil.rmtree(tmp)
+    # default-file round-trip: generate from a seed, re-parse, regenerate —
+    # the app-only preservation must survive a regen cycle unchanged, and
+    # the catalogue half must be identical (review loop-2: the actual hazard).
+    seed = ('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n'
+            '    <string name="app_name">Dasher</string>\n'
+            '    <string name="ime_name">Dasher Keyboard</string>\n'
+            '    <string name="save_default_name">dasher.txt</string>\n'
+            '</resources>\n')
+    once = generate_default(shared, seed)
+    twice = generate_default(shared, once)  # once IS the re-parsed file
+    assert once == twice, "default-file generation not idempotent (app-only keys drift)"
+    assert 'name="ime_name"' in once, "app-only key lost on first pass"
 
     # default-file discovery: res names, not keys. app_name IS catalogued
     # now, and 'default' catalogues as s_default — neither is app-only. A
@@ -235,9 +236,13 @@ def main():
     default_path = os.path.join(RES, "values", "strings.xml")
     if args.with_default:
         if not os.path.exists(default_path):
-            if args.check:
-                print("MISSING: values/strings.xml — unrecoverable app-only keys; restore and regenerate"); sys.exit(1)
-            current = ""
+            # Review loop-2: refusing in write mode too — regenerating from
+            # nothing silently wipes every app-only key (only save_default_name
+            # would survive). Restore the file (git) and regenerate.
+            print("REFUSING: values/strings.xml is missing — its app-only keys "
+                  "(ime_name, toolbar_*, settings chrome) cannot be recovered from "
+                  "the catalogue. Restore it from git and re-run.", file=sys.stderr)
+            sys.exit(1)
         else:
             current = open(default_path).read()
         content = generate_default(shared, current)

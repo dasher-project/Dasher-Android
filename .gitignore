@@ -25,3 +25,4 @@ third_party/DasherCore/build/
 
 # Gradle wrapper jar is committed; keep it.
 !gradle/wrapper/gradle-wrapper.jar
+__pycache__/
