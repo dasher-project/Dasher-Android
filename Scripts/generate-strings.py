@@ -67,10 +67,12 @@ def load_catalogue():
         data = json.load(f)
     return data["meta"]["locales"], data["shared"]
 
-_CATALOGUE_KEYS = set()
-if os.path.exists(SHARED):
-    with open(SHARED) as _f:
-        _CATALOGUE_KEYS = set(json.load(_f)["shared"].keys())
+def _catalogue_res_names():
+    """Review I4: compare RES NAMES, not keys — 'default'/'new' map to
+    s_default/s_new and key-comparison misclassified them app-only."""
+    with open(SHARED) as f:
+        shared = json.load(f)["shared"]
+    return {res_name(k) for k in shared}
 
 
 def xml_escape(s):
@@ -118,12 +120,12 @@ def generate_xml(locale, shared):
 # settings chrome, always_docked…). Preserved from the existing default file
 # BY KEY across regenerations — this file is Android's dev surface; strings
 # graduate into the catalogue via ui-strings.json when they stabilise.
-import re as _re
 def _discover_app_only(current_default):
     if not current_default:
         return {"save_default_name"}
-    names = set(_re.findall(r'<string name="([^"]+)"', current_default))
-    return {n for n in names if n not in _CATALOGUE_KEYS} or {"save_default_name"}
+    names = set(re.findall(r'<string name="([^"]+)"', current_default))
+    catalogue = _catalogue_res_names()
+    return {n for n in names if n not in catalogue} or {"save_default_name"}
 
 
 def generate_default(shared, current_default):
@@ -133,7 +135,8 @@ def generate_default(shared, current_default):
     _aliased = set(KEY_ALIASES.values())
     kept = {}
     if current_default:
-        for m in re.finditer(r'<string name="([^"]+)">(.*?)</string>', current_default, re.S):
+        # Review M4: tolerate attributes (translatable="false" etc.)
+        for m in re.finditer(r'<string name="([^"]+)"[^>]*>(.*?)</string>', current_default, re.S):
             name, text = m.group(1), m.group(2)
             if name in app_only:
                 kept[name] = text
@@ -161,13 +164,69 @@ def generate_default(shared, current_default):
     return "\n".join(lines) + "\n"
 
 
+def selftest():
+    """Review I5: pin the collision-prone mapping logic without a pytest harness."""
+    import tempfile, shutil
+    locales, shared = load_catalogue()
+
+    # res_name: keyword + digit-initial keys
+    assert res_name("default") == "s_default"
+    assert res_name("new") == "s_new"
+    assert res_name("1_1f_cps_2_d_wpm") == "typing_rate"  # alias
+    assert res_name("toolbar_new") == "toolbar_new"
+
+    # no two catalogue keys map to the same res name unless explicitly skipped
+    names = {}
+    for k in shared:
+        if k in GTK_ONLY_KEYS or k in ANDROID_SKIP_KEYS:
+            continue
+        n = res_name(k)
+        assert n not in names, f"collision: {k} and {names[n]} -> {n}"
+        names[n] = k
+
+    # skipped keys resolve without collision with aliases
+    for k in ANDROID_SKIP_KEYS:
+        assert res_name(k) not in names or k in KEY_ALIASES.values(), f"skip key {k} collides"
+
+    # two-pass idempotence in a temp dir
+    tmp = tempfile.mkdtemp()
+    try:
+        outs = []
+        for _ in range(2):
+            body, _c = generate_xml("af", shared)
+            outs.append(body)
+        assert outs[0] == outs[1], "locale generation not idempotent"
+    finally:
+        shutil.rmtree(tmp)
+
+    # default-file discovery: res names, not keys. app_name IS catalogued
+    # now, and 'default' catalogues as s_default — neither is app-only. A
+    # genuinely app-only key (ime_name, not in the catalogue) is kept.
+    fake_default = ('<resources><string name="app_name">Dasher</string>'
+                    '<string name="s_default">Default</string>'
+                    '<string name="ime_name">Dasher Keyboard</string></resources>')
+    d = _discover_app_only(fake_default)
+    assert "ime_name" in d, f"app-only key lost: {d}"
+    assert "app_name" not in d and "s_default" not in d, f"catalogue keys misclassified as app-only: {d}"
+
+    print("selftest OK: res-name mapping, alias/skip, idempotence, discovery")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--with-default", action="store_true",
                     help="also regenerate values/strings.xml (default locale)")
     ap.add_argument("--check", action="store_true",
                     help="exit 1 if any generated file differs from the working tree (CI gate)")
+    ap.add_argument("--selftest", action="store_true",
+                    help="run internal consistency checks (res-name mapping, alias/skip interplay, two-pass idempotence)")
     args = ap.parse_args()
+
+    if args.check and not args.with_default:
+        ap.error("--check requires --with-default (the default file is generated too; not checking it would pass silently)")
+
+    if args.selftest:
+        return selftest()
 
     locales, shared = load_catalogue()
     print(f"{len(shared)} keys, {len(locales)} locales")
@@ -175,7 +234,12 @@ def main():
 
     default_path = os.path.join(RES, "values", "strings.xml")
     if args.with_default:
-        current = open(default_path).read() if os.path.exists(default_path) else ""
+        if not os.path.exists(default_path):
+            if args.check:
+                print("MISSING: values/strings.xml — unrecoverable app-only keys; restore and regenerate"); sys.exit(1)
+            current = ""
+        else:
+            current = open(default_path).read()
         content = generate_default(shared, current)
         if args.check:
             if os.path.exists(default_path) and open(default_path).read() != content:

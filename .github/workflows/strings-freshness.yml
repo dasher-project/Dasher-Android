@@ -9,6 +9,7 @@ on:
     paths:
       - "app/src/main/res/values*/**"
       - "shared-resources/**"
+      - "shared-resources"  # bare gitlink — submodule pin bumps change this, not children
       - "Scripts/generate-strings.py"
   workflow_dispatch:
 
@@ -25,5 +26,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Generator selftest
+        run: python3 Scripts/generate-strings.py --selftest
+
       - name: Verify generated strings are fresh
         run: python3 Scripts/generate-strings.py --with-default --check

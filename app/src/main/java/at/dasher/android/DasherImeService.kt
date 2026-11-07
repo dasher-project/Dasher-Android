@@ -60,18 +60,30 @@ class DasherImeService : InputMethodService() {
     // settings so the main app stays in sync.
     private var speedPercent = 100
     private var speedRange = 20..400
-    private val speedStep: Int get() = ((speedRange.last - speedRange.first) / 40).coerceAtLeast(10)
+    private val speedStep: Int get() = speedStepFor(speedRange)
     private var speedView: android.widget.TextView? = null
 
     private fun nudgeSpeed(delta: Int) {
         val eng = engine ?: return
-        val next = (speedPercent + delta).coerceIn(speedRange.first, speedRange.last)
-        if (next == speedPercent) return
+        // Review I1: the ENGINE is the source of truth, not the cached field —
+        // the main app may have changed speed via the shared settings file
+        // (#54's reload path); computing from a stale cache would clobber it.
+        val cur = eng.getSpeedPercent()
+        val next = (cur + delta).coerceIn(speedRange.first, speedRange.last)
+        if (next == cur) return
         eng.setSpeedPercent(next)
         eng.saveSettings()
         speedPercent = next
         speedView?.text = "$speedPercent%"
         UiTelemetry.setting("Speed Percent", next.toLong(), "ime")
+    }
+
+    /** Review I1: re-sync the cached speed + display after settings reload. */
+    private fun refreshSpeedFromEngine() {
+        val eng = engine ?: return
+        speedPercent = eng.getSpeedPercent()
+        speedRange = eng.speedRangePercent()
+        speedView?.text = "$speedPercent%"
     }
 
     /**
@@ -265,6 +277,10 @@ class DasherImeService : InputMethodService() {
                 marginStart = dp(6, density); marginEnd = dp(2, density)
             }
             tooltipTextCompat("Typing speed")
+            // Review I2: onCreateInputView can re-run on a LIVE instance —
+            // the field survives, so seed the text here or the recreated
+            // view sits empty until the process dies.
+            text = "$speedPercent%"
         }
         top.addView(iconButton(R.drawable.ic_lucide_minus, "Slower") { nudgeSpeed(-speedStep) })
         top.addView(speedView)
@@ -627,6 +643,8 @@ class DasherImeService : InputMethodService() {
             // emulator: zero colorful canvas pixels). Hide it now and
             // re-push the canvas geometry to the surviving engine.
             loadingOverlay?.visibility = View.GONE
+            // Review I2: views were rebuilt — refresh the speed display too.
+            refreshSpeedFromEngine()
             canvasView?.let { v ->
                 if (v.width > 0 && v.height > 0) engine?.onSurfaceSizeChanged(v.width, v.height)
             }
@@ -958,6 +976,7 @@ class DasherImeService : InputMethodService() {
         // remember the setting that you set"). Cheap: one file read +
         // diff, only changed parameters fire callbacks.
         engine?.reloadSettings()
+        refreshSpeedFromEngine()
         engine?.start()
     }
 
@@ -1028,6 +1047,8 @@ class DasherImeService : InputMethodService() {
         "Float the keyboard" -> "float"
         "Dock the keyboard" -> "dock"
         "Hide the keyboard" -> "hide"
+        "Slower" -> "speed_down"   // review M2: pinned, not fall-through
+        "Faster" -> "speed_up"
         else -> description.lowercase().replace(' ', '_')
     }
 
