@@ -91,6 +91,7 @@ class DasherEngine(
         NativeBridge.unregisterLogListener(nativeHandle)
         NativeBridge.unregisterTextSizeListener(nativeHandle)
         NativeBridge.unregisterParameterChangedListener(nativeHandle)
+        NativeBridge.unregisterActionListener(nativeHandle)
         if (nativeHandle != 0L) NativeBridge.nativeDestroy(nativeHandle)
     }
 
@@ -551,6 +552,19 @@ class DasherEngine(
         NativeBridge.registerMessageListener(nativeHandle, l)
     }
 
+    /**
+     * RFC 0021 control-node actions (move/delete/select). The listener fires
+     * on the frame thread DURING [NativeBridge.nativeFrame] — do not touch the
+     * engine or an InputConnection inside it; queue the request and apply it
+     * after the frame returns (the same discipline the IME applies to output
+     * deltas). [attrs] is the marshalled `key=value` pairs joined with `\n`.
+     */
+    fun setActionListener(l: (name: String, attrs: String) -> Unit) {
+        if (destroyed || nativeHandle == 0L) return
+        NativeBridge.registerActionListener(nativeHandle, l)
+    }
+    fun clearActionListener() { if (!destroyed) NativeBridge.unregisterActionListener(nativeHandle) }
+
     fun clearOutputListener() { if (!destroyed) NativeBridge.unregisterOutputListener(nativeHandle) }
     fun clearClipboardListener() { if (!destroyed) NativeBridge.unregisterClipboardListener(nativeHandle) }
     fun clearSpeakListener() { if (!destroyed) NativeBridge.unregisterSpeakListener(nativeHandle) }
@@ -832,6 +846,14 @@ class DasherEngine(
                 Log.e(TAG, "nativeCreate returned 0 — dataDir=$dataDir")
                 return null
             }
+            // RFC 0021: register the control-node actions (move/delete/
+            // select) BEFORE the provisional setScreenSize below — the
+            // control box parses control.xml once at realization, and an
+            // action registered later stays unknown until BP_CONTROL_MODE
+            // is toggled (DasherCore docs/CUSTOM_ACTIONS.md). move/delete
+            // override the engine's internal factories, so the existing
+            // Move/Delete nodes execute natively in the target field.
+            NativeBridge.nativeRegisterActions(handle)
             val eng = DasherEngine(handle, userDir, frameConsumer)
             // Realize the engine immediately with a provisional screen size.
             // One-time merge of pre-#37 `training/` copies into the

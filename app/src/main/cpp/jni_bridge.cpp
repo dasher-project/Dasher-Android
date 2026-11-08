@@ -161,6 +161,7 @@ static jmethodID g_onClipboard = nullptr;
 static jmethodID g_onSpeak = nullptr;
 static jmethodID g_onMessage = nullptr;
 static jmethodID g_onOutput = nullptr;
+static jmethodID g_onAction = nullptr;
 static jmethodID g_onParameterChanged = nullptr;
 static jmethodID g_onLog = nullptr;
 static jmethodID g_onTextSize = nullptr;
@@ -243,6 +244,39 @@ static void outputCallback(int type, const char* text, void* user_data) {
     if (attached) g_jvm->DetachCurrentThread();
 }
 
+// RFC 0021 control-node custom actions (move/delete/select). The engine
+// fires this from CContNode::Do() on the thread that calls
+// dasher_frame() (the main thread here), passing the control.xml
+// attributes VERBATIM as parallel arrays that are valid only during the
+// call. We copy what we need into ONE joined string of key=value
+// entries separated by '\n' before re-entering the JVM. The values are
+// a fixed small vocabulary from control.xml (forward=yes|no,
+// dist=char|word|sentence|paragraph|all) — neither '=' nor '\n' can
+// occur in a key or value, so the flat encoding is loss-free.
+static void actionCallback(const char* name, int attr_count,
+                           const char** attr_keys, const char** attr_values,
+                           void* user_data) {
+    if (!g_nbClass || !g_onAction || !name) return;
+    bool attached = false;
+    JNIEnv* env = attachEnv(attached);
+    if (!env) return;
+    std::string joined;
+    for (int i = 0; i < attr_count; ++i) {
+        if (!attr_keys[i]) continue;
+        if (!joined.empty()) joined += '\n';
+        joined += attr_keys[i];
+        joined += '=';
+        joined += attr_values[i] ? attr_values[i] : "";
+    }
+    jstring jname = env->NewStringUTF(name);
+    jstring jattrs = env->NewStringUTF(joined.c_str());
+    jlong jhandle = reinterpret_cast<jlong>(user_data);
+    env->CallStaticVoidMethod(g_nbClass, g_onAction, jhandle, jname, jattrs);
+    env->DeleteLocalRef(jname);
+    env->DeleteLocalRef(jattrs);
+    if (attached) g_jvm->DetachCurrentThread();
+}
+
 extern "C" {
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
@@ -257,12 +291,13 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     g_onSpeak = env->GetStaticMethodID(g_nbClass, "onSpeak", "(JLjava/lang/String;I)V");
     g_onMessage = env->GetStaticMethodID(g_nbClass, "onMessage", "(JILjava/lang/String;)V");
     g_onOutput = env->GetStaticMethodID(g_nbClass, "onOutput", "(JILjava/lang/String;)V");
+    g_onAction = env->GetStaticMethodID(g_nbClass, "onAction", "(JLjava/lang/String;Ljava/lang/String;)V");
     g_onParameterChanged = env->GetStaticMethodID(g_nbClass, "onParameterChanged", "(JI)V");
     g_onLog = env->GetStaticMethodID(g_nbClass, "onLog", "(JILjava/lang/String;)V");
     g_onTextSize = env->GetStaticMethodID(g_nbClass, "onTextSize", "(JLjava/lang/String;I[F)Z");
-    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p param=%p log=%p textSize=%p)",
+    LOGI("JNI_OnLoad: callbacks resolved (clipboard=%p speak=%p msg=%p out=%p action=%p param=%p log=%p textSize=%p)",
          (void*)g_onClipboard, (void*)g_onSpeak, (void*)g_onMessage, (void*)g_onOutput,
-         (void*)g_onParameterChanged, (void*)g_onLog, (void*)g_onTextSize);
+         (void*)g_onAction, (void*)g_onParameterChanged, (void*)g_onLog, (void*)g_onTextSize);
     return JNI_VERSION_1_6;
 }
 
@@ -996,6 +1031,36 @@ JNIEXPORT void JNICALL
 Java_at_dasher_android_NativeBridge_nativeSetOutputCallback(JNIEnv*, jclass, jlong handle) {
     auto* s = fromHandle(handle);
     if (s && s->ctx) dasher_set_output_callback(s->ctx, outputCallback, reinterpret_cast<void*>(handle));
+}
+
+// ── RFC 0021 control-node custom actions (move/delete/select) ───────────────
+
+// Registers the three control-mode actions as CAPI custom actions for
+// this session, routed to NativeBridge.onAction via [actionCallback].
+//
+// TIMING CONTRACT (DasherCore docs/CUSTOM_ACTIONS.md): must run BEFORE
+// the first dasher_set_screen_size() for the actions to exist at
+// control.xml parse time — DasherEngine.create calls this immediately
+// after nativeCreate, ahead of its provisional 800x600 realization.
+//
+// Registering "move"/"delete" also OVERRIDES the built-in engine-internal
+// factories: NodeCreationManager drains GetPendingCustomActions after
+// registerBuiltinActions(), so the existing Move/Delete control nodes
+// re-bind to this callback and act on the TARGET field instead of
+// mutating engine-private state no frontend observes (the visible-but-
+// dead class RFC 0021 field-reported as Dasher-Windows #88). "select"
+// nodes exist only in the engine's control.xml (DasherCore#106+) and
+// stay pruned until a handler exists — exactly this registration.
+JNIEXPORT void JNICALL
+Java_at_dasher_android_NativeBridge_nativeRegisterActions(JNIEnv*, jclass, jlong handle) {
+    auto* s = fromHandle(handle);
+    if (!s || !s->ctx) return;
+    void* ud = reinterpret_cast<void*>(handle);
+    dasher_register_action(s->ctx, "move", actionCallback, ud);
+    dasher_register_action(s->ctx, "delete", actionCallback, ud);
+    dasher_register_action(s->ctx, "select", actionCallback, ud);
+    LOGI("nativeRegisterActions: move/delete/select registered (handle=%ld)",
+         static_cast<long>(handle));
 }
 
 // ── Game mode ───────────────────────────────────────────────────────────────

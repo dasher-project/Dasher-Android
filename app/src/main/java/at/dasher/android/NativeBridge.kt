@@ -288,6 +288,16 @@ object NativeBridge {
     /** Installs the real-time output callback (per-char insert/delete; enables reactive output). */
     @JvmStatic external fun nativeSetOutputCallback(handle: Long)
 
+    /**
+     * Registers the RFC 0021 control-node actions (`move`, `delete`, `select`) as
+     * CAPI custom actions routed to [onAction]. MUST be called before the first
+     * [nativeSetScreenSize] — the control box parses control.xml once at
+     * realization (DasherCore docs/CUSTOM_ACTIONS.md). `move`/`delete` override
+     * the engine's internal factories, binding those nodes to native execution
+     * in the target field; `select` nodes stay pruned until this runs.
+     */
+    @JvmStatic external fun nativeRegisterActions(handle: Long)
+
     // ── Callback listeners (set by the app; invoked on the main thread) ──
     // Per-engine-instance listeners (#56): each engine handle registers its
     // own callbacks; dispatch goes only to the listener registered for the
@@ -313,6 +323,18 @@ object NativeBridge {
     @JvmStatic fun registerOutputListener(handle: Long, l: (type: Int, text: String) -> Unit) { outputListeners[handle] = l }
     @JvmStatic fun unregisterOutputListener(handle: Long) { outputListeners.remove(handle) }
 
+    /**
+     * RFC 0021 control-node action receiver (move/delete/select). Fires on the
+     * thread that calls nativeFrame (main) DURING dasher_frame — implementations
+     * must not touch the engine or an InputConnection synchronously; queue and
+     * apply after the frame (the outputCoalescer discipline). [attrs] is the
+     * marshalled key=value pairs joined with `\n` (fixed control.xml vocabulary
+     * — see jni_bridge.cpp).
+     */
+    private val actionListeners = java.util.concurrent.ConcurrentHashMap<Long, (name: String, attrs: String) -> Unit>()
+    @JvmStatic fun registerActionListener(handle: Long, l: (name: String, attrs: String) -> Unit) { actionListeners[handle] = l }
+    @JvmStatic fun unregisterActionListener(handle: Long) { actionListeners.remove(handle) }
+
 
     /**
      * Real text measurement for the engine's label layout (DasherCore v0.2.4 /
@@ -331,6 +353,7 @@ object NativeBridge {
     @JvmStatic fun onMessage(handle: Long, type: Int, text: String) { messageListeners[handle]?.invoke(type, text) }
     @JvmStatic fun onLog(handle: Long, level: Int, text: String) { logListeners[handle]?.invoke(level, text) }
     @JvmStatic fun onOutput(handle: Long, type: Int, text: String) { outputListeners[handle]?.invoke(type, text) }
+    @JvmStatic fun onAction(handle: Long, name: String, attrs: String) { actionListeners[handle]?.invoke(name, attrs) }
     @JvmStatic fun onParameterChanged(handle: Long, key: Int) { parameterChangedListeners[handle]?.invoke(key) }
 
     /** Called from JNI (textSizeCallback); signature must match the cached method ID. */
