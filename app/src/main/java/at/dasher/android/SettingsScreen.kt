@@ -740,15 +740,27 @@ private fun OutputFontSection(
 private fun ParameterRow(engine: DasherEngine, p: ParameterInfo, version: Int, onChange: () -> Unit) {
     // `version` is read so the row recomposes and re-reads the engine after a change.
     @Suppress("UNUSED_EXPRESSION") version
+    // RFC 0021 / issue #89: BP_CONTROL_MODE's engine metadata is accurate
+    // but generic ("editing commands (delete, move, speak, etc.)") and
+    // ships in English regardless of app locale — the parameter is not in
+    // the engine's Strings catalogue, so dasher_get_parameter_info falls
+    // back to the compiled-in English. This one row gets a deliberate,
+    // localized Android-side label + description that names what the
+    // switch actually adds (the Select/Move/Delete canvas group).
+    val controlModeKey = remember { NativeBridge.nativeFindParameterKey("BP_CONTROL_MODE") }
+    val override = if (p.key == controlModeKey)
+        stringResource(R.string.control_mode_label) to stringResource(R.string.control_mode_description)
+    else null
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(p.name, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            if (p.description.isNotBlank()) {
-                Text(p.description, style = MaterialTheme.typography.bodySmall,
+            Text(override?.first ?: p.name, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            val description = override?.second ?: p.description
+            if (description.isNotBlank()) {
+                Text(description, style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 3, overflow = TextOverflow.Ellipsis)
             }
         }

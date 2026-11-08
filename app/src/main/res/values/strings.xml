@@ -5,6 +5,8 @@
          App-only keys (not yet in the catalogue) are preserved from this file. -->
     <string name="always_docked_desc">The Dasher keyboard reopens docked at the bottom of the screen every time, even if you floated it before. While typing, tapping Float still floats the keyboard until you dock it again — this setting only decides where the keyboard starts.</string>
     <string name="always_docked_title">Keyboard always starts docked</string>
+    <string name="control_mode_description">Adds Select, Move and Delete editing commands to the canvas: select, move or delete text by letter, word, paragraph or all, forwards or backwards.</string>
+    <string name="control_mode_label">Control Mode</string>
     <string name="ime_name">Dasher Keyboard</string>
     <string name="save_default_name">dasher.txt</string>
     <string name="settings_advanced">Advanced settings</string>
