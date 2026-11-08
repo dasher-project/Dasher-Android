@@ -27,8 +27,11 @@ object DataInstaller {
     /**
      * Bump when the bundled DasherCore/Data contents change to force re-extraction.
      * DasherCore pins the submodule, so this is manual: update when bumping the pin.
+     * v2: DasherCore#106 (RFC 0021) grows control/control.xml with the Select
+     * subtree — without this bump an upgrade install keeps the old extracted
+     * control.xml and the Select group never appears.
      */
-    private const val DATA_VERSION = 1
+    private const val DATA_VERSION = 2
 
     /**
      * The user-writable directory the engine keeps its own state in
