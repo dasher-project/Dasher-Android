@@ -112,9 +112,12 @@ private fun executeMove(ic: InputConnection, action: ControlAction, onBufferChan
             "no_text"
         }
     }
-    val caret = t.selStart - t.base
-    val target = controlMoveOffset(t.text, caret, action.dist, action.forward)
-    if (target == caret) return "noop"
+    // Move OFF the selection in the direction of travel (forward from the
+    // selection end, backward from its start — the native arrow-collapse
+    // expectation); with a collapsed caret both ends coincide.
+    val from = if (action.forward == ControlDirection.FORWARD) t.selEnd else t.selStart
+    val target = controlMoveOffset(t.text, from - t.base, action.dist, action.forward)
+    if (target == from - t.base) return "noop"
     val ok = ic.setSelection(t.base + target, t.base + target)
     if (ok) onBufferChanged()
     return if (ok) "applied" else "refused"
@@ -124,11 +127,14 @@ private fun executeMove(ic: InputConnection, action: ControlAction, onBufferChan
 private fun executeDelete(ic: InputConnection, action: ControlAction, onBufferChanged: () -> Unit): String {
     val t = readTargetText(ic)
     if (t == null) return deleteCursorRelative(ic, action, onBufferChanged)
-    // Collapse any active selection first: deleteSurroundingText is
-    // undefined over one (Heide's #50 ⌫ bug), and we hold the absolute
-    // offsets to do it exactly.
-    if (t.selEnd > t.selStart) ic.setSelection(t.selStart, t.selStart)
-    val caret = t.selStart - t.base
+    // Direction-facing anchor over a selection: backward deletes BEFORE
+    // the selection start, forward AFTER its end (the selection itself is
+    // the plain Delete key's job — the control-tree delete is a
+    // measured-distance operation by design). deleteSurroundingText is
+    // undefined over an ACTIVE selection (Heide's #50 ⌫ bug), so collapse
+    // to that anchor first — safe, we hold absolute offsets.
+    val caret = (if (action.forward == ControlDirection.FORWARD) t.selEnd else t.selStart) - t.base
+    if (t.selEnd > t.selStart) ic.setSelection(t.base + caret, t.base + caret)
     val range = controlDeleteRange(t.text, caret, action.dist, action.forward)
     if (range.isEmpty()) return "noop"
     val units = range.last + 1 - range.first

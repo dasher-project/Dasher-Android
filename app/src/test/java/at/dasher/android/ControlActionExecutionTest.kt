@@ -167,11 +167,17 @@ class ControlActionExecutionTest {
     }
 
     @Test
-    fun move_collapses_from_the_selection_start() {
-        // The IME's operative caret is the selection START.
-        val ic = FakeIc(extracted = extracted("hello world", 2, 6))
-        assertEquals("applied", run(ic, act("move", ControlDistance.CHAR, true)))
-        assertEquals(listOf("setSelection(3,3)"), ic.calls)
+    fun move_collapses_off_the_selection_in_the_direction_of_travel() {
+        // Forward moves from the selection END (native arrow-collapse
+        // expectation); backward from its start.
+        val fwd = FakeIc(extracted = extracted("hello world", 2, 6))
+        assertEquals("applied", run(fwd, act("move", ControlDistance.CHAR, true)))
+        assertEquals(listOf("setSelection(7,7)"), fwd.calls)
+        val back = FakeIc(extracted = extracted("hello world", 6, 11))
+        assertEquals("applied", run(back, act("move", ControlDistance.WORD, false)))
+        // Word-backward from the selection start crosses the separator run
+        // to the previous word's start (getRange's chained-hop semantics).
+        assertEquals(listOf("setSelection(0,0)"), back.calls)
     }
 
     @Test
@@ -217,11 +223,21 @@ class ControlActionExecutionTest {
     @Test
     fun delete_collapses_an_active_selection_first() {
         // Heide's #50 ⌫ rule: deleteSurroundingText is undefined over a
-        // selection — collapse to the operative caret (selection START),
-        // then measure from there.
+        // selection — collapse to the direction-facing anchor. Backward
+        // deletes BEFORE the selection start (selection [6,11), word
+        // backward → delete [0,6)).
         val ic = FakeIc(extracted = extracted("hello world", 6, 11))
         assertEquals("applied", run(ic, act("delete", ControlDistance.WORD, false)))
         assertEquals(listOf("setSelection(6,6)", "deleteSurroundingText(6,0)"), ic.calls)
+    }
+
+    @Test
+    fun delete_forward_over_a_selection_starts_at_its_end() {
+        // Forward deletes AFTER the selection end: selection [0,6),
+        // word forward → delete [6,11).
+        val ic = FakeIc(extracted = extracted("hello world", 0, 6))
+        assertEquals("applied", run(ic, act("delete", ControlDistance.WORD, true)))
+        assertEquals(listOf("setSelection(6,6)", "deleteSurroundingText(0,5)"), ic.calls)
     }
 
     @Test
