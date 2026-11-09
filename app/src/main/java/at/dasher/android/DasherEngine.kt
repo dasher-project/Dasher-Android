@@ -644,18 +644,21 @@ class DasherEngine(
     fun setBoolValue(key: Int, value: Boolean) {
         if (nativeHandle == 0L) return
         NativeBridge.nativeSetBoolParameter(nativeHandle, key, if (value) 1 else 0)
+        saveSettings() // #96: the generated UI writes through this path
     }
     fun longValue(key: Int): Long =
         if (nativeHandle == 0L) 0L else NativeBridge.nativeGetLongParameter(nativeHandle, key)
     fun setLongValue(key: Int, value: Long) {
         if (nativeHandle == 0L) return
         NativeBridge.nativeSetLongParameter(nativeHandle, key, value)
+        saveSettings() // #96
     }
     fun stringValue(key: Int): String =
         if (nativeHandle == 0L) "" else NativeBridge.nativeGetStringParameter(nativeHandle, key)
     fun setStringValue(key: Int, value: String) {
         if (nativeHandle == 0L) return
         NativeBridge.nativeSetStringParameter(nativeHandle, key, value)
+        saveSettings() // #96: SP_ALPHABET_ID et al. must survive IME cold start
     }
 
     /** Enum entries (display name → int value) for a long parameter; empty if not enum. */
