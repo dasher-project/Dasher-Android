@@ -23,7 +23,7 @@ object UpdateChecker {
     private const val KEY_ENABLED = "enabled"
     private const val KEY_SKIP_VERSION = "skip_version"
     private const val CHECK_INTERVAL_MS = 7L * 24 * 60 * 60 * 1000 // 7 days
-    private const val API_URL = "https://api.github.com/repos/dasher-project/Dasher-Android/releases?per_page=1"
+    private const val API_URL = "https://api.github.com/repos/dasher-project/Dasher-Android/releases/latest"
     private const val RELEASES_PAGE = "https://github.com/dasher-project/Dasher-Android/releases/latest"
 
     data class UpdateInfo(
@@ -101,12 +101,13 @@ object UpdateChecker {
             val body = conn.inputStream.bufferedReader().readText()
             conn.disconnect()
 
-            val releases = org.json.JSONArray(body)
-            if (releases.length() == 0) {
-                return@withContext UpdateInfo(false, "", currentVersion, RELEASES_PAGE, "")
-            }
-
-            val release = releases.getJSONObject(0)
+            // /releases/latest returns a single object and EXCLUDES
+            // prereleases — matching RELEASES_PAGE, which already points
+            // at the latest stable. The old list endpoint (?per_page=1)
+            // included prereleases, so every -rc we published for testers
+            // would have prompted all stable users (v6.0.1-rc.1 found it
+            // live).
+            val release = org.json.JSONObject(body)
             val tag = release.optString("tag_name", "")
             val url = release.optString("html_url", RELEASES_PAGE)
             val name = release.optString("name", "")
