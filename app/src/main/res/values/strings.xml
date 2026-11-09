@@ -5,7 +5,6 @@
          App-only keys (not yet in the catalogue) are preserved from this file. -->
     <string name="always_docked_desc">The Dasher keyboard reopens docked at the bottom of the screen every time, even if you floated it before. While typing, tapping Float still floats the keyboard until you dock it again — this setting only decides where the keyboard starts.</string>
     <string name="always_docked_title">Keyboard always starts docked</string>
-    <string name="control_mode_description">Adds Select, Move and Delete editing commands to the canvas: select, move or delete text by letter, word, sentence, paragraph or all, forwards or backwards.</string>
     <string name="control_mode_label">Control Mode</string>
     <string name="ime_name">Dasher Keyboard</string>
     <string name="save_default_name">dasher.txt</string>
@@ -81,6 +80,7 @@ You can change this anytime in Settings &gt; Privacy.</string>
     <string name="colour_theme">Colour Theme</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">contents or personal information is ever collected. You can change this any </string>
     <string name="control">Control</string>
+    <string name="control_mode_description">Adds Select, Move and Delete editing commands to the canvas: select, move or delete text by letter, word, sentence, paragraph or all, forwards or backwards.</string>
     <string name="control_mode_enabled">Control mode: enabled</string>
     <string name="control_mode_tooltip">Control mode</string>
     <string name="control_nodes_tooltip">Control nodes: move, delete, clear, speak, pause</string>
@@ -132,6 +132,7 @@ You can change this anytime in Settings &gt; Privacy.</string>
     <string name="diagnostics">Diagnostics</string>
     <string name="direct_mode">Direct Mode</string>
     <string name="done">Done</string>
+    <string name="drag_to_move_the_keyboard_window">Drag to move the keyboard window</string>
     <string name="dwell_duration">Dwell Duration</string>
     <string name="dwell_to_click">Dwell to click</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Enable Dasher under Settings → General → Keyboard → Keyboards, then turn on Allow Full Access so Dasher can speak and learn.</string>
@@ -232,6 +233,7 @@ You can change this anytime in Settings &gt; Privacy.</string>
     <string name="no_settings_available_for_this_section">No settings available for this section.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No speech engine available. Build with the system TTS feature, or set up a cloud voice in Preferences.</string>
     <string name="no_training_data_to_export_yet">No training data to export yet</string>
+    <string name="no_tts_engine_available">No TTS engine available. Install speech-dispatcher for system TTS.</string>
     <string name="no_user_training_data_yet">No user training data yet</string>
     <string name="no_voices_found">No voices found</string>
     <string name="nothing_to_save">Nothing to save</string>
@@ -277,6 +279,7 @@ You can change this anytime in Settings &gt; Privacy.</string>
     <string name="rate_very_slow">Very Slow</string>
     <string name="re_import_from_dasher_5">Re-import from Dasher 5</string>
     <string name="read">Read</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Release the pinch to pause</string>
     <string name="reset">Reset</string>
     <string name="reset_all_settings_to_defaults">Reset All Settings to Defaults</string>
@@ -300,6 +303,7 @@ You can change this anytime in Settings &gt; Privacy.</string>
     <string name="saved">Saved</string>
     <string name="saved_2">Saved: </string>
     <string name="scan_speed">Scan Speed</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Selection Method</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">service running? See the setup help on the Keyboard button for install commands.</string>
     <string name="settings">Settings</string>

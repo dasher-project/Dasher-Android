@@ -56,6 +56,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Integritet.</string>
     <string name="colour_theme">Färgtema</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">innehåll eller personlig information någonsin samlas in. Du kan ändra detta när som helst</string>
     <string name="control">Kontroll</string>
+    <string name="control_mode_description">Lägger till redigeringskommandon Välj, Flytta och Ta bort till arbetsytan: välj, flytta eller ta bort text efter bokstav, ord, mening, stycke eller allt, framåt eller bakåt.</string>
     <string name="control_mode_enabled">Kontrollläge: aktiverat</string>
     <string name="control_mode_tooltip">Kontrollläge</string>
     <string name="control_nodes_tooltip">Kontrollnoder: flytta, ta bort, rensa, tala, pausa</string>
@@ -107,6 +108,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="diagnostics">Diagnostik</string>
     <string name="direct_mode">Direktläge</string>
     <string name="done">Gjort</string>
+    <string name="drag_to_move_the_keyboard_window">Dra för att flytta tangentbordsfönstret</string>
     <string name="dwell_duration">Varlighet</string>
     <string name="dwell_to_click">Håll nedtryckt för att klicka</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Aktivera Dasher under Inställningar → Allmänt → Tangentbord → Tangentbord och slå sedan på Tillåt fullständig åtkomst så att Dasher kan tala och lära sig.</string>
@@ -205,6 +207,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="no_settings_available_for_this_section">Inga inställningar tillgängliga för det här avsnittet.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Ingen talmotor tillgänglig. Bygg med systemets TTS-funktion eller ställ in en moln-röst i Inställningar.</string>
     <string name="no_training_data_to_export_yet">Inga träningsdata att exportera ännu</string>
+    <string name="no_tts_engine_available">Ingen TTS-motor tillgänglig. Installera speech-dispatcher för system TTS.</string>
     <string name="no_user_training_data_yet">Inga användarträningsdata ännu</string>
     <string name="no_voices_found">Inga röster hittades</string>
     <string name="nothing_to_save">Inget att spara</string>
@@ -250,6 +253,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="rate_very_slow">Mycket långsam</string>
     <string name="re_import_from_dasher_5">Importera om från Dasher 5</string>
     <string name="read">Läsa</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Släpp nypknappen för att pausa</string>
     <string name="reset">Återställa</string>
     <string name="reset_all_settings_to_defaults">Återställ alla inställningar till standardinställningarna</string>
@@ -273,6 +277,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="saved">Sparad</string>
     <string name="saved_2">Sparad:</string>
     <string name="scan_speed">Skanningshastighet</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Urvalsmetod</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">tjänst igång? Se installationshjälpen på Tangentbords-knappen för installationskommandon.</string>
     <string name="settings">Inställningar</string>

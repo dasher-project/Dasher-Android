@@ -56,6 +56,7 @@
     <string name="colour_theme">ಬಣ್ಣದ ಥೀಮ್</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">ಸಾಮಗ್ರಿಗಳು ಅಥವಾ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಯಾವಾಗಲೂ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ. ನೀವು ಇದನ್ನು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು</string>
     <string name="control">ನಿಯಂತ್ರಣ</string>
+    <string name="control_mode_description">ಕ್ಯಾನ್ವಾಸ್‌ಗೆ ಸೆಲೆಕ್ಟ್, ಮೂವ್ ಮತ್ತು ಡಿಲೀಟ್ ಎಡಿಟಿಂಗ್ ಕಮಾಂಡ್‌ಗಳನ್ನು ಸೇರಿಸುತ್ತದೆ: ಅಕ್ಷರ, ಪದ, ವಾಕ್ಯ, ಪ್ಯಾರಾಗ್ರಾಫ್ ಅಥವಾ ಎಲ್ಲಾ ಮೂಲಕ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ, ಸರಿಸಿ ಅಥವಾ ಅಳಿಸಿ, ಮುಂದಕ್ಕೆ ಅಥವಾ ಹಿಂದಕ್ಕೆ.</string>
     <string name="control_mode_enabled">ನಿಯಂತ್ರಣ ಮೋಡ್: ಸಕ್ರಿಯವಾಗಿದೆ</string>
     <string name="control_mode_tooltip">ನಿಯಂತ್ರಣ ಮೋಡ್</string>
     <string name="control_nodes_tooltip">ನಿಯಂತ್ರಣ ನೋಡ್ಸ್: ಚಲಿಸುವಿಕೆ, ಅಳಿಸು, ತೆರವುಗೊಳಿಸು, ಮಾತನಾಡು, ವಿರಾಮ ಕೊಡು</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">ರೋಗನಿರ್ಣಯ</string>
     <string name="direct_mode">ನೇರ ಮೋಡ್</string>
     <string name="done">ಮುಗಿದಿದೆ</string>
+    <string name="drag_to_move_the_keyboard_window">ಕೀಬೋರ್ಡ್ ವಿಂಡೋವನ್ನು ಸರಿಸಲು ಎಳೆಯಿರಿ</string>
     <string name="dwell_duration">ನಿವಾಸಾವಧಿ</string>
     <string name="dwell_to_click">ಕ್ಲಿಕ್ ಮಾಡಲು ವಾಸಿಸು (Dwell)</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಸಾಮಾನ್ಯ → ಕೀಬೋರ್ಡ್ → ಕೀಬೋರ್ಡ್‌ಗಳು ಅಡಿಯಲ್ಲಿ ಡ್ಯಾಷರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ, ನಂತರ ಡ್ಯಾಷರ್ ಮಾತನಾಡಲು ಮತ್ತು ಕಲಿಯಲು ಪೂರ್ಣ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಿ ಆನ್ ಮಾಡಿ.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">ಈ ವಿಭಾಗಕ್ಕೆ ಯಾವುದೇ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">ಮಾತಿನ ಎಂಜಿನ್ ಲಭ್ಯವಿಲ್ಲ. ಸిస్టಮ್ TTS ವೈಶಿಷ್ಟ್ಯವನ್ನು ಬಳಸಿ ನಿರ್ಮಿಸಿ, ಅಥವಾ ಆಯ್ಕೆಗಳಲ್ಲಿ ಕ್ಲೌಡ್ ಧ್ವನಿಯನ್ನು ಸೆಟ್‌ಅಪ್ ಮಾಡಿ.</string>
     <string name="no_training_data_to_export_yet">ಈಗಿನವರೆಗೆ ರಫ್ತಿಗೆ ತಯಾರಿರುವ ತರಬೇತಿ ಡೇಟಾ ಇಲ್ಲ</string>
+    <string name="no_tts_engine_available">ಯಾವುದೇ TTS ಎಂಜಿನ್ ಲಭ್ಯವಿಲ್ಲ. ಸಿಸ್ಟಂ TTS ಗಾಗಿ ಸ್ಪೀಚ್ ಡಿಸ್ಪ್ಯಾಚರ್ ಅನ್ನು ಸ್ಥಾಪಿಸಿ.</string>
     <string name="no_user_training_data_yet">ಇನ್ನೂ ಯಾವುದೇ ಬಳಕೆದಾರ ತರಬೇತಿ ಡೇಟಾ ಇಲ್ಲ</string>
     <string name="no_voices_found">ಯಾವುದೇ ಧ್ವನಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ</string>
     <string name="nothing_to_save">ಉಳಿಸಲು ಏನೂ ಇಲ್ಲ.</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">ತುಂಬಾ ನಿಧಾನ</string>
     <string name="re_import_from_dasher_5">ಡ್ಯಾಷರ್ 5 ರಿಂದ ಮರು-ಆಮದು ಮಾಡಿ</string>
     <string name="read">ಓದು, @ item: intext Access permission, concatenated</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">ವಿರಾಮಗೊಳಿಸಲು ಪಿಂಚ್ ಅನ್ನು ಬಿಡುಗಡೆ ಮಾಡಿ</string>
     <string name="reset">ಮರುಹೊಂದಿಸಿ</string>
     <string name="reset_all_settings_to_defaults">ಎಲ್ಲಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಿ</string>
@@ -273,6 +277,7 @@
     <string name="saved">ಉಳಿಸಲಾಗಿದೆ</string>
     <string name="saved_2">ಉಳಿಸಲಾಗಿದೆ</string>
     <string name="scan_speed">ಸ್ಕ್ಯಾನ್ ವೇಗ</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">ಆಯ್ಕೆ ವಿಧಾನ</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">ಸರ್ವಿಸ್ ಚಾಲನೆಯಲ್ಲಿದೆಯೆ? ಇನ್‌ಸ್ಟಾಲ್ ಆದೇಶಗಳಿಗೆ ಕೀಬೋರ್ಡ್ ಬಟನ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಸಹಾಯವನ್ನು ನೋಡಿ.</string>
     <string name="settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>

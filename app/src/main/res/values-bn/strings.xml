@@ -56,6 +56,7 @@
     <string name="colour_theme">রঙের থিম</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">কোনো সামগ্রী বা ব্যক্তিগত তথ্য কখনও সংগ্রহ করা হয় না। আপনি এটিকে যেকোনো সময় পরিবর্তন করতে পারেন</string>
     <string name="control">নিয়ন্ত্রণ</string>
+    <string name="control_mode_description">ক্যানভাসে সিলেক্ট, মুভ এবং ডিলিট এডিটিং কমান্ড যোগ করে: অক্ষর, শব্দ, বাক্য, অনুচ্ছেদ বা সমস্ত, ফরোয়ার্ড বা পিছনের দ্বারা পাঠ্য নির্বাচন, সরান বা মুছুন।</string>
     <string name="control_mode_enabled">নিয়ন্ত্রণ মোড: সক্রিয়</string>
     <string name="control_mode_tooltip">নিয়ন্ত্রণ মোড</string>
     <string name="control_nodes_tooltip">নিয়ন্ত্রণ নোড: স্থানান্তর, মুছে ফেলা, সাফ করা, কথা বলা, বিরতি</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">ডায়াগনস্টিকস</string>
     <string name="direct_mode">সরাসরি মোড</string>
     <string name="done">সম্পন্ন হয়েছে</string>
+    <string name="drag_to_move_the_keyboard_window">কীবোর্ড উইন্ডো সরাতে টেনে আনুন</string>
     <string name="dwell_duration">থাকার সময়কাল</string>
     <string name="dwell_to_click">ক্লিক করতে বসুন</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">সেটিংস → সাধারণ → কীবোর্ড → কীবোর্ডস-এ গিয়ে ড্যাশার সক্রিয় করুন, তারপর সম্পূর্ণ অ্যাক্সেসের অনুমতি দিন (Allow Full Access) চালু করুন, যাতে ড্যাশার কথা বলতে ও শিখতে পারে।</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">এই বিভাগের জন্য কোনও সেটিংস উপলব্ধ নেই ।</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">কোনও বক্তৃতা ইঞ্জিন উপলব্ধ নেই। সিস্টেম TTS ফিচার ব্যবহার করে তৈরি করুন, বা পছন্দসই সেটিংসে একটি ক্লাউড ভয়েস সেট আপ করুন।</string>
     <string name="no_training_data_to_export_yet">এখন পর্যন্ত রপ্তানি করার কোনো প্রশিক্ষণ তথ্য নেই</string>
+    <string name="no_tts_engine_available">কোনো TTS ইঞ্জিন উপলব্ধ নেই। সিস্টেম TTS-এর জন্য স্পিচ-ডিসপ্যাচার ইনস্টল করুন।</string>
     <string name="no_user_training_data_yet">এখনও কোনো ব্যবহারকারীর প্রশিক্ষণ ডেটা নেই</string>
     <string name="no_voices_found">কোনো ভয়েস পাওয়া যায়নি</string>
     <string name="nothing_to_save">বাঁচানোর কিছুই নেই</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">খুব ধীর</string>
     <string name="re_import_from_dasher_5">ড্যাশার ৫ থেকে পুনরায় আমদানি করুন</string>
     <string name="read">পড়া</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">থামানোর জন্য চিমটি ছেড়ে দিন।</string>
     <string name="reset">রিসেট</string>
     <string name="reset_all_settings_to_defaults">সমস্ত সেটিংস ডিফল্টে রিসেট করুন</string>
@@ -273,6 +277,7 @@
     <string name="saved">সংরক্ষিত</string>
     <string name="saved_2">সংরক্ষণ হয়েছে</string>
     <string name="scan_speed">স্ক্যান গতি</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">বাছাই পদ্ধতি</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">সার্ভিস চালু আছে? ইনস্টল কমান্ডের জন্য কীবোর্ড বাটনের সেটআপ হেল্প দেখুন।</string>
     <string name="settings">সেটিংস</string>

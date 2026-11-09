@@ -56,6 +56,7 @@
     <string name="colour_theme">Цветовая тема</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">содержимое или личная информация когда-либо собирается. Вы можете изменить это в любое</string>
     <string name="control">Управление</string>
+    <string name="control_mode_description">Добавляет на холст команды редактирования «Выбрать», «Переместить» и «Удалить»: выделить, переместить или удалить текст по букве, слову, предложению, абзацу или всему тексту вперед или назад.</string>
     <string name="control_mode_enabled">Режим управления: включён</string>
     <string name="control_mode_tooltip">Режим управления</string>
     <string name="control_nodes_tooltip">Управляющие узлы: переместить, удалить, очистить, говорить, пауза</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">Диагностика</string>
     <string name="direct_mode">Прямой режим</string>
     <string name="done">Сделанный</string>
+    <string name="drag_to_move_the_keyboard_window">Перетащите, чтобы переместить окно клавиатуры</string>
     <string name="dwell_duration">Длительность пребывания</string>
     <string name="dwell_to_click">Дождитесь клика</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Включите Dasher в разделе «Настройки» → «Общие» → «Клавиатура» → «Клавиатуры», затем включите параметр «Разрешить полный доступ», чтобы Dasher мог говорить и учиться.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">Настройки для этого раздела отсутствуют.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Двигатель речи недоступен. Соберите с функцией TTS системы или настройте облачный голос в настройках.</string>
     <string name="no_training_data_to_export_yet">Нет данных обучения для экспорта</string>
+    <string name="no_tts_engine_available">Движок TTS отсутствует. Установите речевой диспетчер для системы TTS.</string>
     <string name="no_user_training_data_yet">Нет пользовательских данных обучения</string>
     <string name="no_voices_found">Голоса не найдены</string>
     <string name="nothing_to_save">Сохранить нечего</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">Очень медленно</string>
     <string name="re_import_from_dasher_5">Повторный импорт из Dasher 5</string>
     <string name="read">Читать</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Отпустите щипок, чтобы поставить на паузу.</string>
     <string name="reset">Перезагрузить</string>
     <string name="reset_all_settings_to_defaults">Сбросить все настройки до значений по умолчанию</string>
@@ -273,6 +277,7 @@
     <string name="saved">Сохранено</string>
     <string name="saved_2">Сохранено:</string>
     <string name="scan_speed">Скорость сканирования</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Метод выбора</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Служба запущена? Смотрите справку по настройке на кнопке Клавиатура для команд установки.</string>
     <string name="settings">Настройки</string>

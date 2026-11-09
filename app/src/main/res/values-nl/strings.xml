@@ -56,6 +56,7 @@ Je kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="colour_theme">Kleurenthema</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">inhoud of persoonlijke informatie ooit wordt verzameld. U kunt dit op elk moment wijzigen</string>
     <string name="control">Controle</string>
+    <string name="control_mode_description">Voegt bewerkingsopdrachten voor selecteren, verplaatsen en verwijderen toe aan het canvas: selecteer, verplaats of verwijder tekst per letter, woord, zin, alinea of ​​alles, vooruit of achteruit.</string>
     <string name="control_mode_enabled">Bedieningsmodus: ingeschakeld</string>
     <string name="control_mode_tooltip">Bedieningsmodus</string>
     <string name="control_nodes_tooltip">Controleknopen: verplaatsen, verwijderen, wissen, spreken, pauzeren</string>
@@ -107,6 +108,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="diagnostics">Diagnostiek</string>
     <string name="direct_mode">Directe modus</string>
     <string name="done">Klaar</string>
+    <string name="drag_to_move_the_keyboard_window">Sleep om het toetsenbordvenster te verplaatsen</string>
     <string name="dwell_duration">Verblijfsduur</string>
     <string name="dwell_to_click">Blijf staan om te klikken</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Schakel Dasher in via Instellingen → Algemeen → Toetsenbord → Toetsenborden en zet vervolgens \'Volledige toegang toestaan\' aan, zodat Dasher kan spreken en leren.</string>
@@ -205,6 +207,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="no_settings_available_for_this_section">Er zijn geen instellingen beschikbaar voor dit gedeelte.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Geen spraakengine beschikbaar. Bouw met de systeem-TTS-functie, of stel een cloudstem in via Voorkeuren.</string>
     <string name="no_training_data_to_export_yet">Nog geen trainingsgegevens om te exporteren</string>
+    <string name="no_tts_engine_available">Geen TTS-engine beschikbaar. Spraakverzender voor systeem TTS installeren.</string>
     <string name="no_user_training_data_yet">Nog geen trainingsgegevens van gebruikers</string>
     <string name="no_voices_found">Geen stemmen gevonden</string>
     <string name="nothing_to_save">Niets te redden</string>
@@ -250,6 +253,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="rate_very_slow">Heel langzaam</string>
     <string name="re_import_from_dasher_5">Opnieuw importeren vanuit Dasher 5</string>
     <string name="read">Lezen</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Laat los om te pauzeren</string>
     <string name="reset">Resetten</string>
     <string name="reset_all_settings_to_defaults">Alle instellingen terugzetten naar de standaardwaarden</string>
@@ -273,6 +277,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="saved">Opgeslagen</string>
     <string name="saved_2">Opgeslagen:</string>
     <string name="scan_speed">Scansnelheid</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Selectiemethode</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Service actief? Zie de installatiehulp op de toetsenbordknop voor installatiescripts.</string>
     <string name="settings">Instellingen</string>

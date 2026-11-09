@@ -56,6 +56,7 @@ Ezt bármikor megváltoztathatja a Beállítások &gt; Adatvédelem menüpontban
     <string name="colour_theme">Színtéma</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">tartalmakat vagy személyes információkat gyűjtenek. Ezt bármikor megváltoztathatja</string>
     <string name="control">Kontroll</string>
+    <string name="control_mode_description">Kijelölés, áthelyezés és törlés szerkesztési parancsokat ad a vászonhoz: szöveg kijelölése, mozgatása vagy törlése betűnként, szónként, mondatonként, bekezdésenként vagy mindegyikenként, előre vagy hátra.</string>
     <string name="control_mode_enabled">Vezérlési mód: engedélyezve</string>
     <string name="control_mode_tooltip">Vezérlési mód</string>
     <string name="control_nodes_tooltip">Vezérlőcsomópontok: mozgatás, törlés, törlés, beszéd, szünet</string>
@@ -107,6 +108,7 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="diagnostics">Diagnosztika</string>
     <string name="direct_mode">Közvetlen mód</string>
     <string name="done">Kész</string>
+    <string name="drag_to_move_the_keyboard_window">Húzza a billentyűzet ablakát</string>
     <string name="dwell_duration">Tartózkodási idő</string>
     <string name="dwell_to_click">Tartózkodjon a kattintáshoz</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Engedélyezze a Dashert a Beállítások → Általános → Billentyűzet → Billentyűzetek menüpontban, majd kapcsolja be a Teljes hozzáférés engedélyezése beállítást, hogy a Dasher beszélhessen és tanulhasson.</string>
@@ -205,6 +207,7 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="no_settings_available_for_this_section">Ehhez a szakaszhoz nem érhetők el beállítások.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Nem érhető el beszédmotor. Építsd a rendszer TTS funkciójával, vagy állíts be egy felhő alapú hangot a Beállításokban.</string>
     <string name="no_training_data_to_export_yet">Még nincs exportálható képzési adat</string>
+    <string name="no_tts_engine_available">Nem áll rendelkezésre TTS motor. Telepítse a beszéd diszpécsert a rendszer TTS-hez.</string>
     <string name="no_user_training_data_yet">Még nincs felhasználói képzési adat</string>
     <string name="no_voices_found">Nem található hang</string>
     <string name="nothing_to_save">Nincs mit menteni</string>
@@ -250,6 +253,7 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="rate_very_slow">Nagyon lassú</string>
     <string name="re_import_from_dasher_5">Újraimportálás a Dasher 5-ből</string>
     <string name="read">Elolvas</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Engedje el a csípést a szüneteltetéshez</string>
     <string name="reset">Visszaállítás</string>
     <string name="reset_all_settings_to_defaults">Minden beállítás visszaállítása alapértelmezettre</string>
@@ -273,6 +277,7 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="saved">Mentett</string>
     <string name="saved_2">Elmentve:</string>
     <string name="scan_speed">Szkennelési sebesség</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Kiválasztási módszer</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">A szolgáltatás fut? Lásd a beállítási segítséget a Billentyűzet gombnál a telepítési parancsokhoz.</string>
     <string name="settings">Beállítások</string>

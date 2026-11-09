@@ -56,6 +56,7 @@
     <string name="colour_theme">रंग थीम</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">सामग्री या व्यक्तिगत जानकारी कभी भी एकत्रित की जाती है। आप इसे कभी भी बदल सकते हैं</string>
     <string name="control">नियंत्रण</string>
+    <string name="control_mode_description">कैनवास पर चयन करें, स्थानांतरित करें और हटाएं संपादन कमांड जोड़ता है: अक्षर, शब्द, वाक्य, पैराग्राफ या सभी, आगे या पीछे से टेक्स्ट का चयन करें, स्थानांतरित करें या हटाएं।</string>
     <string name="control_mode_enabled">नियंत्रण मोड: सक्षम</string>
     <string name="control_mode_tooltip">नियंत्रण मोड</string>
     <string name="control_nodes_tooltip">कंट्रोल नोड्स: स्थानांतरित करें, हटाएँ, साफ़ करें, बोलें, विराम दें</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">निदान</string>
     <string name="direct_mode">प्रत्यक्ष मोड</string>
     <string name="done">हो गया</string>
+    <string name="drag_to_move_the_keyboard_window">कीबोर्ड विंडो को स्थानांतरित करने के लिए खींचें</string>
     <string name="dwell_duration">ठहराव अवधि</string>
     <string name="dwell_to_click">क्लिक करने के लिए निवास करें</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">सेटिंग्स → सामान्य → कीबोर्ड → कीबोर्ड के अंतर्गत डैशर को सक्षम करें, फिर पूर्ण पहुंच की अनुमति दें को चालू करें ताकि डैशर बोल सके और सीख सके।</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">इस सेक्शन के लिए कोई सेटिंग उपलब्ध नहीं है।</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">कोई स्पीच इंजन उपलब्ध नहीं है। सिस्टम TTS फीचर के साथ बिल्ड करें, या प्रेफरेंस में क्लाउड वॉइस सेट करें।</string>
     <string name="no_training_data_to_export_yet">निर्यात करने के लिए अभी कोई प्रशिक्षण डेटा नहीं है</string>
+    <string name="no_tts_engine_available">कोई टीटीएस इंजन उपलब्ध नहीं है. सिस्टम टीटीएस के लिए स्पीच-डिस्पैचर स्थापित करें।</string>
     <string name="no_user_training_data_yet">अभी तक कोई उपयोगकर्ता प्रशिक्षण डेटा नहीं</string>
     <string name="no_voices_found">कोई आवाज़ नहीं मिली</string>
     <string name="nothing_to_save">बचाने के लिए कुछ नहीं</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">बहुत धीमी गति से</string>
     <string name="re_import_from_dasher_5">डैशर 5 से पुनः आयात करें</string>
     <string name="read">पढ़ें</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">रोकने के लिए पिंच बटन छोड़ दें</string>
     <string name="reset">रीसेट करें</string>
     <string name="reset_all_settings_to_defaults">सभी सेटिंग्स को डिफ़ॉल्ट पर रीसेट करें</string>
@@ -273,6 +277,7 @@
     <string name="saved">सहेजा गया</string>
     <string name="saved_2">सेव किया गया</string>
     <string name="scan_speed">स्कैन गति</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">चयन विधि</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">सेवा चल रही है? इंस्टॉल कमांड के लिए कीबोर्ड बटन पर सेटअप मदद देखें।</string>
     <string name="settings">सेटिंग्स</string>

@@ -56,6 +56,7 @@ Puedes cambiar esto en cualquier momento en Configuración &gt; Privacidad.</str
     <string name="colour_theme">Tema de color</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">contenidos o información personal se recopilen alguna vez. Puedes cambiar esto en cualquier momento</string>
     <string name="control">Control</string>
+    <string name="control_mode_description">Agrega comandos de edición Seleccionar, Mover y Eliminar al lienzo: seleccione, mueva o elimine texto por letra, palabra, oración, párrafo o todo, hacia adelante o hacia atrás.</string>
     <string name="control_mode_enabled">Modo de control: activado</string>
     <string name="control_mode_tooltip">Modo de control</string>
     <string name="control_nodes_tooltip">Nodos de control: mover, eliminar, limpiar, hablar, pausar</string>
@@ -107,6 +108,7 @@ Puedes cambiar esta configuración en cualquier momento en Ajustes &gt; Privacid
     <string name="diagnostics">Diagnóstico</string>
     <string name="direct_mode">Modo directo</string>
     <string name="done">Hecho</string>
+    <string name="drag_to_move_the_keyboard_window">Arrastra para mover la ventana del teclado</string>
     <string name="dwell_duration">Duración de permanencia</string>
     <string name="dwell_to_click">Permanecer para hacer clic</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Habilita Dasher en Ajustes → General → Teclado → Teclados y, a continuación, activa la opción Permitir acceso completo para que Dasher pueda hablar y aprender.</string>
@@ -205,6 +207,7 @@ Puedes cambiar esta configuración en cualquier momento en Ajustes &gt; Privacid
     <string name="no_settings_available_for_this_section">No hay ajustes disponibles para esta sección.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">No hay motor de voz disponible. Compila con la función TTS del sistema, o configura una voz en la nube en Preferencias.</string>
     <string name="no_training_data_to_export_yet">Aún no hay datos de entrenamiento para exportar</string>
+    <string name="no_tts_engine_available">No hay motor TTS disponible. Instale el despachador de voz para el sistema TTS.</string>
     <string name="no_user_training_data_yet">Todavía no hay datos de entrenamiento de usuario</string>
     <string name="no_voices_found">No se encontraron voces</string>
     <string name="nothing_to_save">Nada que salvar</string>
@@ -250,6 +253,7 @@ Puedes cambiar esta configuración en cualquier momento en Ajustes &gt; Privacid
     <string name="rate_very_slow">muy lento</string>
     <string name="re_import_from_dasher_5">Reimportar desde Dasher 5</string>
     <string name="read">De Leer</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Suelta los dedos para pausar</string>
     <string name="reset">Reiniciar</string>
     <string name="reset_all_settings_to_defaults">Restablecer todos los ajustes a los valores predeterminados.</string>
@@ -273,6 +277,7 @@ Puedes cambiar esta configuración en cualquier momento en Ajustes &gt; Privacid
     <string name="saved">Guardado</string>
     <string name="saved_2">Guardado:</string>
     <string name="scan_speed">Velocidad de escaneo</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Método de selección</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">¿El servicio está en funcionamiento? Consulta la ayuda de configuración en el botón del teclado para los comandos de instalación.</string>
     <string name="settings">Ajustes</string>

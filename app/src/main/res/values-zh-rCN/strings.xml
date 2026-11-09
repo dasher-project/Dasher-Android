@@ -56,6 +56,7 @@
     <string name="colour_theme">颜色主题</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">内容或个人信息是否被收集。您可以随时更改此设置</string>
     <string name="control">控制</string>
+    <string name="control_mode_description">将选择、移动和删除编辑命令添加到画布：按字母、单词、句子、段落或全部向前或向后选择、移动或删除文本。</string>
     <string name="control_mode_enabled">控制模式：已启用</string>
     <string name="control_mode_tooltip">控制模式</string>
     <string name="control_nodes_tooltip">控制节点：移动、删除、清除、说话、暂停</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">诊断</string>
     <string name="direct_mode">直接模式</string>
     <string name="done">完毕</string>
+    <string name="drag_to_move_the_keyboard_window">拖动以移动键盘窗口</string>
     <string name="dwell_duration">停留时间</string>
     <string name="dwell_to_click">停留点击</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">在“设置”→“常规”→“键盘”→“键盘”下启用 Dasher，然后打开“允许完全访问”，以便 Dasher 可以说话和学习。</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">此部分暂无设置选项。</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">没有可用的语音引擎。请使用系统 TTS 功能构建，或在偏好设置中设置云端语音。</string>
     <string name="no_training_data_to_export_yet">暂无可导出的训练数据</string>
+    <string name="no_tts_engine_available">没有可用的 TTS 引擎。为系统 TTS 安装语音调度程序。</string>
     <string name="no_user_training_data_yet">尚无用户训练数据</string>
     <string name="no_voices_found">没有找到声音</string>
     <string name="nothing_to_save">已无可挽救</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">非常慢</string>
     <string name="re_import_from_dasher_5">从 Dasher 5 重新导入</string>
     <string name="read">读</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">松开捏合即可暂停</string>
     <string name="reset">重置</string>
     <string name="reset_all_settings_to_defaults">将所有设置重置为默认值</string>
@@ -273,6 +277,7 @@
     <string name="saved">已保存</string>
     <string name="saved_2">已保存：</string>
     <string name="scan_speed">扫描速度</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">选择方法</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">服务正在运行吗？请在键盘按钮上的设置帮助中查看安装命令。</string>
     <string name="settings">设置</string>

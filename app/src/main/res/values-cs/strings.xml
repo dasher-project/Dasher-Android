@@ -56,6 +56,7 @@ Toto můžete kdykoliv změnit v Nastavení &gt; Soukromí.</string>
     <string name="colour_theme">Barevné téma</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">obsah nebo osobní údaje jsou kdykoli sbírány. Toto můžete kdykoli změnit</string>
     <string name="control">Kontrola</string>
+    <string name="control_mode_description">Přidá na plátno editační příkazy Select, Move a Delete: výběr, přesun nebo odstranění textu po písmenech, slovech, větách, odstavcích nebo vše, dopředu nebo dozadu.</string>
     <string name="control_mode_enabled">Režim ovládání: zapnuto</string>
     <string name="control_mode_tooltip">Režim ovládání</string>
     <string name="control_nodes_tooltip">Ovládací uzly: přesunout, smazat, vyčistit, mluvit, pauza</string>
@@ -107,6 +108,7 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="diagnostics">Diagnostika</string>
     <string name="direct_mode">Přímý režim</string>
     <string name="done">Hotovo</string>
+    <string name="drag_to_move_the_keyboard_window">Tažením přesunete okno klávesnice</string>
     <string name="dwell_duration">Doba setrvání</string>
     <string name="dwell_to_click">Klepněte na tlačítko Dwell</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Povolte Dasher v Nastavení → Obecné → Klávesnice → Klávesnice a poté zapněte Povolit plný přístup, aby Dasher mohl mluvit a učit se.</string>
@@ -205,6 +207,7 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="no_settings_available_for_this_section">Pro tuto sekci nejsou k dispozici žádná nastavení.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Žádný dostupný řečový modul. Sestavte s funkcí systému TTS nebo nastavte cloudový hlas v Předvolbách.</string>
     <string name="no_training_data_to_export_yet">Žádná výcviková data k exportu zatím</string>
+    <string name="no_tts_engine_available">Není k dispozici žádný motor TTS. Nainstalujte hlasový dispečer pro systém TTS.</string>
     <string name="no_user_training_data_yet">Dosud žádná data o školení uživatele</string>
     <string name="no_voices_found">Nebyly nalezeny žádné hlasy</string>
     <string name="nothing_to_save">Nic k uložení</string>
@@ -250,6 +253,7 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="rate_very_slow">Velmi pomalé</string>
     <string name="re_import_from_dasher_5">Znovu importovat z Dasheru 5</string>
     <string name="read">Přečteno</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Uvolněním prstů pozastavíte</string>
     <string name="reset">Obnovit</string>
     <string name="reset_all_settings_to_defaults">Obnovit všechna nastavení na výchozí hodnoty</string>
@@ -273,6 +277,7 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="saved">Uloženo</string>
     <string name="saved_2">Uloženo:</string>
     <string name="scan_speed">Rychlost skenování</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Metoda výběru</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Služba běží? Podívejte se na nápovědu k nastavení na tlačítku Klávesnice pro instalační příkazy.</string>
     <string name="settings">Nastavení</string>

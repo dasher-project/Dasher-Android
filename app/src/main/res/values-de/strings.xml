@@ -56,6 +56,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="colour_theme">Farbthema</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">Inhalte oder persönliche Informationen werden jemals gesammelt. Sie können dies jederzeit ändern</string>
     <string name="control">Kontrolle</string>
+    <string name="control_mode_description">Fügt der Leinwand die Bearbeitungsbefehle „Auswählen“, „Verschieben“ und „Löschen“ hinzu: Wählen, verschieben oder löschen Sie Text nach Buchstaben, Wörtern, Sätzen, Absätzen oder allen, vorwärts oder rückwärts.</string>
     <string name="control_mode_enabled">Steuermodus: aktiviert</string>
     <string name="control_mode_tooltip">Kontrollmodus</string>
     <string name="control_nodes_tooltip">Steuerknoten: verschieben, löschen, löschen, sprechen, pausieren</string>
@@ -107,6 +108,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="diagnostics">Diagnose</string>
     <string name="direct_mode">Direktmodus</string>
     <string name="done">Erledigt</string>
+    <string name="drag_to_move_the_keyboard_window">Ziehen Sie, um das Tastaturfenster zu verschieben</string>
     <string name="dwell_duration">Aufenthaltsdauer</string>
     <string name="dwell_to_click">Verweilen zum Klicken</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Aktivieren Sie Dasher unter Einstellungen → Allgemein → Tastatur → Tastaturen und aktivieren Sie dann Vollzugriff zulassen, damit Dasher sprechen und lernen kann.</string>
@@ -205,6 +207,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="no_settings_available_for_this_section">Für diesen Abschnitt sind keine Einstellungen verfügbar.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Keine Sprachausgabe verfügbar. Erstellen Sie es mit der systemeigenen TTS-Funktion oder richten Sie eine Cloud-Stimme in den Einstellungen ein.</string>
     <string name="no_training_data_to_export_yet">Noch keine Trainingsdaten zum Exportieren vorhanden</string>
+    <string name="no_tts_engine_available">Keine TTS-Engine verfügbar. Installieren Sie den Speech-Dispatcher für das System TTS.</string>
     <string name="no_user_training_data_yet">Noch keine Benutzerschulungsdaten</string>
     <string name="no_voices_found">Keine Stimmen gefunden</string>
     <string name="nothing_to_save">Nichts zu retten</string>
@@ -250,6 +253,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="rate_very_slow">Sehr langsam</string>
     <string name="re_import_from_dasher_5">Reimport aus Dasher 5</string>
     <string name="read">Ablesen</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Lassen Sie die Taste los, um zu pausieren</string>
     <string name="reset">Zurücksetzen</string>
     <string name="reset_all_settings_to_defaults">Setzen Sie alle Einstellungen auf die Standardeinstellungen zurück</string>
@@ -273,6 +277,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="saved">Gespeichert</string>
     <string name="saved_2">Gespeichert:</string>
     <string name="scan_speed">Scangeschwindigkeit</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Auswahlverfahren</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Läuft der Dienst? Siehe die Einrichtungshilfe auf der Tastaturtaste für Installationsbefehle.</string>
     <string name="settings">Einstellungen</string>

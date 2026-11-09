@@ -56,6 +56,7 @@
     <string name="colour_theme">வண்ண தீம்</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">உள்ளடக்கம் அல்லது தனிப்பட்ட தகவல்கள் எப்போதும் சேகரிக்கப்படவில்லை. நீங்கள் இதை எப்போதும் மாற்றலாம்</string>
     <string name="control">கட்டுப்பாடு</string>
+    <string name="control_mode_description">கேன்வாஸில் தேர்ந்தெடு, நகர்த்து மற்றும் நீக்கு எடிட்டிங் கட்டளைகளைச் சேர்க்கிறது: எழுத்து, சொல், வாக்கியம், பத்தி அல்லது அனைத்தும், முன்னோக்கி அல்லது பின்னோக்கி உரையைத் தேர்ந்தெடுக்கவும், நகர்த்தவும் அல்லது நீக்கவும்.</string>
     <string name="control_mode_enabled">கட்டுப்பாட்டு முறை: இயலுமைப்படுத்தப்பட்டது</string>
     <string name="control_mode_tooltip">கட்டுப்பாட்டு முறை</string>
     <string name="control_nodes_tooltip">கட்டுப்பாட்டு நொட்ஸ்: நகர்த்து, அகற்று, சுத்தம் செய், பேசுக, இடைநிறுத்து</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">நோயறிதல்</string>
     <string name="direct_mode">நேரடி பயன்முறை</string>
     <string name="done">முடிந்தது</string>
+    <string name="drag_to_move_the_keyboard_window">விசைப்பலகை சாளரத்தை நகர்த்த இழுக்கவும்</string>
     <string name="dwell_duration">தங்கும் காலம்</string>
     <string name="dwell_to_click">கிளிக் செய்ய தங்குங்கள்</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">அமைப்புகள் → பொது → விசைப்பலகை → விசைப்பலகைகள் என்பதற்குச் சென்று டேஷரை இயக்கவும், பின்னர் முழு அணுகலை அனுமதி என்பதை இயக்கவும், இதன்மூலம் டேஷர் பேசவும் கற்றுக்கொள்ளவும் முடியும்.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">இந்தப் பகுதிக்கு அமைப்புகள் எதுவும் கிடைக்கவில்லை.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">எந்த வாக்கிய இயந்திரத்தையும் பயன்படுத்த முடியவில்லை. கணினியின் TTS அம்சத்துடன் உருவாக்கவும், அல்லது விருப்பங்களில் மேக குரலை அமைக்கவும்.</string>
     <string name="no_training_data_to_export_yet">இன்னும் ஏற்றுமதி செய்ய பயிற்சி தரவு இல்லை</string>
+    <string name="no_tts_engine_available">TTS இன்ஜின் இல்லை. கணினி TTSக்கான பேச்சு-அனுப்பியலை நிறுவவும்.</string>
     <string name="no_user_training_data_yet">இன்னும் பயனர் பயிற்சி தரவு இல்லை</string>
     <string name="no_voices_found">குரல்கள் இல்லை</string>
     <string name="nothing_to_save">காப்பாற்ற ஒன்றுமில்லை</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">மிக மெதுவாக</string>
     <string name="re_import_from_dasher_5">டேஷர் 5 இலிருந்து மீண்டும் இறக்குமதி செய்யவும்</string>
     <string name="read">படிக்கவும்</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">இடைநிறுத்த, கிள்ளலை விடுங்கள்.</string>
     <string name="reset">மீட்டமை</string>
     <string name="reset_all_settings_to_defaults">அனைத்து அமைப்புகளையும் இயல்புநிலைக்கு மீட்டமைக்கவும்</string>
@@ -273,6 +277,7 @@
     <string name="saved">சேமிக்கப்பட்டது</string>
     <string name="saved_2">சேமிக்கப்பட்டது:</string>
     <string name="scan_speed">ஸ்கேன் வேகம்</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">தேர்வு முறை</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">சேவை இயங்குகிறதா? நிறுவல் கட்டளைகளுக்காக விசைப்பலகை பொத்தானில் அமைப்பு உதவியைப் பார்க்கவும்.</string>
     <string name="settings">அமைப்புகள்</string>

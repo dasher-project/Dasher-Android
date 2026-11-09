@@ -56,6 +56,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="colour_theme">Kleurtema</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">inhoud of persoonlike inligting ooit ingesamel word. Jy kan dit enige tyd verander</string>
     <string name="control">Beheer</string>
+    <string name="control_mode_description">Voeg Kies-, Skuif- en Vee-redigeeropdragte by die doek: kies, skuif of vee teks uit per letter, woord, sin, paragraaf of alles, vorentoe of agtertoe.</string>
     <string name="control_mode_enabled">Beheermodus: aangeskakel</string>
     <string name="control_mode_tooltip">Beheermodus</string>
     <string name="control_nodes_tooltip">Beheerknope: skuif, verwyder, maak skoon, praat, onderbreek</string>
@@ -107,6 +108,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="diagnostics">Diagnostiek</string>
     <string name="direct_mode">Direkte modus</string>
     <string name="done">Klaar</string>
+    <string name="drag_to_move_the_keyboard_window">Sleep om die sleutelbordvenster te skuif</string>
     <string name="dwell_duration">Verblijfsduur</string>
     <string name="dwell_to_click">Kliek om te kliek</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Aktiveer Dasher onder Instellings → Algemeen → Sleutelbord → Sleutelborde, en skakel dan Laat Volle Toegang Toe aan sodat Dasher kan praat en leer.</string>
@@ -205,6 +207,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="no_settings_available_for_this_section">Geen instellings beskikbaar vir hierdie afdeling nie.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Geen spraak-enjin beskikbaar nie. Bou met die stelsel se TTS-funksie, of stel \'n wolkstem op in Voorkeure.</string>
     <string name="no_training_data_to_export_yet">Nog geen opleidingsdata om uit te voer nie</string>
+    <string name="no_tts_engine_available">Geen TTS-enjin beskikbaar nie. Installeer spraakversender vir stelsel TTS.</string>
     <string name="no_user_training_data_yet">Nog geen gebruikers opleidingsdata nie</string>
     <string name="no_voices_found">Geen stemme gevind nie</string>
     <string name="nothing_to_save">Niks om te spaar nie</string>
@@ -250,6 +253,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="rate_very_slow">Baie Stadig</string>
     <string name="re_import_from_dasher_5">Herinvoer vanaf Dasher 5</string>
     <string name="read">Ry</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Laat die knyp los om te pouseer</string>
     <string name="reset">Herstel</string>
     <string name="reset_all_settings_to_defaults">Stel alle instellings terug na verstekwaardes</string>
@@ -273,6 +277,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="saved">Gestoor</string>
     <string name="saved_2">Gebêre</string>
     <string name="scan_speed">Skandeerspoed</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Seleksiemetode</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">diens aan die gang? Sien die instellingshulp op die Sleutelbord-knoppie vir installeeropdragte.</string>
     <string name="settings">Instellings</string>

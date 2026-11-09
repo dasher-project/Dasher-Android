@@ -56,6 +56,7 @@
     <string name="colour_theme">رنگین تھیم</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">مواد یا ذاتی معلومات کبھی بھی جمع نہیں کی جاتی۔ آپ اسے کسی بھی وقت تبدیل کر سکتے ہیں</string>
     <string name="control">کنٹرول</string>
+    <string name="control_mode_description">کینوس میں سلیکٹ، موو اور ڈیلیٹ ایڈیٹنگ کمانڈز شامل کرتا ہے: حرف، لفظ، جملہ، پیراگراف یا سبھی، آگے یا پیچھے کی طرف متن کو منتخب، منتقل یا حذف کریں۔</string>
     <string name="control_mode_enabled">کنٹرول موڈ: فعال</string>
     <string name="control_mode_tooltip">کنٹرول موڈ</string>
     <string name="control_nodes_tooltip">کنٹرول نوڈز: منتقل کریں، حذف کریں، صاف کریں، بولیں، روکیں</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">تشخیص</string>
     <string name="direct_mode">ڈائریکٹ موڈ</string>
     <string name="done">ہو گیا</string>
+    <string name="drag_to_move_the_keyboard_window">کی بورڈ ونڈو کو منتقل کرنے کے لیے گھسیٹیں۔</string>
     <string name="dwell_duration">رہائش کی مدت</string>
     <string name="dwell_to_click">کلک کرنے کے لئے رہنا</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">ڈیشر کو ترتیبات → جنرل → کی بورڈ → کی بورڈز کے تحت فعال کریں، پھر مکمل رسائی کی اجازت کو آن کریں تاکہ ڈیشر بول اور سیکھ سکے۔</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">اس سیکشن کے لیے کوئی ترتیبات دستیاب نہیں ہیں۔</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">کوئی تقریر کا انجن دستیاب نہیں۔ سسٹم TTS خصوصیت کے ساتھ بنائیں، یا ترجیحات میں کلاؤڈ آواز مرتب کریں۔</string>
     <string name="no_training_data_to_export_yet">ابھی تک برآمد کرنے کے لیے کوئی ٹریننگ ڈیٹا نہیں ہے</string>
+    <string name="no_tts_engine_available">کوئی TTS انجن دستیاب نہیں ہے۔ سسٹم TTS کے لیے اسپیچ ڈسپیچر انسٹال کریں۔</string>
     <string name="no_user_training_data_yet">ابھی تک کوئی یوزر ٹریننگ ڈیٹا نہیں ہے</string>
     <string name="no_voices_found">کوئی آوازیں نہیں ملی</string>
     <string name="nothing_to_save">بچانے کے لیے کچھ نہیں۔</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">بہت آہستہ</string>
     <string name="re_import_from_dasher_5">Dasher 5 سے دوبارہ درآمد کریں۔</string>
     <string name="read">پڑھیں</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">توقف کے لیے چوٹکی چھوڑ دیں۔</string>
     <string name="reset">دوبارہ ترتیب دیں۔</string>
     <string name="reset_all_settings_to_defaults">تمام ترتیبات کو ڈیفالٹس پر ری سیٹ کریں۔</string>
@@ -273,6 +277,7 @@
     <string name="saved">محفوظ کیا گیا۔</string>
     <string name="saved_2">محفوظ کیا گیا:</string>
     <string name="scan_speed">اسکین کی رفتار</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">سلیکشن کا طریقہ</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">سروس چل رہی ہے؟ انسٹال کمانڈز کے لیے کی بورڈ کے بٹن پر سیٹ اپ ہیلپ دیکھیں۔</string>
     <string name="settings">ترتیبات</string>
