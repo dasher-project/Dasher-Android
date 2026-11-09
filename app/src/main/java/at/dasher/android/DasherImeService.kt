@@ -660,6 +660,12 @@ class DasherImeService : InputMethodService() {
             // to the target field as ONE atomic edit (bug #5: unbatched
             // deltas garble text in OneNote/Word's async editors).
             flushOutputToTarget()
+            // RFC 0021: this frame's control-node actions (queued during
+            // dasher_frame by the action listener) run AFTER the engine
+            // call returned — applying them mid-frame would re-enter the
+            // engine (reanchor → seedBuffer) and the InputConnection from
+            // inside CContNode::Do().
+            applyPendingControlActions()
         }
         if (eng == null) {
             Log.e(TAG, "IME engine creation failed (dataDir=$dataDir)")
@@ -727,6 +733,77 @@ class DasherImeService : InputMethodService() {
         speedRange = eng.speedRangePercent()
         speedView?.text = "$speedPercent%"
         eng.start()
+    }
+
+    // ── RFC 0021 control-node actions (move/delete/select) ───────────────
+    //
+    // The engine fires registered actions from CContNode::Do() DURING
+    // dasher_frame() (main thread here). The listener only QUEUES; the
+    // frame consumer drains the queue after nativeFrame returned, so
+    // nothing re-enters the engine (reanchor → seedBuffer) or the
+    // InputConnection mid-frame — the same discipline the output
+    // coalescer enforces for text deltas (bug #5).
+
+    private val pendingControlActions = ArrayDeque<ControlAction>()
+
+    /**
+     * Reentrancy guard, mirroring Dasher-Windows' generation counter
+     * (`_unitActionGeneration`): bumped per dispatched action. Execution
+     * here is SYNCHRONOUS on the main thread (each action re-reads the
+     * field immediately before mutating it, and InputConnection calls are
+     * blocking binder calls), so a later action can never observe stale
+     * state from an earlier one — unlike Windows, where the UIA await
+     * opens an interleaving window and a superseded action must abort.
+     * The counter remains the structural anchor: any future async step
+     * (an await between read and apply) must check it and abort.
+     */
+    private var controlActionGeneration = 0
+
+    /** Queue from the engine callback (fires mid-frame; see section doc). */
+    private fun onControlAction(name: String, attrs: String) {
+        val action = parseControlAction(name, attrs)
+        if (action == null) {
+            // The engine validates no attributes for custom actions — a
+            // typo'd dist must degrade to a logged no-op, never a crash.
+            Log.w(TAG, "control action '$name' attrs='$attrs' unparseable — no-op")
+            UiTelemetry.action("control_node", name, "unparseable")
+            return
+        }
+        pendingControlActions.add(action)
+    }
+
+    /** Drain the queue after the frame (see the frame consumer). */
+    private fun applyPendingControlActions() {
+        while (pendingControlActions.isNotEmpty()) {
+            val action = pendingControlActions.removeFirst()
+            controlActionGeneration++
+            try {
+                performControlAction(action)
+            } catch (e: Exception) {
+                // A hostile editor must never take the keyboard down.
+                Log.w(TAG, "control action ${action.telemetryId} failed: ${e.message}")
+                UiTelemetry.action("control_node", action.telemetryId, "error")
+            }
+        }
+    }
+
+    private fun performControlAction(action: ControlAction) {
+        val ic = currentInputConnection
+        if (ic == null) {
+            UiTelemetry.action("control_node", action.telemetryId, "no_connection")
+            return
+        }
+        // One atomic batch per action — the editor cannot reformat between
+        // the selection collapse and the delete (bug #5's discipline). The
+        // InputConnection choreography itself lives in ControlActionExecution
+        // (fake-InputConnection-testable, the performImeBackspace pattern).
+        ic.beginBatchEdit()
+        val state = try {
+            executeControlAction(ic, action) { reanchorEngineToTarget() }
+        } finally {
+            ic.endBatchEdit()
+        }
+        UiTelemetry.action("control_node", action.telemetryId, state)
     }
 
     // ── Engine re-anchoring (RFC 0015 tier 2) ────────────────────────────
@@ -815,6 +892,9 @@ class DasherImeService : InputMethodService() {
             cm.setPrimaryClip(ClipData.newPlainText("Dasher", text))
         }
         eng.clearSpeakListener() // IME doesn't speak (the app does)
+        // RFC 0021 control-node actions: queue during the frame, execute
+        // after it (applyPendingControlActions from the frame consumer).
+        eng.setActionListener { name, attrs -> onControlAction(name, attrs) }
     }
 
     /**
@@ -944,6 +1024,10 @@ class DasherImeService : InputMethodService() {
             // field must NEVER land here (review I2 — for an AAC user, text
             // appearing in the wrong app's field is a trust failure).
             outputCoalescer.clear()
+            // Same trust rule for queued control actions (RFC 0021): a
+            // move/delete/select measured against the old field must not
+            // fire into the new one.
+            pendingControlActions.clear()
             if (info != null &&
                 info.inputType != InputType.TYPE_NULL &&
                 !isInputViewShown
@@ -1115,6 +1199,8 @@ class DasherImeService : InputMethodService() {
          * each is a key event the target must process — a bulk control-mode
          * delete beyond this cap is skipped with a log (engine/field desync
          * is recoverable; an ANR or an editor dropping half the flood is not).
+         * The control-action path uses the same value via
+         * MAX_CONTROL_DEL_KEY_EVENTS (ControlActionExecution.kt).
          */
         const val MAX_DEL_KEY_EVENTS = 64
     }

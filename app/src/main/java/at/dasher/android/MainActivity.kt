@@ -595,6 +595,64 @@ class MainActivity : ComponentActivity() {
                 else -> Log.e("DasherCore", text)
             }
         }
+        // RFC 0021 control-node actions: the listener fires DURING
+        // dasher_frame (main thread) — post so the editor mutation + the
+        // engine re-sync (applyEditorSync → seedBuffer/setOffset) run after
+        // the engine call returns, never re-entered from CContNode::Do().
+        eng.setActionListener { name, attrs ->
+            mainHandler.post { applyControlActionToEditor(name, attrs) }
+        }
+    }
+
+    /**
+     * RFC 0021 — one control-node action against the in-app editor's
+     * [androidx.compose.ui.text.input.TextFieldValue]: measure over the
+     * field's own text and apply as an ordinary FIELD change, so the
+     * existing RFC 0019 machinery ([applyEditorSync]) arbitrates the
+     * engine follow-up (delete → Seed, move → Reanchor; a select only
+     * changes the selection). Move/delete anchor on the end of the
+     * selection FACING the travel direction (forward from the end,
+     * backward from the start) — the same rule the IME executor pins.
+     */
+    private fun applyControlActionToEditor(name: String, attrs: String) {
+        val action = parseControlAction(name, attrs)
+        if (action == null) {
+            // The engine validates no attributes for custom actions.
+            Log.w(TAG, "control action '$name' attrs='$attrs' unparseable — no-op")
+            UiTelemetry.action("control_node", name, "unparseable")
+            return
+        }
+        val text = outputField.text
+        val sel = outputField.selection
+        val forward = action.forward == ControlDirection.FORWARD
+        val facing = if (forward) sel.end else sel.start
+        val value = when (action.name) {
+            "select" -> {
+                val range = controlSelectBounds(
+                    text, sel.start, sel.end, action.dist, action.forward,
+                    hadSelection = sel.start != sel.end,
+                )
+                outputField.copy(
+                    selection = androidx.compose.ui.text.TextRange(range.first, range.last + 1)
+                )
+            }
+            "move" -> outputField.copy(
+                selection = androidx.compose.ui.text.TextRange(
+                    controlMoveOffset(text, facing, action.dist, action.forward)
+                )
+            )
+            else -> {
+                val range = controlDeleteRange(text, facing, action.dist, action.forward)
+                if (range.isEmpty()) outputField // nothing to delete in that direction
+                else androidx.compose.ui.text.input.TextFieldValue(
+                    text.removeRange(range.first, range.last + 1),
+                    androidx.compose.ui.text.TextRange(range.first),
+                )
+            }
+        }
+        val noop = value == outputField
+        if (!noop) applyEditorSync(value)
+        UiTelemetry.action("control_node", action.telemetryId, if (noop) "noop" else "applied")
     }
 
     private fun applyCanvasFont(eng: DasherEngine) {
