@@ -56,6 +56,7 @@ Ungakushintsha lokhu noma yinini ku-Settings &gt; Privacy.</string>
     <string name="colour_theme">Itimu Yombala</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">okuqukethwe noma ulwazi lomuntu siqu luhlala luqoqwa. Ungashintsha lokhu nganoma yisiphi isikhathi</string>
     <string name="control">Ukulawula</string>
+    <string name="control_mode_description">Yengeza Khetha, Hambisa futhi Susa imiyalo yokuhlela kukhanvasi: khetha, hambisa noma susa umbhalo ngohlamvu, igama, umusho, indima noma konke, phambili noma emuva.</string>
     <string name="control_mode_enabled">Imodi yokulawula: ivuliwe</string>
     <string name="control_mode_tooltip">Imodi yokulawula</string>
     <string name="control_nodes_tooltip">Amanothi okulawula: hamba, sula, hlambulula, khuluma, yima</string>
@@ -107,6 +108,7 @@ Ungashintsha lokhu noma nini kuzilungiselelo &gt; Ubumfihlo.</string>
     <string name="diagnostics">Ukuxilongwa</string>
     <string name="direct_mode">Imodi Eqondile</string>
     <string name="done">Kuqediwe</string>
+    <string name="drag_to_move_the_keyboard_window">Hudula ukuze uhambise iwindi lekhibhodi</string>
     <string name="dwell_duration">Isikhathi Sokuhlala</string>
     <string name="dwell_to_click">Hlala ukuze uchofoze</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Nika amandla i-Dasher ngaphansi kwezilungiselelo → Okuvamile → Ikhibhodi → Amakhibhodi, bese uvula i-Vumela Ukufinyelela Okugcwele ukuze i-Dasher ikwazi ukukhuluma nokufunda.</string>
@@ -205,6 +207,7 @@ Ungashintsha lokhu noma nini kuzilungiselelo &gt; Ubumfihlo.</string>
     <string name="no_settings_available_for_this_section">Azikho izilungiselelo ezitholakalayo zalesi sigaba.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Ayikho injini yokukhuluma etholakalayo. Yakha usebenzisa isici se-TTS sesistimu, noma usethe izwi lefu ku-Preferences.</string>
     <string name="no_training_data_to_export_yet">Asikakayitholi idatha yokuqeqesha yokuthekelisa okwamanje</string>
+    <string name="no_tts_engine_available">Ayikho injini ye-TTS etholakalayo. Faka i-speech-dispatcher yesistimu ye-TTS.</string>
     <string name="no_user_training_data_yet">Akukho idatha yokuqeqesha yomsebenzisi okwamanje</string>
     <string name="no_voices_found">Awekho amazwi atholiwe</string>
     <string name="nothing_to_save">Akukho okufanele kulondolozwe</string>
@@ -250,6 +253,7 @@ Ungashintsha lokhu noma nini kuzilungiselelo &gt; Ubumfihlo.</string>
     <string name="rate_very_slow">Kancane Kakhulu</string>
     <string name="re_import_from_dasher_5">Ngenisa kabusha kusuka ku-Dasher 5</string>
     <string name="read">Funda</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Khulula ukuncinza ukuze umise okwesikhashana</string>
     <string name="reset">Setha kabusha</string>
     <string name="reset_all_settings_to_defaults">Setha kabusha Zonke Izilungiselelo zibe Okuzenzakalelayo</string>
@@ -273,6 +277,7 @@ Ungashintsha lokhu noma nini kuzilungiselelo &gt; Ubumfihlo.</string>
     <string name="saved">Kulondoloziwe</string>
     <string name="saved_2">Kulondoloziwe:</string>
     <string name="scan_speed">Isivinini Sokuskena</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Indlela Yokukhetha</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">inkonzo iyasebenza? Bheka usizo lokumisa ku-Keyboard batini ukuze uthole imiyalo yokufaka.</string>
     <string name="settings">Izilungiselelo</string>

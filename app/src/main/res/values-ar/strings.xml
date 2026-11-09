@@ -56,6 +56,7 @@
     <string name="colour_theme">نظام الألوان</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">يتم جمع المحتوى أو المعلومات الشخصية في أي وقت. يمكنك تغيير هذا في أي</string>
     <string name="control">تحكم</string>
+    <string name="control_mode_description">إضافة أوامر التحرير التحديد والنقل والحذف إلى اللوحة القماشية: تحديد النص أو نقله أو حذفه بالحرف أو الكلمة أو الجملة أو الفقرة أو الكل، للأمام أو للخلف.</string>
     <string name="control_mode_enabled">وضع التحكم: مفعل</string>
     <string name="control_mode_tooltip">وضع التحكم</string>
     <string name="control_nodes_tooltip">عقد التحكم: تحريك، حذف، مسح، تحدث، توقف مؤقت</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">التشخيص</string>
     <string name="direct_mode">الوضع المباشر</string>
     <string name="done">منتهي</string>
+    <string name="drag_to_move_the_keyboard_window">اسحب لتحريك نافذة لوحة المفاتيح</string>
     <string name="dwell_duration">مدة الإقامة</string>
     <string name="dwell_to_click">اسكن للنقر</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">قم بتمكين Dasher من خلال الإعدادات → عام → لوحة المفاتيح → لوحات المفاتيح، ثم قم بتشغيل السماح بالوصول الكامل حتى يتمكن Dasher من التحدث والتعلم.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">لا توجد إعدادات متاحة لهذا القسم.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">لا يوجد محرك تحويل نص إلى كلام متاح. قم بالبناء باستخدام ميزة تحويل النص إلى كلام في النظام، أو قم بإعداد صوت سحابي في التفضيلات.</string>
     <string name="no_training_data_to_export_yet">لا توجد بيانات تدريب للتصدير بعد</string>
+    <string name="no_tts_engine_available">لا يتوفر محرك TTS. تثبيت مرسل الكلام لنظام TTS.</string>
     <string name="no_user_training_data_yet">لا توجد بيانات تدريب للمستخدم بعد</string>
     <string name="no_voices_found">لم يتم العثور على أصوات</string>
     <string name="nothing_to_save">لا يوجد شيء للحفظ</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">بطيء جدًا</string>
     <string name="re_import_from_dasher_5">إعادة الاستيراد من Dasher 5</string>
     <string name="read">اقرأ</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">حرر الضغطة للتوقف مؤقتًا</string>
     <string name="reset">إعادة ضبط</string>
     <string name="reset_all_settings_to_defaults">إعادة ضبط جميع الإعدادات إلى الوضع الافتراضي</string>
@@ -273,6 +277,7 @@
     <string name="saved">أنقذ</string>
     <string name="saved_2">تم الحفظ:</string>
     <string name="scan_speed">سرعة المسح</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">طريقة الاختيار</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">هل الخدمة تعمل؟ انظر مساعدة الإعداد على زر لوحة المفاتيح لأوامر التثبيت.</string>
     <string name="settings">إعدادات</string>

@@ -56,6 +56,7 @@
     <string name="colour_theme">రంగు థీమ్</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">విషయాలు లేదా వ్యక్తిగత సమాచారం ఎప్పుడూ సేకరించబడదు. మీరు దీన్ని ఎప్పుడైనా మార్చుకోవచ్చు</string>
     <string name="control">నియంత్రణ</string>
+    <string name="control_mode_description">కాన్వాస్‌కి ఎంచుకోండి, తరలించు మరియు తొలగించు సవరణ ఆదేశాలను జోడిస్తుంది: అక్షరం, పదం, వాక్యం, పేరా లేదా అన్నీ, ముందుకు లేదా వెనుకకు వచనాన్ని ఎంచుకోండి, తరలించండి లేదా తొలగించండి.</string>
     <string name="control_mode_enabled">నియంత్రణ మోడ్: ప్రారంభించబడింది</string>
     <string name="control_mode_tooltip">నియంత్రణ మోడ్</string>
     <string name="control_nodes_tooltip">నియంత్రణ నోడ్ల్స్: కదిలించండి, తొలగించండి, క్లియర్ చేయండి, మాట్లాడండి, ఆపు</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">రోగ నిర్ధారణలు</string>
     <string name="direct_mode">డైరెక్ట్ మోడ్</string>
     <string name="done">పూర్తయింది</string>
+    <string name="drag_to_move_the_keyboard_window">కీబోర్డ్ విండోను తరలించడానికి లాగండి</string>
     <string name="dwell_duration">తిరగే వ్యవధి</string>
     <string name="dwell_to_click">క్లిక్ చేయడానికి డ్వెల్ చేయండి</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">సెట్టింగ్స్ → జనరల్ → కీబోర్డ్ → కీబోర్డ్స్ కింద డాషర్‌ను ఎనేబుల్ చేసి, ఆ తర్వాత \'అలో ఫుల్ యాక్సెస్\' ను ఆన్ చేయండి, తద్వారా డాషర్ మాట్లాడగలదు మరియు నేర్చుకోగలదు.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">ఈ విభాగానికి ఎలాంటి సెట్టింగ్‌లు అందుబాటులో లేవు.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">ఎటువంటి మాటల ఇంజిన్ అందుబాటులో లేదు. సిస్టమ్ TTS ఫీచర్‌తో నిర్మించండి లేదా ప్రీఫరెన్సెస్‌లో క్లౌడ్ వాయిస్‌ను సెట్ చేయండి.</string>
     <string name="no_training_data_to_export_yet">ఇంకా ఎగుమతి చేయడానికి ట్రెయినింగ్ డేటా లేదు</string>
+    <string name="no_tts_engine_available">TTS ఇంజిన్ అందుబాటులో లేదు. సిస్టమ్ TTS కోసం స్పీచ్-డిస్పాచర్‌ను ఇన్‌స్టాల్ చేయండి.</string>
     <string name="no_user_training_data_yet">ఇంకా వినియోగదారు ట్రెయినింగ్ డేటా లేదు</string>
     <string name="no_voices_found">స్వరాలు ఏవీ కనుగొనబడలేదు</string>
     <string name="nothing_to_save">కాపాడటానికి ఏమీ లేదు</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">చాలా స్లో</string>
     <string name="re_import_from_dasher_5">డాషర్ 5 నుండి తిరిగి దిగుమతి చేసుకోండి</string>
     <string name="read">చదవండి</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">పాజ్ చేయడానికి పించ్‌ను విడుదల చేయండి</string>
     <string name="reset">రీసెట్</string>
     <string name="reset_all_settings_to_defaults">అన్ని సెట్టింగ్‌లను డిఫాల్ట్‌లకు రీసెట్ చేయండి</string>
@@ -273,6 +277,7 @@
     <string name="saved">సేవ్ చేయబడింది</string>
     <string name="saved_2">సేవ్ చేయబడింది:</string>
     <string name="scan_speed">స్కాన్ వేగం</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">ఎంపిక పద్ధతి</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">సేవ నడుస్తావా? ఇన్‌స్టాల్ ఆదేశాల కోసం కీబోర్డ్ బటన్ పై సెటప్ సహాయాన్ని చూడండి.</string>
     <string name="settings">సెట్టింగ్‌లు</string>

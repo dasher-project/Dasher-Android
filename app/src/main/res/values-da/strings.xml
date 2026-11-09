@@ -56,6 +56,7 @@ Du kan ændre dette når som helst under Indstillinger &gt; Privatliv.</string>
     <string name="colour_theme">Farvetema</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">indhold eller personlige oplysninger nogensinde indsamles. Du kan ændre dette når som helst</string>
     <string name="control">Kontrol</string>
+    <string name="control_mode_description">Tilføjer Vælg, Flyt og Slet redigeringskommandoer til lærredet: vælg, flyt eller slet tekst efter bogstav, ord, sætning, afsnit eller alle, fremad eller tilbage.</string>
     <string name="control_mode_enabled">Kontroltilstand: aktiveret</string>
     <string name="control_mode_tooltip">Kontroltilstand</string>
     <string name="control_nodes_tooltip">Kontrolknuder: flyt, slet, ryd, tal, pause</string>
@@ -107,6 +108,7 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="diagnostics">Diagnostik</string>
     <string name="direct_mode">Direkte tilstand</string>
     <string name="done">Færdig</string>
+    <string name="drag_to_move_the_keyboard_window">Træk for at flytte tastaturvinduet</string>
     <string name="dwell_duration">Opholdstid</string>
     <string name="dwell_to_click">Dvæl ved at klikke</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Aktivér Dasher under Indstillinger → Generelt → Tastatur → Tastaturer, og aktivér derefter Tillad fuld adgang, så Dasher kan tale og lære.</string>
@@ -205,6 +207,7 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="no_settings_available_for_this_section">Der er ingen tilgængelige indstillinger for dette afsnit.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Ingen taleengine tilgængelig. Byg med systemets TTS-funktion, eller opsæt en cloud-stemme i Indstillinger.</string>
     <string name="no_training_data_to_export_yet">Ingen træningsdata at eksportere endnu</string>
+    <string name="no_tts_engine_available">Ingen TTS-motor tilgængelig. Installer taledispatcher til system TTS.</string>
     <string name="no_user_training_data_yet">Ingen brugertræningsdata endnu</string>
     <string name="no_voices_found">Ingen stemmer fundet</string>
     <string name="nothing_to_save">Intet at gemme</string>
@@ -250,6 +253,7 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="rate_very_slow">Meget langsom</string>
     <string name="re_import_from_dasher_5">Genimportér fra Dasher 5</string>
     <string name="read">Læs</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Slip kniben for at sætte på pause</string>
     <string name="reset">Nulstil</string>
     <string name="reset_all_settings_to_defaults">Nulstil alle indstillinger til standardindstillinger</string>
@@ -273,6 +277,7 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="saved">Gemt</string>
     <string name="saved_2">Gemt</string>
     <string name="scan_speed">Scanningshastighed</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Udvælgelsesmetode</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">tjeneste kører? Se installationshjælpen på Tastatur-knappen for installationskommandoer.</string>
     <string name="settings">Indstillinger</string>

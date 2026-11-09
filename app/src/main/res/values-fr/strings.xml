@@ -56,6 +56,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="colour_theme">Thème de couleur</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">contenu du presse-papiers ni information personnelle n\'est collecté. Vous pouvez modifier ce choix à tout </string>
     <string name="control">Contrôle</string>
+    <string name="control_mode_description">Ajoute des commandes d\'édition Sélectionner, Déplacer et Supprimer au canevas : sélectionner, déplacer ou supprimer du texte par lettre, mot, phrase, paragraphe ou tout, vers l\'avant ou vers l\'arrière.</string>
     <string name="control_mode_enabled">Mode de contrôle : activé</string>
     <string name="control_mode_tooltip">Mode de contrôle</string>
     <string name="control_nodes_tooltip">Nœuds de contrôle : déplacer, supprimer, effacer, parler, pause</string>
@@ -106,6 +107,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="diagnostics">Diagnostic</string>
     <string name="direct_mode">Mode direct</string>
     <string name="done">Fait</string>
+    <string name="drag_to_move_the_keyboard_window">Faites glisser pour déplacer la fenêtre du clavier</string>
     <string name="dwell_duration">Durée de séjour</string>
     <string name="dwell_to_click">Stationnement pour cliquer</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Activez Dasher sous Paramètres → Général → Clavier → Claviers, puis activez Autoriser l\'accès complet pour que Dasher puisse parler et apprendre.</string>
@@ -206,6 +208,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="no_settings_available_for_this_section">Aucun paramètre disponible pour cette section.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Aucun moteur de synthèse vocale disponible. Compilez avec la fonction TTS système ou configurez une voix cloud dans les Préférences.</string>
     <string name="no_training_data_to_export_yet">Pas encore de données d\'entraînement à exporter</string>
+    <string name="no_tts_engine_available">Aucun moteur TTS disponible. Installez le répartiteur vocal pour le système TTS.</string>
     <string name="no_user_training_data_yet">Pas encore de données de formation utilisateur</string>
     <string name="no_voices_found">Aucune voix trouvée</string>
     <string name="nothing_to_save">Rien à sauvegarder</string>
@@ -251,6 +254,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="rate_very_slow">Très lent</string>
     <string name="re_import_from_dasher_5">Réimporter depuis Dasher 5</string>
     <string name="read">Lire</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Relâchez le pincement pour faire une pause</string>
     <string name="reset">Réinitialiser</string>
     <string name="reset_all_settings_to_defaults">Réinitialiser tous les paramètres par défaut</string>
@@ -274,6 +278,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="saved">Enregistré</string>
     <string name="saved_2">Enregistré : </string>
     <string name="scan_speed">Vitesse de numérisation</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Méthode de sélection</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">est-il en cours d\'exécution ? Consultez l\'aide sur le bouton Clavier pour les commandes d\'installation.</string>
     <string name="settings">Paramètres</string>

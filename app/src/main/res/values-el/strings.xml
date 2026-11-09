@@ -56,6 +56,7 @@
     <string name="colour_theme">Θέμα χρώματος</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">περιεχόμενο ή προσωπικές πληροφορίες συλλέγονται ποτέ. Μπορείτε να αλλάξετε αυτό οποιαδήποτε</string>
     <string name="control">Έλεγχος</string>
+    <string name="control_mode_description">Προσθέτει εντολές επεξεργασίας Επιλογή, Μετακίνηση και Διαγραφή στον καμβά: επιλέξτε, μετακινήστε ή διαγράψτε κείμενο ανά γράμμα, λέξη, πρόταση, παράγραφο ή όλα, προς τα εμπρός ή προς τα πίσω.</string>
     <string name="control_mode_enabled">Λειτουργία ελέγχου: ενεργοποιημένη</string>
     <string name="control_mode_tooltip">Λειτουργία ελέγχου</string>
     <string name="control_nodes_tooltip">Κόμβοι ελέγχου: μετακίνηση, διαγραφή, καθαρισμός, ομιλία, παύση</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">Διαγνωστικά</string>
     <string name="direct_mode">Άμεση λειτουργία</string>
     <string name="done">Γινώμενος</string>
+    <string name="drag_to_move_the_keyboard_window">Σύρετε για να μετακινήσετε το παράθυρο του πληκτρολογίου</string>
     <string name="dwell_duration">Διάρκεια Παραμονής</string>
     <string name="dwell_to_click">Συγκεντρωθείτε για να κάνετε κλικ</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Ενεργοποιήστε το Dasher στις Ρυθμίσεις → Γενικά → Πληκτρολόγιο → Πληκτρολόγια και, στη συνέχεια, ενεργοποιήστε την επιλογή Να επιτρέπεται η πλήρης πρόσβαση, ώστε το Dasher να μπορεί να μιλάει και να μαθαίνει.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">Δεν υπάρχουν διαθέσιμες ρυθμίσεις για αυτήν την ενότητα.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Δεν υπάρχει διαθέσιμος κινητήρας ομιλίας. Δημιουργήστε με τη λειτουργία TTS του συστήματος ή ρυθμίστε μια φωνή cloud στις Προτιμήσεις.</string>
     <string name="no_training_data_to_export_yet">Δεν υπάρχει ακόμη δεδομένα εκπαίδευσης προς εξαγωγή</string>
+    <string name="no_tts_engine_available">Δεν υπάρχει διαθέσιμος κινητήρας TTS. Εγκαταστήστε τον αποστολέα ομιλίας για το σύστημα TTS.</string>
     <string name="no_user_training_data_yet">Δεν υπάρχουν ακόμη δεδομένα εκπαίδευσης χρήστη</string>
     <string name="no_voices_found">Δεν βρέθηκαν φωνές</string>
     <string name="nothing_to_save">Δεν υπάρχει τίποτα για αποθήκευση</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">Πολύ αργό</string>
     <string name="re_import_from_dasher_5">Επανεισαγωγή από το Dasher 5</string>
     <string name="read">Αναγνωσμένο</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Αφήστε το τσίμπημα για παύση</string>
     <string name="reset">Επαναφορά</string>
     <string name="reset_all_settings_to_defaults">Επαναφορά όλων των ρυθμίσεων στις προεπιλογές</string>
@@ -273,6 +277,7 @@
     <string name="saved">Αποθηκεύτηκε</string>
     <string name="saved_2">Αποθηκεύτηκε</string>
     <string name="scan_speed">Ταχύτητα σάρωσης</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Μέθοδος Επιλογής</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Η υπηρεσία λειτουργεί; Δείτε τη βοήθεια εγκατάστασης στο κουμπί Πληκτρολόγιο για εντολές εγκατάστασης.</string>
     <string name="settings">Ρυθμίσεις</string>

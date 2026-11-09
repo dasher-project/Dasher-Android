@@ -56,6 +56,7 @@
     <string name="colour_theme">കളർ തീം</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">ഉള്ളടക്കങ്ങൾ അല്ലെങ്കിൽ വ്യക്തിഗത വിവരങ്ങൾ ഒരുപോഴും ശേഖരിക്കപ്പെടുന്നില്ല. നിങ്ങൾ ഇതെന്തെങ്കിലും മാറ്റം വരുത്താൻ കഴിയും</string>
     <string name="control">നിയന്ത്രണം</string>
+    <string name="control_mode_description">എഡിറ്റിംഗ് കമാൻഡുകൾ തിരഞ്ഞെടുക്കുക, നീക്കുക, ഇല്ലാതാക്കുക എന്നിവ ക്യാൻവാസിലേക്ക് ചേർക്കുന്നു: അക്ഷരം, വാക്ക്, വാക്യം, ഖണ്ഡിക അല്ലെങ്കിൽ എല്ലാം, മുന്നോട്ട് അല്ലെങ്കിൽ പിന്നിലേക്ക് വാചകം തിരഞ്ഞെടുക്കുക, നീക്കുക അല്ലെങ്കിൽ ഇല്ലാതാക്കുക.</string>
     <string name="control_mode_enabled">നിയന്ത്രണ മോഡ്: സജീവം</string>
     <string name="control_mode_tooltip">നിയന്ത്രണ മോഡ്</string>
     <string name="control_nodes_tooltip">നിയന്ത്രണ നോഡുകൾ: നീക്കുക, ഇല്ലാതാക്കുക, ശുദ്ധമാക്കുക, സംസാരിക്കുക, നിർത്തുക</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">ഡയഗ്നോസ്റ്റിക്സ്</string>
     <string name="direct_mode">ഡയറക്ട് മോഡ്</string>
     <string name="done">ചെയ്തുകഴിഞ്ഞു</string>
+    <string name="drag_to_move_the_keyboard_window">കീബോർഡ് വിൻഡോ നീക്കാൻ വലിച്ചിടുക</string>
     <string name="dwell_duration">നിലവിലെ സമയം</string>
     <string name="dwell_to_click">ക്ലിക്ക് ചെയ്യാൻ താമസിക്കുക</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">ക്രമീകരണങ്ങൾ → പൊതുവായത് → കീബോർഡ് → കീബോർഡുകൾ എന്നതിന് കീഴിൽ ഡാഷർ പ്രവർത്തനക്ഷമമാക്കുക, തുടർന്ന് ഡാഷറിന് സംസാരിക്കാനും പഠിക്കാനും കഴിയുന്ന തരത്തിൽ പൂർണ്ണ ആക്‌സസ് അനുവദിക്കുക ഓണാക്കുക.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">ഈ വിഭാഗത്തിന് ക്രമീകരണങ്ങളൊന്നും ലഭ്യമല്ല.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">എന്നും സംസാര എഞ്ചിൻ ലഭ്യമല്ല. സിസ്റ്റം TTS സവിശേഷതയുമായി നിർമ്മിക്കുകയോ, അല്ലെങ്കിൽ പ്രിഫറൻസുകളിൽ ക്ലൗഡ് വോയ്‌സ് സജ്ജമാക്കുകയോ ചെയ്യുക.</string>
     <string name="no_training_data_to_export_yet">ഇനിയും എക്സ്പോർട്ട് ചെയ്യാനുള്ള പരിശീലന ഡാറ്റ ഇല്ല</string>
+    <string name="no_tts_engine_available">TTS എഞ്ചിൻ ലഭ്യമല്ല. സിസ്റ്റം TTS-നായി സ്പീച്ച്-ഡിസ്പാച്ചർ ഇൻസ്റ്റാൾ ചെയ്യുക.</string>
     <string name="no_user_training_data_yet">ഇനിയും ഉപയോക്തൃ പരിശീലന ഡാറ്റ ഇല്ല</string>
     <string name="no_voices_found">ശബ്ദങ്ങളൊന്നും കണ്ടെത്തിയില്ല</string>
     <string name="nothing_to_save">സംരക്ഷിക്കാൻ ഒന്നുമില്ല.</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">വളരെ മന്ദം</string>
     <string name="re_import_from_dasher_5">ഡാഷർ 5-ൽ നിന്ന് വീണ്ടും ഇറക്കുമതി ചെയ്യുക</string>
     <string name="read">വായിക്കുക</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">താൽക്കാലികമായി നിർത്താൻ പിഞ്ച് വിടുക</string>
     <string name="reset">റീസെറ്റ്</string>
     <string name="reset_all_settings_to_defaults">എല്ലാ ക്രമീകരണങ്ങളും സ്ഥിരസ്ഥിതികളിലേക്ക് പുനഃസജ്ജമാക്കുക</string>
@@ -273,6 +277,7 @@
     <string name="saved">സംരക്ഷിച്ചു</string>
     <string name="saved_2">സംരക്ഷിച്ചു:</string>
     <string name="scan_speed">സ്കാൻ വേഗത</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">തിരഞ്ഞെടുപ്പ് രീതി</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">സേവനം പ്രവർത്തിക്കുന്നുണ്ടോ? ഇൻസ്റ്റാൾ കമാൻഡുകൾക്കായി കീബോർഡ് ബട്ടണിലുള്ള സജ്ജീകരണ സഹായം കാണുക.</string>
     <string name="settings">ക്രമീകരണങ്ങൾ</string>

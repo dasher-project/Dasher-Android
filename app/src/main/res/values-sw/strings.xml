@@ -56,6 +56,7 @@ Unaweza kubadilisha hili wakati wowote kwenye Mipangilio &gt; Faragha.</string>
     <string name="colour_theme">Mandhari ya Rangi</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">maudhui au taarifa binafsi zikikusanywa. Unaweza kubadilisha hii yoyote</string>
     <string name="control">Udhibiti</string>
+    <string name="control_mode_description">Inaongeza Chagua, Hamisha na Futa amri za uhariri kwenye turubai: chagua, sogeza au futa maandishi kwa herufi, neno, sentensi, aya au vyote, mbele au nyuma.</string>
     <string name="control_mode_enabled">Hali ya udhibiti: imewezeshwa</string>
     <string name="control_mode_tooltip">Hali ya udhibiti</string>
     <string name="control_nodes_tooltip">Node za kudhibiti: hamisha, fata, fafanua, sema, simama</string>
@@ -107,6 +108,7 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="diagnostics">Utambuzi</string>
     <string name="direct_mode">Hali ya Moja kwa Moja</string>
     <string name="done">Imekamilika</string>
+    <string name="drag_to_move_the_keyboard_window">Buruta ili kusogeza kidirisha cha kibodi</string>
     <string name="dwell_duration">Muda wa Kukaa</string>
     <string name="dwell_to_click">Kaa ili kubofya</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">Washa Kidhibiti cha Dashi chini ya Mipangilio → Jumla → Kibodi → Kibodi, kisha washa Ruhusu Ufikiaji Kamili ili Kidhibiti cha Dashi kiweze kuzungumza na kujifunza.</string>
@@ -205,6 +207,7 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="no_settings_available_for_this_section">Hakuna mipangilio inayopatikana kwa sehemu hii.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">Hakuna injini ya hotuba inayopatikana. Jenga kwa kipengele cha TTS cha mfumo, au weka sauti ya wingu kwenye Mapendeleo.</string>
     <string name="no_training_data_to_export_yet">Hakuna data ya mafunzo ya kusafirisha bado</string>
+    <string name="no_tts_engine_available">Hakuna injini ya TTS inayopatikana. Sakinisha kisambaza sauti kwa mfumo wa TTS.</string>
     <string name="no_user_training_data_yet">Hakuna data ya mafunzo ya mtumiaji bado</string>
     <string name="no_voices_found">Hakuna sauti zilizopatikana</string>
     <string name="nothing_to_save">Hakuna cha kuhifadhi</string>
@@ -250,6 +253,7 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="rate_very_slow">Polepole Sana</string>
     <string name="re_import_from_dasher_5">Ingiza tena kutoka Dasher 5</string>
     <string name="read">Soma</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">Achilia mkazo ili kusimamisha</string>
     <string name="reset">Weka upya</string>
     <string name="reset_all_settings_to_defaults">Weka upya Mipangilio Yote hadi Chaguo-msingi</string>
@@ -273,6 +277,7 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="saved">Imehifadhiwa</string>
     <string name="saved_2">Imehifadhiwa:</string>
     <string name="scan_speed">Kasi ya Kuchanganua</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">Mbinu ya Uchaguzi</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">huduma inafanya kazi? Angalia msaada wa usanidi kwenye kitufe cha Keyboard kwa amri za usakinishaji.</string>
     <string name="settings">Mipangilio</string>

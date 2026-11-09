@@ -56,6 +56,7 @@
     <string name="colour_theme">રંગ થીમ</string>
     <string name="contents_or_personal_information_is_ever_collected_you_can_c">સામગ્રી અથવા વ્યક્તિગત માહિતી ક્યારેય એકત્ર કરવામાં આવે છે. તમે આને કોઈ પણ સમયે बदलાવી શકો છો</string>
     <string name="control">નियંત્રણ</string>
+    <string name="control_mode_description">કેનવાસમાં પસંદ કરો, ખસેડો અને કાઢી નાખો સંપાદન આદેશો ઉમેરે છે: અક્ષર, શબ્દ, વાક્ય, ફકરો અથવા બધા દ્વારા, આગળ અથવા પાછળની તરફ ટેક્સ્ટ પસંદ કરો, ખસેડો અથવા કાઢી નાખો.</string>
     <string name="control_mode_enabled">કન્ટ્રોલ મોડ: સક્રિય</string>
     <string name="control_mode_tooltip">કન્ટ્રોલ મોડ</string>
     <string name="control_nodes_tooltip">કંટ્રોલ નોડ્સ: ખસેડો, કાઢી નાખો, સાફ કરો, બોલો, વિરામ આપો</string>
@@ -107,6 +108,7 @@
     <string name="diagnostics">ડાયગ્નોસ્ટિક્સ</string>
     <string name="direct_mode">ડાયરેક્ટ મોડ</string>
     <string name="done">થઈ ગયું</string>
+    <string name="drag_to_move_the_keyboard_window">કીબોર્ડ વિન્ડોને ખસેડવા માટે ખેંચો</string>
     <string name="dwell_duration">રમતગણ સમયગાળો</string>
     <string name="dwell_to_click">ક્લિક કરવા માટે નિવાસ કરો</string>
     <string name="enable_dasher_under_settings_general_keyboard_keyboards_then">સેટિંગ્સ → જનરલ → કીબોર્ડ → કીબોર્ડ્સ હેઠળ ડેશરને સક્ષમ કરો, પછી પૂર્ણ ઍક્સેસને મંજૂરી આપો ચાલુ કરો જેથી ડેશર બોલી અને શીખી શકે.</string>
@@ -205,6 +207,7 @@
     <string name="no_settings_available_for_this_section">આ વિભાગ માટે કોઈ સેટિંગ્સ ઉપલબ્ધ નથી.</string>
     <string name="no_speech_engine_available_build_with_the_system_tts_feature">કોઈ પણ ભાષણ એન્જિન ઉપલબ્ધ નથી. સિસ્ટમ TTS ફીચર સાથે બિલ્ડ કરો, અથવા પ્રેફરન્સમાં ક્લાઉડ વોઇસ સેટ અપ કરો.</string>
     <string name="no_training_data_to_export_yet">હજી નિકાસ કરવા માટે કોઈ તાલીમ ડેટા નથી</string>
+    <string name="no_tts_engine_available">કોઈ TTS એન્જિન ઉપલબ્ધ નથી. સિસ્ટમ TTS માટે સ્પીચ-ડિસ્પેચર ઇન્સ્ટોલ કરો.</string>
     <string name="no_user_training_data_yet">અત્યાર સુધી કોઇ વપરાશકર્તા તાલીમ ડેટા નથી</string>
     <string name="no_voices_found">કોઈ અવાજો મળ્યા નથી</string>
     <string name="nothing_to_save">સાચવવા માટે કંઈ નથી</string>
@@ -250,6 +253,7 @@
     <string name="rate_very_slow">ખૂબ ધીમી</string>
     <string name="re_import_from_dasher_5">ડેશર 5 માંથી ફરીથી આયાત કરો</string>
     <string name="read">વાંચો</string>
+    <string name="reanchor_context">Re-anchor context</string>
     <string name="release_the_pinch_to_pause">થોભાવવા માટે પિંચ છોડી દો</string>
     <string name="reset">રીસેટ</string>
     <string name="reset_all_settings_to_defaults">બધી સેટિંગ્સ ડિફોલ્ટ પર રીસેટ કરો</string>
@@ -273,6 +277,7 @@
     <string name="saved">સાચવેલ</string>
     <string name="saved_2">સંગ્રહ થયેલ છે</string>
     <string name="scan_speed">સ્કેન સ્પીડ</string>
+    <string name="select_all">Select All</string>
     <string name="selection_method">પસંદગિરી પદ્ધતિ</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">સર્વિસ ચાલી રહી છે? ઇન્સ્ટોલ કમાન્ડ્સ માટે કીબોર્ડ બટન પર સેટઅપ મદદ જુઓ.</string>
     <string name="settings">સેટિંગ્સ</string>
