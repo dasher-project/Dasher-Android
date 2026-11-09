@@ -56,8 +56,17 @@ fun executeControlAction(
 private class TargetText(val text: String, val base: Int, val selStart: Int, val selEnd: Int)
 
 private fun readTargetText(ic: InputConnection): TargetText? {
+    val req = ExtractedTextRequest().apply {
+        // Ask for the whole field: without a hint some editors window the
+        // reply to a few hundred chars around the caret, and a windowed
+        // text would be measured as if complete (select-ALL silently
+        // selecting only the window — review finding). Callers still
+        // re-base via startOffset, and refuse honestly below when a
+        // window still arrives with a selection outside it.
+        hintMaxChars = 1_000_000
+    }
     val et = try {
-        ic.getExtractedText(ExtractedTextRequest(), 0)
+        ic.getExtractedText(req, 0)
     } catch (e: Exception) {
         null
     } ?: return null
@@ -132,11 +141,15 @@ private fun executeDelete(ic: InputConnection, action: ControlAction, onBufferCh
     // the plain Delete key's job — the control-tree delete is a
     // measured-distance operation by design). deleteSurroundingText is
     // undefined over an ACTIVE selection (Heide's #50 ⌫ bug), so collapse
-    // to that anchor first — safe, we hold absolute offsets.
+    // to that anchor first — safe, we hold absolute offsets. MEASURE
+    // FIRST (review finding): a dead-end delete must not destroy the
+    // user's selection on its way to reporting "noop".
     val caret = (if (action.forward == ControlDirection.FORWARD) t.selEnd else t.selStart) - t.base
-    if (t.selEnd > t.selStart) ic.setSelection(t.base + caret, t.base + caret)
     val range = controlDeleteRange(t.text, caret, action.dist, action.forward)
-    if (range.isEmpty()) return "noop"
+    if (range.isEmpty()) {
+        return "noop"
+    }
+    if (t.selEnd > t.selStart) ic.setSelection(t.base + caret, t.base + caret)
     val units = range.last + 1 - range.first
     val backward = action.forward == ControlDirection.BACKWARD
     // One-sided by construction (controlDeleteRange measures from the
