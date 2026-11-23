@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">நிலைநிறுத்திய பிறகு தானாகத் தேர்ந்தெடுக்கும். OS தங்குதல் முடக்கப்பட்டிருந்தால் மட்டுமே இதைச் செயல்படுத்தவும்.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">விரல்களால் கிள்ளும்போது உங்கள் பார்வையை நிலைநிறுத்திய பிறகு தானாகவே தேர்ந்தெடுக்கும். OS dwell முடக்கப்பட்டிருந்தால் மட்டுமே இதைச் செயல்படுத்தவும்.</string>
     <string name="back">மீண்டும்</string>
+    <string name="back_to_dasher">Dasherக்குத் திரும்பு</string>
     <string name="backspace_label">Del</string>
     <string name="backspace_tooltip">அழி (மீண்டும் செய்ய பிடித்துக்கொள்ளவும்)</string>
     <string name="calibrate_tilt">சாய்வை சரிசெய்</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">நிறம்: {0}</string>
     <string name="diag_speed_format">வேகம்: {0}</string>
     <string name="diagnostics">நோயறிதல்</string>
+    <string name="direct_input_missing">Dasher Direct Input இல்லை என்றால்</string>
+    <string name="direct_input_ready_description">நேரடி பயன்முறை தயாராக உள்ளது. கூடுதல் செயலிகளில் கர்சருக்கு முன் உள்ள உரையைக் கணிப்புகளுக்குப் பயன்படுத்த Dasher Direct Input ஐச் சேர்க்கவும்.</string>
+    <string name="direct_input_restart">உங்கள் மேக்கை மறுதொடக்கம் செய்து, பட்டியலை மீண்டும் சரிபார்க்கவும்.</string>
+    <string name="direct_input_setup_button">உரை சூழலை அமைக்கவும்</string>
+    <string name="direct_input_setup_steps">விசைப்பலகை அமைப்புகளில், உரை உள்ளீடு → திருத்து → + என்பதற்குச் செல்லவும். Dasher Direct Input ஐத் தேடி சேர் என்பதைக் கிளிக் செய்யவும்.</string>
+    <string name="direct_input_setup_title">பிற பயன்பாடுகளில் கணிப்புகளை மேம்படுத்தவும்</string>
     <string name="direct_mode">நேரடி பயன்முறை</string>
+    <string name="direct_mode_access_resume">அணுகல் கிடைத்தவுடன் நேரடி பயன்முறை தொடங்கும்.</string>
+    <string name="direct_mode_focus_editor">தொடங்க, உரைக் கர்சரை ஓர் உரைப் புலத்தில் வைக்கவும்.</string>
     <string name="done">முடிந்தது</string>
     <string name="drag_to_move_the_keyboard_window">விசைப்பலகை சாளரத்தை நகர்த்த இழுக்கவும்</string>
     <string name="dwell_duration">தங்கும் காலம்</string>
@@ -181,6 +190,7 @@
     <string name="language">மொழி</string>
     <string name="language_locale">மொழி / பிராந்தியம்</string>
     <string name="language_locale_2">&lt;b&gt;மொழி / வட்டாரம்&lt;/b&gt;</string>
+    <string name="later">பின்னர்</string>
     <string name="layout_bottom">கீழ்</string>
     <string name="layout_keyboard">விசைப்பலகை</string>
     <string name="layout_left">இடது பக்கம்</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">ஸ்கேன் வேகம்</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">தேர்வு முறை</string>
+    <string name="sending_to_app_format">{app}க்கு அனுப்புகிறது</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">சேவை இயங்குகிறதா? நிறுவல் கட்டளைகளுக்காக விசைப்பலகை பொத்தானில் அமைப்பு உதவியைப் பார்க்கவும்.</string>
     <string name="settings">அமைப்புகள்</string>
     <string name="settings_2">அமைப்புகள்...</string>

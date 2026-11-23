@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">ಸರಿಪಡಿಸಿದ ನಂತರ ಸ್ವಯಂ-ಆಯ್ಕೆ ಮಾಡಿ. OS dwell ಆಫ್ ಆಗಿದ್ದರೆ ಮಾತ್ರ ಸಕ್ರಿಯಗೊಳಿಸಿ.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">ಪಿಂಚ್ ಮಾಡುವಾಗ ನಿಮ್ಮ ನೋಟವನ್ನು ಸರಿಪಡಿಸಿದ ನಂತರ ಸ್ವಯಂ-ಆಯ್ಕೆ ಮಾಡಿ. OS ಡ್ವೆಲ್ ಆಫ್ ಆಗಿದ್ದರೆ ಮಾತ್ರ ಸಕ್ರಿಯಗೊಳಿಸಿ.</string>
     <string name="back">ಹಿಂದೆ</string>
+    <string name="back_to_dasher">Dasher ಗೆ ಹಿಂತಿರುಗಿ</string>
     <string name="backspace_label">ಅಳಿಸಿ</string>
     <string name="backspace_tooltip">ಅಳಿಸು (ಮುಂದುವರಿಸಲು ಹತ್ತಿ ಹಿಡಿರು)</string>
     <string name="calibrate_tilt">ತಿರುಗುವಿಕೆಯ ನೆಲೆ ಹೊಂದಿಸಿ</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">ಬಣ್ಣ: {0}</string>
     <string name="diag_speed_format">ವೇಗ: {0}</string>
     <string name="diagnostics">ರೋಗನಿರ್ಣಯ</string>
+    <string name="direct_input_missing">ಒಂದು ವೇಳೆ Dasher Direct Input ಕಾಣೆಯಾಗಿದೆ</string>
+    <string name="direct_input_ready_description">ನೇರ ಮೋಡ್ ಸಿದ್ಧವಾಗಿದೆ. ಹೆಚ್ಚಿನ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಕರ್ಸರ್‌ಗೆ ಮುಂಚಿನ ಪಠ್ಯವನ್ನು ಮುನ್ನೋಟಗಳಿಗೆ ಬಳಸಲು Dasher Direct Input ಸೇರಿಸಿ.</string>
+    <string name="direct_input_restart">ನಿಮ್ಮ ಮ್ಯಾಕ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ, ನಂತರ ಪಟ್ಟಿಯನ್ನು ಮತ್ತೊಮ್ಮೆ ಪರಿಶೀಲಿಸಿ.</string>
+    <string name="direct_input_setup_button">ಪಠ್ಯ ಸಂದರ್ಭವನ್ನು ಹೊಂದಿಸಿ</string>
+    <string name="direct_input_setup_steps">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ, ಪಠ್ಯ ಇನ್‌ಪುಟ್ → ಎಡಿಟ್ → + ಗೆ ಹೋಗಿ. Dasher Direct Input ಗಾಗಿ ಹುಡುಕಿ ಮತ್ತು ಸೇರಿಸು ಕ್ಲಿಕ್ ಮಾಡಿ.</string>
+    <string name="direct_input_setup_title">ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ಮುನ್ಸೂಚನೆಗಳನ್ನು ಸುಧಾರಿಸಿ</string>
     <string name="direct_mode">ನೇರ ಮೋಡ್</string>
+    <string name="direct_mode_access_resume">ಪ್ರವೇಶ ಲಭ್ಯವಾದ ತಕ್ಷಣ ನೇರ ಮೋಡ್ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</string>
+    <string name="direct_mode_focus_editor">ಪ್ರಾರಂಭಿಸಲು ಪಠ್ಯ ಕರ್ಸರ್ ಅನ್ನು ಪಠ್ಯ ಕ್ಷೇತ್ರದಲ್ಲಿ ಇರಿಸಿ.</string>
     <string name="done">ಮುಗಿದಿದೆ</string>
     <string name="drag_to_move_the_keyboard_window">ಕೀಬೋರ್ಡ್ ವಿಂಡೋವನ್ನು ಸರಿಸಲು ಎಳೆಯಿರಿ</string>
     <string name="dwell_duration">ನಿವಾಸಾವಧಿ</string>
@@ -181,6 +190,7 @@
     <string name="language">ಭಾಷೆ</string>
     <string name="language_locale">ಭಾಷೆ / ಸ್ಥಳೀಯತೆ</string>
     <string name="language_locale_2">&lt;b&gt;ಭಾಷೆ / ಸ್ಥಳ&lt;/b&gt;</string>
+    <string name="later">ನಂತರ</string>
     <string name="layout_bottom">ಕೆಳಭಾಗ</string>
     <string name="layout_keyboard">ಕೀಬೋರ್ಡ್</string>
     <string name="layout_left">ಎಡಭಾಗ</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">ಸ್ಕ್ಯಾನ್ ವೇಗ</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">ಆಯ್ಕೆ ವಿಧಾನ</string>
+    <string name="sending_to_app_format">{app} ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">ಸರ್ವಿಸ್ ಚಾಲನೆಯಲ್ಲಿದೆಯೆ? ಇನ್‌ಸ್ಟಾಲ್ ಆದೇಶಗಳಿಗೆ ಕೀಬೋರ್ಡ್ ಬಟನ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಸಹಾಯವನ್ನು ನೋಡಿ.</string>
     <string name="settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
     <string name="settings_2">ಸೆಟ್ಟಿಂಗ್‌ಗಳು...</string>

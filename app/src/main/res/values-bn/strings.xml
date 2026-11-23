@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">দৃষ্টি নিবদ্ধ করার পর স্বয়ংক্রিয়ভাবে নির্বাচিত হবে। শুধুমাত্র OS ডুয়েল বন্ধ থাকলেই এটি সক্রিয় করুন।</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">পিঞ্চ করার সময় দৃষ্টি স্থির রাখলে স্বয়ংক্রিয়ভাবে নির্বাচন হবে। শুধুমাত্র OS dwell বন্ধ থাকলেই এটি সক্রিয় করুন।</string>
     <string name="back">পেছনে</string>
+    <string name="back_to_dasher">Dasher এ ফিরে যান</string>
     <string name="backspace_label">মুছুন</string>
     <string name="backspace_tooltip">মুছুন (বারবার করতে ধরুন)</string>
     <string name="calibrate_tilt">ঝোঁক ক্যালিব্রেট করুন</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">রঙ: {0}</string>
     <string name="diag_speed_format">গতি: {0}</string>
     <string name="diagnostics">ডায়াগনস্টিকস</string>
+    <string name="direct_input_missing">যদি Dasher Direct Input অনুপস্থিত থাকে</string>
+    <string name="direct_input_ready_description">সরাসরি মোড প্রস্তুত। আরও অ্যাপে কার্সরের ঠিক আগের লেখা থেকে পূর্বাভাস পেতে Dasher Direct Input যোগ করুন।</string>
+    <string name="direct_input_restart">আপনার ম্যাক রিস্টার্ট করুন, তারপর আবার তালিকা চেক করুন।</string>
+    <string name="direct_input_setup_button">টেক্সট কনটেক্সট সেট আপ করুন</string>
+    <string name="direct_input_setup_steps">কীবোর্ড সেটিংসে, টেক্সট ইনপুট → সম্পাদনা → + এ যান। Dasher Direct Input অনুসন্ধান করুন এবং যোগ করুন ক্লিক করুন।</string>
+    <string name="direct_input_setup_title">অন্যান্য অ্যাপে পূর্বাভাস উন্নত করুন</string>
     <string name="direct_mode">সরাসরি মোড</string>
+    <string name="direct_mode_access_resume">অ্যাক্সেস উপলব্ধ হওয়ার সাথে সাথে সরাসরি মোড শুরু হয়।</string>
+    <string name="direct_mode_focus_editor">শুরু করতে একটি টেক্সট ফিল্ডে কার্সর রাখুন।</string>
     <string name="done">সম্পন্ন হয়েছে</string>
     <string name="drag_to_move_the_keyboard_window">কীবোর্ড উইন্ডো সরাতে টেনে আনুন</string>
     <string name="dwell_duration">থাকার সময়কাল</string>
@@ -181,6 +190,7 @@
     <string name="language">ভাষা</string>
     <string name="language_locale">ভাষা / স্থানীয়তা</string>
     <string name="language_locale_2">&lt;b&gt;ভাষা / স্থানীয়&lt;/b&gt;</string>
+    <string name="later">পরে</string>
     <string name="layout_bottom">নীচে</string>
     <string name="layout_keyboard">কিবোর্ড</string>
     <string name="layout_left">বাম দিকে</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">স্ক্যান গতি</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">বাছাই পদ্ধতি</string>
+    <string name="sending_to_app_format">{app} এ পাঠানো হচ্ছে</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">সার্ভিস চালু আছে? ইনস্টল কমান্ডের জন্য কীবোর্ড বাটনের সেটআপ হেল্প দেখুন।</string>
     <string name="settings">সেটিংস</string>
     <string name="settings_2">সেটিংস...</string>

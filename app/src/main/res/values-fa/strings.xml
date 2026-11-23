@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">انتخاب خودکار پس از تثبیت. فقط در صورتی فعال شود که OS dwell خاموش باشد.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">انتخاب خودکار پس از ثابت نگه داشتن نگاه هنگام گرفتن دو انگشت. فقط در صورتی فعال شود که OS dwell خاموش باشد.</string>
     <string name="back">بازگشت</string>
+    <string name="back_to_dasher">بازگشت به Dasher</string>
     <string name="backspace_label">دل</string>
     <string name="backspace_tooltip">حذف (برای تکرار نگه دارید)</string>
     <string name="calibrate_tilt">تنظیم شیب</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">رنگ: {0}</string>
     <string name="diag_speed_format">سرعت: {0}</string>
     <string name="diagnostics">تشخیص</string>
+    <string name="direct_input_missing">اگر Dasher Direct Input وجود ندارد</string>
+    <string name="direct_input_ready_description">حالت مستقیم آماده است. Dasher Direct Input را اضافه کنید تا پیش‌بینی‌ها در برنامه‌های بیشتری از متن درست پیش از نشانگر نوشتن استفاده کنند.</string>
+    <string name="direct_input_restart">مک خود را مجددا راه اندازی کنید، سپس دوباره لیست را بررسی کنید.</string>
+    <string name="direct_input_setup_button">تنظیم زمینهٔ متن</string>
+    <string name="direct_input_setup_steps">در تنظیمات صفحه کلید، به ورودی متن → ویرایش → + بروید. Dasher Direct Input را جستجو کنید و روی افزودن کلیک کنید.</string>
+    <string name="direct_input_setup_title">بهبود پیش بینی ها در سایر برنامه ها</string>
     <string name="direct_mode">حالت مستقیم</string>
+    <string name="direct_mode_access_resume">حالت مستقیم به محض اینکه دسترسی در دسترس باشد شروع می شود.</string>
+    <string name="direct_mode_focus_editor">برای شروع، نشانگر نوشتن را در یک کادر متنی قرار دهید.</string>
     <string name="done">انجام شد</string>
     <string name="drag_to_move_the_keyboard_window">برای حرکت دادن پنجره صفحه کلید بکشید</string>
     <string name="dwell_duration">مدت اقامت</string>
@@ -181,6 +190,7 @@
     <string name="language">زبان</string>
     <string name="language_locale">زبان / منطقه</string>
     <string name="language_locale_2">&lt;b&gt;زبان / منطقه&lt;/b&gt;</string>
+    <string name="later">بعدا</string>
     <string name="layout_bottom">پایین</string>
     <string name="layout_keyboard">کیبورد</string>
     <string name="layout_left">سمت چپ</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">سرعت اسکن</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">روش انتخاب</string>
+    <string name="sending_to_app_format">ارسال به {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">سرویس در حال اجرا است؟ راهنمای نصب را از دکمه کیبورد برای دستورات نصب ببینید.</string>
     <string name="settings">تنظیمات</string>
     <string name="settings_2">تنظیمات...</string>

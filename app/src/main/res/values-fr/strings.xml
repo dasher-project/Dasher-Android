@@ -40,6 +40,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Sélection automatique après fixation. Activer uniquement si le maintien du système d\'exploitation est désactivé.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Sélection automatique après avoir fixé votre regard tout en pinçant. Activer uniquement si le maintien du système d\'exploitation est désactivé.</string>
     <string name="back">Retour</string>
+    <string name="back_to_dasher">Retour à Dasher</string>
     <string name="backspace_label">del</string>
     <string name="backspace_tooltip">Supprimer (maintenir pour répéter)</string>
     <string name="calibrate_tilt">Calibrer l\'inclinaison</string>
@@ -105,7 +106,15 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="diag_colour_format">Couleur : {0}</string>
     <string name="diag_speed_format">Vitesse : {0}</string>
     <string name="diagnostics">Diagnostic</string>
+    <string name="direct_input_missing">Si Dasher Direct Input est manquant</string>
+    <string name="direct_input_ready_description">Le mode direct est prêt. Ajoutez Dasher Direct Input pour que les prédictions utilisent le texte juste avant le curseur dans davantage d’applications.</string>
+    <string name="direct_input_restart">Redémarrez votre Mac, puis vérifiez à nouveau la liste.</string>
+    <string name="direct_input_setup_button">Configurer le contexte du texte</string>
+    <string name="direct_input_setup_steps">Dans les réglages Clavier, accédez à Saisie de texte → Modifier → +. Recherchez Dasher Direct Input, puis cliquez sur Ajouter.</string>
+    <string name="direct_input_setup_title">Améliorer les prédictions dans d\'autres applications</string>
     <string name="direct_mode">Mode direct</string>
+    <string name="direct_mode_access_resume">Le mode direct démarre dès que l\'accès est disponible.</string>
+    <string name="direct_mode_focus_editor">Placez le curseur dans un champ de texte pour commencer.</string>
     <string name="done">Fait</string>
     <string name="drag_to_move_the_keyboard_window">Faites glisser pour déplacer la fenêtre du clavier</string>
     <string name="dwell_duration">Durée de séjour</string>
@@ -182,6 +191,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="language">Langue</string>
     <string name="language_locale">Langue / Paramètres régionaux</string>
     <string name="language_locale_2">&lt;b&gt;Langue / Paramètres régionaux&lt;/b&gt;</string>
+    <string name="later">Plus tard</string>
     <string name="layout_bottom">Bas</string>
     <string name="layout_keyboard">Clavier</string>
     <string name="layout_left">Côté gauche</string>
@@ -280,6 +290,7 @@ Vous pouvez modifier cela à tout moment dans Paramètres &gt; Confidentialité.
     <string name="scan_speed">Vitesse de numérisation</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Méthode de sélection</string>
+    <string name="sending_to_app_format">Envoi à {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">est-il en cours d\'exécution ? Consultez l\'aide sur le bouton Clavier pour les commandes d\'installation.</string>
     <string name="settings">Paramètres</string>
     <string name="settings_2">Paramètres...</string>

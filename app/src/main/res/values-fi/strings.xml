@@ -40,6 +40,7 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automaattinen valinta fiksaation jälkeen. Ota käyttöön vain, jos käyttöjärjestelmän viipymä on pois päältä.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Automaattinen valinta katseen kiinnittämisen jälkeen nipistyksen aikana. Ota käyttöön vain, jos käyttöjärjestelmän viipymä on pois päältä.</string>
     <string name="back">Takaisin</string>
+    <string name="back_to_dasher">Takaisin kohteeseen Dasher</string>
     <string name="backspace_label">poista</string>
     <string name="backspace_tooltip">Poista (pidä painettuna toistaaksesi)</string>
     <string name="calibrate_tilt">Kalibroi kallistus</string>
@@ -106,7 +107,15 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="diag_colour_format">Väri: {0}</string>
     <string name="diag_speed_format">Nopeus: {0}</string>
     <string name="diagnostics">Diagnostiikka</string>
+    <string name="direct_input_missing">Jos Dasher Direct Input puuttuu</string>
+    <string name="direct_input_ready_description">Suora tila on valmis. Lisää Dasher Direct Input, jotta ennusteet voivat käyttää tekstiä juuri ennen kohdistinta useammissa sovelluksissa.</string>
+    <string name="direct_input_restart">Käynnistä Mac uudelleen ja tarkista luettelo uudelleen.</string>
+    <string name="direct_input_setup_button">Määritä tekstikonteksti</string>
+    <string name="direct_input_setup_steps">Siirry Näppäimistöasetuksissa kohtaan Tekstinsyöttö → Muokkaa → +. Etsi Dasher Direct Input ja napsauta Lisää.</string>
+    <string name="direct_input_setup_title">Paranna ennusteita muissa sovelluksissa</string>
     <string name="direct_mode">Suora tila</string>
+    <string name="direct_mode_access_resume">Suora tila alkaa heti, kun pääsy on käytettävissä.</string>
+    <string name="direct_mode_focus_editor">Aloita asettamalla tekstikohdistin tekstikenttään.</string>
     <string name="done">Tehty</string>
     <string name="drag_to_move_the_keyboard_window">Siirrä näppäimistöikkunaa vetämällä</string>
     <string name="dwell_duration">Oleskeluaika</string>
@@ -181,6 +190,7 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="language">Kieli</string>
     <string name="language_locale">Kieli / Alue</string>
     <string name="language_locale_2">&lt;b&gt;Kieli /alue&lt;/b&gt;</string>
+    <string name="later">Myöhemmin</string>
     <string name="layout_bottom">Pohja</string>
     <string name="layout_keyboard">Näppäimistö</string>
     <string name="layout_left">Vasen puoli</string>
@@ -279,6 +289,7 @@ Voit muuttaa tätä milloin tahansa kohdassa Asetukset &gt; Tietosuoja.</string>
     <string name="scan_speed">Skannausnopeus</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Valintamenetelmä</string>
+    <string name="sending_to_app_format">Lähetetään osoitteeseen {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Palvelu käynnissä? Katso asennusohjeet näppäimistön painikkeen ohjeesta.</string>
     <string name="settings">Asetukset</string>
     <string name="settings_2">Asetukset...</string>

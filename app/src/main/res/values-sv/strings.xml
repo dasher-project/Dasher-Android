@@ -40,6 +40,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Integritet.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automatiskt val efter fixering. Aktivera endast om OS-dvalen är avstängd.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Välj automatiskt efter att du fixerat blicken medan du nyper. Aktivera endast om OS-dvalen är avstängd.</string>
     <string name="back">Tillbaka</string>
+    <string name="back_to_dasher">Tillbaka till Dasher</string>
     <string name="backspace_label">Radera</string>
     <string name="backspace_tooltip">Radera (håll in för upprepa)</string>
     <string name="calibrate_tilt">Kalibrera lutning</string>
@@ -106,7 +107,15 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="diag_colour_format">Färg: {0}</string>
     <string name="diag_speed_format">Hastighet: {0}</string>
     <string name="diagnostics">Diagnostik</string>
+    <string name="direct_input_missing">Om Dasher Direct Input saknas</string>
+    <string name="direct_input_ready_description">Direktläget är klart. Lägg till Dasher Direct Input så att förutsägelser kan använda texten precis före markören i fler appar.</string>
+    <string name="direct_input_restart">Starta om din Mac och kontrollera sedan listan igen.</string>
+    <string name="direct_input_setup_button">Ställ in textkontext</string>
+    <string name="direct_input_setup_steps">I Tangentbordsinställningar, gå till Textinmatning → Redigera → +. Sök efter Dasher Direct Input och klicka på Lägg till.</string>
+    <string name="direct_input_setup_title">Förbättra förutsägelser i andra appar</string>
     <string name="direct_mode">Direktläge</string>
+    <string name="direct_mode_access_resume">Direktläget startar så snart åtkomst är tillgänglig.</string>
+    <string name="direct_mode_focus_editor">Placera textmarkören i ett textfält för att börja.</string>
     <string name="done">Gjort</string>
     <string name="drag_to_move_the_keyboard_window">Dra för att flytta tangentbordsfönstret</string>
     <string name="dwell_duration">Varlighet</string>
@@ -181,6 +190,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="language">Språk</string>
     <string name="language_locale">Språk / Region</string>
     <string name="language_locale_2">&lt;b&gt;Språk / Lokalt läge&lt;/b&gt;</string>
+    <string name="later">Senare</string>
     <string name="layout_bottom">Botten</string>
     <string name="layout_keyboard">Tangentbord</string>
     <string name="layout_left">Vänster sida</string>
@@ -279,6 +289,7 @@ Du kan ändra detta när som helst i Inställningar &gt; Sekretess.</string>
     <string name="scan_speed">Skanningshastighet</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Urvalsmetod</string>
+    <string name="sending_to_app_format">Skickar till {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">tjänst igång? Se installationshjälpen på Tangentbords-knappen för installationskommandon.</string>
     <string name="settings">Inställningar</string>
     <string name="settings_2">Inställningar...</string>

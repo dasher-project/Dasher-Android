@@ -40,6 +40,7 @@ Unaweza kubadilisha hili wakati wowote kwenye Mipangilio &gt; Faragha.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Chagua kiotomatiki baada ya kurekebisha. Washa tu ikiwa OS imezimwa.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Chagua kiotomatiki baada ya kuelekeza macho yako unapobanwa. Washa tu ikiwa OS imezimwa.</string>
     <string name="back">Nyuma</string>
+    <string name="back_to_dasher">Rudi kwa Dasher</string>
     <string name="backspace_label">futa</string>
     <string name="backspace_tooltip">Futa (shikilia kurudia)</string>
     <string name="calibrate_tilt">Pima Mteremko</string>
@@ -106,7 +107,15 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="diag_colour_format">Rangi: {0}</string>
     <string name="diag_speed_format">Kasi: {0}</string>
     <string name="diagnostics">Utambuzi</string>
+    <string name="direct_input_missing">Ikiwa Dasher Direct Input haipo</string>
+    <string name="direct_input_ready_description">Hali ya Moja kwa Moja iko tayari. Ongeza Dasher Direct Input ili ubashiri utumie maandishi yaliyo kabla ya kishale katika programu zaidi.</string>
+    <string name="direct_input_restart">Anzisha tena Mac yako, kisha angalia orodha tena.</string>
+    <string name="direct_input_setup_button">Weka Muktadha wa Maandishi</string>
+    <string name="direct_input_setup_steps">Katika Mipangilio ya Kibodi, nenda kwa Ingizo la Maandishi → Hariri → +. Tafuta Dasher Direct Input na ubofye Ongeza.</string>
+    <string name="direct_input_setup_title">Boresha Utabiri katika Programu Zingine</string>
     <string name="direct_mode">Hali ya Moja kwa Moja</string>
+    <string name="direct_mode_access_resume">Hali ya Moja kwa Moja huanza mara tu ufikiaji unapatikana.</string>
+    <string name="direct_mode_focus_editor">Ili kuanza, weka kishale cha maandishi kwenye sehemu ya kuandika.</string>
     <string name="done">Imekamilika</string>
     <string name="drag_to_move_the_keyboard_window">Buruta ili kusogeza kidirisha cha kibodi</string>
     <string name="dwell_duration">Muda wa Kukaa</string>
@@ -181,6 +190,7 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="language">Lugha</string>
     <string name="language_locale">Lugha / Eneo</string>
     <string name="language_locale_2">&lt;b&gt;Lugha / Eneo&lt;/b&gt;</string>
+    <string name="later">Baadaye</string>
     <string name="layout_bottom">Chini</string>
     <string name="layout_keyboard">Kibodi</string>
     <string name="layout_left">Upande wa kushoto</string>
@@ -279,6 +289,7 @@ Unaweza kubadilisha hili wakati wowote katika Mipangilio &gt; Faragha.</string>
     <string name="scan_speed">Kasi ya Kuchanganua</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Mbinu ya Uchaguzi</string>
+    <string name="sending_to_app_format">Inatuma kwa {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">huduma inafanya kazi? Angalia msaada wa usanidi kwenye kitufe cha Keyboard kwa amri za usakinishaji.</string>
     <string name="settings">Mipangilio</string>
     <string name="settings_2">Mipangilio...</string>

@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">किसी बिंदु पर ध्यान केंद्रित करने के बाद स्वतः चयन हो जाता है। इसे केवल तभी सक्षम करें जब OS ड्वेल सेटिंग बंद हो।</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">पिंच करते समय अपनी दृष्टि स्थिर करने के बाद स्वतः चयन हो जाएगा। इसे केवल तभी सक्षम करें जब OS ड्वेल सेटिंग बंद हो।</string>
     <string name="back">वापस</string>
+    <string name="back_to_dasher">Dasher पर वापस जाएँ</string>
     <string name="backspace_label">डिल</string>
     <string name="backspace_tooltip">हटाएँ (दोहराने के लिए दबाएँ रखें)</string>
     <string name="calibrate_tilt">झुकाव को कैलिब्रेट करें</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">रंग: {0}</string>
     <string name="diag_speed_format">गति: {0}</string>
     <string name="diagnostics">निदान</string>
+    <string name="direct_input_missing">यदि Dasher Direct Input गायब है</string>
+    <string name="direct_input_ready_description">प्रत्यक्ष मोड तैयार है। ज़्यादा ऐप में पूर्वानुमान के लिए कर्सर के ठीक पहले का टेक्स्ट इस्तेमाल करने हेतु Dasher Direct Input जोड़ें।</string>
+    <string name="direct_input_restart">अपने Mac को पुनरारंभ करें, फिर सूची दोबारा जांचें।</string>
+    <string name="direct_input_setup_button">टेक्स्ट संदर्भ सेट करें</string>
+    <string name="direct_input_setup_steps">कीबोर्ड सेटिंग्स में, टेक्स्ट इनपुट → एडिट → + पर जाएं। Dasher Direct Input खोजें और जोड़ें पर क्लिक करें।</string>
+    <string name="direct_input_setup_title">अन्य ऐप्स में पूर्वानुमानों में सुधार करें</string>
     <string name="direct_mode">प्रत्यक्ष मोड</string>
+    <string name="direct_mode_access_resume">एक्सेस उपलब्ध होते ही डायरेक्ट मोड शुरू हो जाता है।</string>
+    <string name="direct_mode_focus_editor">शुरू करने के लिए टेक्स्ट कर्सर को किसी टेक्स्ट फ़ील्ड में रखें।</string>
     <string name="done">हो गया</string>
     <string name="drag_to_move_the_keyboard_window">कीबोर्ड विंडो को स्थानांतरित करने के लिए खींचें</string>
     <string name="dwell_duration">ठहराव अवधि</string>
@@ -181,6 +190,7 @@
     <string name="language">भाषा</string>
     <string name="language_locale">भाषा / लोकल</string>
     <string name="language_locale_2">&lt;b&gt;भाषा / लोकल&lt;/b&gt;</string>
+    <string name="later">बाद में</string>
     <string name="layout_bottom">तल</string>
     <string name="layout_keyboard">कीबोर्ड</string>
     <string name="layout_left">बाईं तरफ</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">स्कैन गति</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">चयन विधि</string>
+    <string name="sending_to_app_format">{app} पर भेजा जा रहा है</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">सेवा चल रही है? इंस्टॉल कमांड के लिए कीबोर्ड बटन पर सेटअप मदद देखें।</string>
     <string name="settings">सेटिंग्स</string>
     <string name="settings_2">सेटिंग्स...</string>

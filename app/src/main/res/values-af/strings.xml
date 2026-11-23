@@ -40,6 +40,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Outomatiese keuse na fiksering. Aktiveer slegs as OS-verblyf afgeskakel is.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Outomatiese keuse nadat jy jou blik vasgehou het terwyl jy knyp. Aktiveer slegs as OS-verblyf afgeskakel is.</string>
     <string name="back">Terug</string>
+    <string name="back_to_dasher">Terug na Dasher</string>
     <string name="backspace_label">verwyder</string>
     <string name="backspace_tooltip">Vee uit (hou aangehou om te herhaal)</string>
     <string name="calibrate_tilt">Kalibreer Kantel</string>
@@ -106,7 +107,15 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="diag_colour_format">Kleur: {0}</string>
     <string name="diag_speed_format">Spoed: {0}</string>
     <string name="diagnostics">Diagnostiek</string>
+    <string name="direct_input_missing">As Dasher Direct Input ontbreek</string>
+    <string name="direct_input_ready_description">Direkte modus is gereed. Voeg Dasher Direct Input by sodat voorspellings die teks net voor die wyser in meer programme kan gebruik.</string>
+    <string name="direct_input_restart">Herbegin jou Mac en gaan dan weer na die lys.</string>
+    <string name="direct_input_setup_button">Stel tekskonteks op</string>
+    <string name="direct_input_setup_steps">In Sleutelbordinstellings, gaan na Teksinvoer → Wysig → +. Soek vir Dasher Direct Input en klik Voeg by.</string>
+    <string name="direct_input_setup_title">Verbeter voorspellings in ander toepassings</string>
     <string name="direct_mode">Direkte modus</string>
+    <string name="direct_mode_access_resume">Direkte modus begin sodra toegang beskikbaar is.</string>
+    <string name="direct_mode_focus_editor">Plaas die tekswyser in ’n teksveld om te begin.</string>
     <string name="done">Klaar</string>
     <string name="drag_to_move_the_keyboard_window">Sleep om die sleutelbordvenster te skuif</string>
     <string name="dwell_duration">Verblijfsduur</string>
@@ -181,6 +190,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="language">Taal</string>
     <string name="language_locale">Taal / Streekinstelling</string>
     <string name="language_locale_2">&lt;b&gt;Taal / Plaaslike&lt;/b&gt;</string>
+    <string name="later">Later</string>
     <string name="layout_bottom">Onderkant</string>
     <string name="layout_keyboard">Sleutelbord</string>
     <string name="layout_left">Linkerkant</string>
@@ -279,6 +289,7 @@ Jy kan dit enige tyd verander in Instellings &gt; Privaatheid.</string>
     <string name="scan_speed">Skandeerspoed</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Seleksiemetode</string>
+    <string name="sending_to_app_format">Stuur tans na {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">diens aan die gang? Sien die instellingshulp op die Sleutelbord-knoppie vir installeeropdragte.</string>
     <string name="settings">Instellings</string>
     <string name="settings_2">Instellings...</string>

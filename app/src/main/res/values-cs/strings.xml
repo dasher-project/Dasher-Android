@@ -40,6 +40,7 @@ Toto můžete kdykoliv změnit v Nastavení &gt; Soukromí.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automatický výběr po fixaci. Povolit pouze v případě, že je vypnuta prodleva operačního systému.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Automatický výběr po upoutání pozornosti během sevření prstů. Povolit pouze v případě, že je vypnuta prodleva v režimu OS.</string>
     <string name="back">Zpět</string>
+    <string name="back_to_dasher">Zpět na Dasher</string>
     <string name="backspace_label">smazat</string>
     <string name="backspace_tooltip">Smazat (podržte pro opakování)</string>
     <string name="calibrate_tilt">Kalibrovat náklon</string>
@@ -106,7 +107,15 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="diag_colour_format">Barva: {0}</string>
     <string name="diag_speed_format">Rychlost: {0}</string>
     <string name="diagnostics">Diagnostika</string>
+    <string name="direct_input_missing">Pokud chybí Dasher Direct Input</string>
+    <string name="direct_input_ready_description">Přímý režim je připraven. Přidejte Dasher Direct Input, aby předpovědi mohly využívat text těsně před kurzorem ve více aplikacích.</string>
+    <string name="direct_input_restart">Restartujte Mac a znovu zkontrolujte seznam.</string>
+    <string name="direct_input_setup_button">Nastavit textový kontext</string>
+    <string name="direct_input_setup_steps">V Nastavení klávesnice přejděte na Textový vstup → Upravit → +. Vyhledejte Dasher Direct Input a klikněte na Přidat.</string>
+    <string name="direct_input_setup_title">Vylepšete předpovědi v jiných aplikacích</string>
     <string name="direct_mode">Přímý režim</string>
+    <string name="direct_mode_access_resume">Přímý režim se spustí, jakmile je k dispozici přístup.</string>
+    <string name="direct_mode_focus_editor">Začněte umístěním kurzoru do textového pole.</string>
     <string name="done">Hotovo</string>
     <string name="drag_to_move_the_keyboard_window">Tažením přesunete okno klávesnice</string>
     <string name="dwell_duration">Doba setrvání</string>
@@ -181,6 +190,7 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="language">Jazyk</string>
     <string name="language_locale">Jazyk / Lokalita</string>
     <string name="language_locale_2">Jazyková lokalita</string>
+    <string name="later">Později</string>
     <string name="layout_bottom">Dno</string>
     <string name="layout_keyboard">Klávesnice</string>
     <string name="layout_left">Levá strana</string>
@@ -279,6 +289,7 @@ Toto nastavení můžete kdykoli změnit v Nastavení &gt; Soukromí.</string>
     <string name="scan_speed">Rychlost skenování</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Metoda výběru</string>
+    <string name="sending_to_app_format">Odesílání do {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Služba běží? Podívejte se na nápovědu k nastavení na tlačítku Klávesnice pro instalační příkazy.</string>
     <string name="settings">Nastavení</string>
     <string name="settings_2">Nastavení...</string>

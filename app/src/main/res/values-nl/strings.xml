@@ -40,6 +40,7 @@ Je kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automatisch selecteren na fixatie. Alleen inschakelen als OS dwell is uitgeschakeld.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Automatisch selecteren na fixatie tijdens het knijpen. Alleen inschakelen als de \'dwell\'-functie van het besturingssysteem is uitgeschakeld.</string>
     <string name="back">Terug</string>
+    <string name="back_to_dasher">Terug naar Dasher</string>
     <string name="backspace_label">del</string>
     <string name="backspace_tooltip">Verwijderen (ingedrukt houden om te herhalen)</string>
     <string name="calibrate_tilt">Kalibreer Kanteling</string>
@@ -106,7 +107,15 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="diag_colour_format">Kleur: {0}</string>
     <string name="diag_speed_format">Snelheid: {0}</string>
     <string name="diagnostics">Diagnostiek</string>
+    <string name="direct_input_missing">Als Dasher Direct Input ontbreekt</string>
+    <string name="direct_input_ready_description">De directe modus is klaar. Voeg Dasher Direct Input toe zodat voorspellingen in meer apps de tekst vlak voor de cursor gebruiken.</string>
+    <string name="direct_input_restart">Start uw Mac opnieuw op en controleer de lijst opnieuw.</string>
+    <string name="direct_input_setup_button">Tekstcontext instellen</string>
+    <string name="direct_input_setup_steps">Ga in Toetsenbordinstellingen naar Tekstinvoer → Bewerken → +. Zoek naar Dasher Direct Input en klik op Toevoegen.</string>
+    <string name="direct_input_setup_title">Verbeter voorspellingen in andere apps</string>
     <string name="direct_mode">Directe modus</string>
+    <string name="direct_mode_access_resume">Directe modus start zodra toegang beschikbaar is.</string>
+    <string name="direct_mode_focus_editor">Plaats de tekstcursor in een tekstveld om te beginnen.</string>
     <string name="done">Klaar</string>
     <string name="drag_to_move_the_keyboard_window">Sleep om het toetsenbordvenster te verplaatsen</string>
     <string name="dwell_duration">Verblijfsduur</string>
@@ -181,6 +190,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="language">Taal</string>
     <string name="language_locale">Taal / Locale</string>
     <string name="language_locale_2">&lt;b&gt;Taal / Locatie&lt;/b&gt;</string>
+    <string name="later">Later</string>
     <string name="layout_bottom">Onderkant</string>
     <string name="layout_keyboard">Toetsenbord</string>
     <string name="layout_left">Linkerzijde</string>
@@ -279,6 +289,7 @@ U kunt dit op elk moment wijzigen in Instellingen &gt; Privacy.</string>
     <string name="scan_speed">Scansnelheid</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Selectiemethode</string>
+    <string name="sending_to_app_format">Verzenden naar {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Service actief? Zie de installatiehulp op de toetsenbordknop voor installatiescripts.</string>
     <string name="settings">Instellingen</string>
     <string name="settings_2">Instellingen...</string>
