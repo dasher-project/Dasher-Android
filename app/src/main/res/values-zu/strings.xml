@@ -40,6 +40,7 @@ Ungakushintsha lokhu noma yinini ku-Settings &gt; Privacy.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Khetha ngokuzenzakalelayo ngemva kokulungisa. Vumela kuphela uma i-OS dwell ivaliwe.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Khetha ngokuzenzakalelayo ngemva kokulungisa amehlo akho ngenkathi ucindezela. Vumela kuphela uma i-OS dwell ivaliwe.</string>
     <string name="back">Emuva</string>
+    <string name="back_to_dasher">Buyela ku-Dasher</string>
     <string name="backspace_label">susa</string>
     <string name="backspace_tooltip">Susa (bamba ukuze uphinde)</string>
     <string name="calibrate_tilt">Lungisa Ukugoba</string>
@@ -106,7 +107,15 @@ Ungashintsha lokhu noma nini kuzilungiselelo &gt; Ubumfihlo.</string>
     <string name="diag_colour_format">Umbala: {0}</string>
     <string name="diag_speed_format">Isivinini: {0}</string>
     <string name="diagnostics">Ukuxilongwa</string>
+    <string name="direct_input_missing">Uma i-Dasher Direct Input ingekho</string>
+    <string name="direct_input_ready_description">Imodi Eqondile isilungile. Engeza i-Dasher Direct Input ukuze ukuqagela kusebenzise umbhalo ongaphambi kwekhesa ezinhlelweni zokusebenza eziningi.</string>
+    <string name="direct_input_restart">Qala kabusha i-Mac yakho, bese uhlola uhlu futhi.</string>
+    <string name="direct_input_setup_button">Setha Umongo Wombhalo</string>
+    <string name="direct_input_setup_steps">Kuzilungiselelo zekhibhodi, hamba kokuthi Okokufaka Umbhalo → Hlela → +. Sesha okuthi Dasher Direct Input bese uchofoza Engeza.</string>
+    <string name="direct_input_setup_title">Thuthukisa ukubikezela kwezinye izinhlelo zokusebenza</string>
     <string name="direct_mode">Imodi Eqondile</string>
+    <string name="direct_mode_access_resume">Imodi Eqondile iqala ngokushesha ngemva kokuba usunikeze imvume Yokufinyeleleka.</string>
+    <string name="direct_mode_focus_editor">Ukuze uqale, beka ikhesa endaweni yokufaka umbhalo.</string>
     <string name="done">Kuqediwe</string>
     <string name="drag_to_move_the_keyboard_window">Hudula ukuze uhambise iwindi lekhibhodi</string>
     <string name="dwell_duration">Isikhathi Sokuhlala</string>
@@ -181,6 +190,7 @@ Ungashintsha lokhu noma nini kuzilungiselelo &gt; Ubumfihlo.</string>
     <string name="language">Ulimi</string>
     <string name="language_locale">Ulimi / Indawo</string>
     <string name="language_locale_2">&lt;b&gt;Ulimi / Indawo&lt;/b&gt;</string>
+    <string name="later">Kamuva</string>
     <string name="layout_bottom">Ngaphansi</string>
     <string name="layout_keyboard">Ikhibhodi</string>
     <string name="layout_left">Uhlangothi lwesobunxele</string>
@@ -279,6 +289,7 @@ Ungashintsha lokhu noma nini kuzilungiselelo &gt; Ubumfihlo.</string>
     <string name="scan_speed">Isivinini Sokuskena</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Indlela Yokukhetha</string>
+    <string name="sending_to_app_format">Ithumela ku-{app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">inkonzo iyasebenza? Bheka usizo lokumisa ku-Keyboard batini ukuze uthole imiyalo yokufaka.</string>
     <string name="settings">Izilungiselelo</string>
     <string name="settings_2">Izilungiselelo...</string>

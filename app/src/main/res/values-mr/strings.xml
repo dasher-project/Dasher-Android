@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">स्थिर झाल्यावर स्वयंचलित निवड. केवळ OS ड्वेल बंद असल्यास सक्षम करा.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">पिंच करताना तुमची नजर स्थिर झाल्यावर आपोआप निवड होईल. केवळ OS ड्वेल बंद असेल तरच सक्षम करा.</string>
     <string name="back">मागे</string>
+    <string name="back_to_dasher">Dasher वर परत</string>
     <string name="backspace_label">Del</string>
     <string name="backspace_tooltip">हटवा (पुन्हा करण्यासाठी धरून ठेवा)</string>
     <string name="calibrate_tilt">झुकाव कॅलिब्रेट करा</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">रंग: {0}</string>
     <string name="diag_speed_format">गती: {0}</string>
     <string name="diagnostics">निदान</string>
+    <string name="direct_input_missing">जर Dasher Direct Input गहाळ असेल</string>
+    <string name="direct_input_ready_description">थेट मोड तयार आहे. अधिक ॲप्समध्ये कर्सरच्या अगोदरचा मजकूर अंदाजांसाठी वापरण्यासाठी Dasher Direct Input जोडा.</string>
+    <string name="direct_input_restart">तुमचा Mac रीस्टार्ट करा, नंतर सूची पुन्हा तपासा.</string>
+    <string name="direct_input_setup_button">मजकूर संदर्भ सेट करा</string>
+    <string name="direct_input_setup_steps">कीबोर्ड सेटिंग्जमध्ये, मजकूर इनपुट → संपादन → + वर जा. Dasher Direct Input शोधा आणि जोडा क्लिक करा.</string>
+    <string name="direct_input_setup_title">इतर ॲप्समधील अंदाज सुधारा</string>
     <string name="direct_mode">थेट मोड</string>
+    <string name="direct_mode_access_resume">प्रवेश उपलब्ध होताच डायरेक्ट मोड सुरू होतो.</string>
+    <string name="direct_mode_focus_editor">सुरू करण्यासाठी मजकूर कर्सर एखाद्या मजकूर फील्डमध्ये ठेवा.</string>
     <string name="done">पूर्ण झाले</string>
     <string name="drag_to_move_the_keyboard_window">कीबोर्ड विंडो हलविण्यासाठी ड्रॅग करा</string>
     <string name="dwell_duration">थांबण्याची कालावधी</string>
@@ -181,6 +190,7 @@
     <string name="language">भाषा</string>
     <string name="language_locale">भाषा / स्थानिक</string>
     <string name="language_locale_2">&lt;b&gt;भाषा / स्थानिक भाषा&lt;/b&gt;</string>
+    <string name="later">नंतर</string>
     <string name="layout_bottom">तळ</string>
     <string name="layout_keyboard">कीबोर्ड</string>
     <string name="layout_left">डावी बाजू</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">स्कॅन गती</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">निवड पद्धत</string>
+    <string name="sending_to_app_format">{app} ला पाठवत आहे</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">सेवा चालू आहे का? इन्स्टॉलेशन कमांडसाठी कीबोर्ड बटणावर सेटअप मदत पहा.</string>
     <string name="settings">सेटिंग्ज</string>
     <string name="settings_2">सेटिंग्ज...</string>

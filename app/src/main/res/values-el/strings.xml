@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Αυτόματη επιλογή μετά τη σταθεροποίηση. Ενεργοποίηση μόνο εάν η παραμονή στο λειτουργικό σύστημα είναι απενεργοποιημένη.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Αυτόματη επιλογή αφού εστιάσετε το βλέμμα σας ενώ τσίμπημα. Ενεργοποιήστε την μόνο εάν η παραμονή στο λειτουργικό σύστημα είναι απενεργοποιημένη.</string>
     <string name="back">Πίσω</string>
+    <string name="back_to_dasher">Επιστροφή στο Dasher</string>
     <string name="backspace_label">διαγραφή</string>
     <string name="backspace_tooltip">Διαγραφή (πατήστε παρατεταμένα για επανάληψη)</string>
     <string name="calibrate_tilt">Βαθμονόμηση κλίσης</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">Χρώμα: {0}</string>
     <string name="diag_speed_format">Ταχύτητα: {0}</string>
     <string name="diagnostics">Διαγνωστικά</string>
+    <string name="direct_input_missing">Εάν λείπει το Dasher Direct Input</string>
+    <string name="direct_input_ready_description">Η άμεση λειτουργία είναι έτοιμη. Προσθέστε το Dasher Direct Input ώστε οι προβλέψεις να χρησιμοποιούν το κείμενο ακριβώς πριν από τον δρομέα σε περισσότερες εφαρμογές.</string>
+    <string name="direct_input_restart">Κάντε επανεκκίνηση του Mac σας και, στη συνέχεια, ελέγξτε ξανά τη λίστα.</string>
+    <string name="direct_input_setup_button">Ρύθμιση περιβάλλοντος κειμένου</string>
+    <string name="direct_input_setup_steps">Στις Ρυθμίσεις πληκτρολογίου, μεταβείτε στην Εισαγωγή κειμένου → Επεξεργασία → +. Αναζητήστε το Dasher Direct Input και κάντε κλικ στην Προσθήκη.</string>
+    <string name="direct_input_setup_title">Βελτιώστε τις προβλέψεις σε άλλες εφαρμογές</string>
     <string name="direct_mode">Άμεση λειτουργία</string>
+    <string name="direct_mode_access_resume">Η άμεση λειτουργία ξεκινά μόλις είναι διαθέσιμη η πρόσβαση.</string>
+    <string name="direct_mode_focus_editor">Τοποθετήστε τον δρομέα σε ένα πεδίο κειμένου για να ξεκινήσετε.</string>
     <string name="done">Γινώμενος</string>
     <string name="drag_to_move_the_keyboard_window">Σύρετε για να μετακινήσετε το παράθυρο του πληκτρολογίου</string>
     <string name="dwell_duration">Διάρκεια Παραμονής</string>
@@ -181,6 +190,7 @@
     <string name="language">Γλώσσα</string>
     <string name="language_locale">Γλώσσα / Περιοχή</string>
     <string name="language_locale_2">&lt;b&gt;Γλώσσα / Τοπικές ρυθμίσεις&lt;/b&gt;</string>
+    <string name="later">Αργότερα</string>
     <string name="layout_bottom">Κάτω μέρος</string>
     <string name="layout_keyboard">Πληκτρολόγιο</string>
     <string name="layout_left">Αριστερή πλευρά</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">Ταχύτητα σάρωσης</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Μέθοδος Επιλογής</string>
+    <string name="sending_to_app_format">Αποστολή σε {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Η υπηρεσία λειτουργεί; Δείτε τη βοήθεια εγκατάστασης στο κουμπί Πληκτρολόγιο για εντολές εγκατάστασης.</string>
     <string name="settings">Ρυθμίσεις</string>
     <string name="settings_2">Ρυθμίσεις...</string>

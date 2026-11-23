@@ -40,6 +40,7 @@ Du kan ændre dette når som helst under Indstillinger &gt; Privatliv.</string>
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automatisk valg efter fiksering. Aktiver kun, hvis OS-dvælgelse er slået fra.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Vælg automatisk efter at have fikseret dit blik, mens du kniber. Aktiver kun, hvis OS-dvælen er slået fra.</string>
     <string name="back">Tilbage</string>
+    <string name="back_to_dasher">Tilbage til Dasher</string>
     <string name="backspace_label">del</string>
     <string name="backspace_tooltip">Slet (hold nede for at gentage)</string>
     <string name="calibrate_tilt">Kalibrer tilt</string>
@@ -106,7 +107,15 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="diag_colour_format">Farve: {0}</string>
     <string name="diag_speed_format">Hastighed: {0}</string>
     <string name="diagnostics">Diagnostik</string>
+    <string name="direct_input_missing">Hvis Dasher Direct Input mangler</string>
+    <string name="direct_input_ready_description">Direkte tilstand er klar. Tilføj Dasher Direct Input, så forudsigelser kan bruge teksten lige før markøren i flere apps.</string>
+    <string name="direct_input_restart">Genstart din Mac, og tjek derefter listen igen.</string>
+    <string name="direct_input_setup_button">Indstil tekstkontekst</string>
+    <string name="direct_input_setup_steps">I Tastaturindstillinger skal du gå til Tekstinput → Rediger → +. Søg efter Dasher Direct Input, og klik på Tilføj.</string>
+    <string name="direct_input_setup_title">Forbedre forudsigelser i andre apps</string>
     <string name="direct_mode">Direkte tilstand</string>
+    <string name="direct_mode_access_resume">Direkte tilstand starter, så snart der er adgang.</string>
+    <string name="direct_mode_focus_editor">Placér tekstmarkøren i et tekstfelt for at begynde.</string>
     <string name="done">Færdig</string>
     <string name="drag_to_move_the_keyboard_window">Træk for at flytte tastaturvinduet</string>
     <string name="dwell_duration">Opholdstid</string>
@@ -181,6 +190,7 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="language">Sprog</string>
     <string name="language_locale">Sprog / Lokalitet</string>
     <string name="language_locale_2">&lt;b&gt;Sprog/lokalitet&lt;/b&gt;</string>
+    <string name="later">Senere</string>
     <string name="layout_bottom">Bund</string>
     <string name="layout_keyboard">Tastatur</string>
     <string name="layout_left">Venstre side</string>
@@ -279,6 +289,7 @@ Du kan til enhver tid ændre dette i Indstillinger &gt; Privatliv.</string>
     <string name="scan_speed">Scanningshastighed</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Udvælgelsesmetode</string>
+    <string name="sending_to_app_format">Sender til {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">tjeneste kører? Se installationshjælpen på Tastatur-knappen for installationskommandoer.</string>
     <string name="settings">Indstillinger</string>
     <string name="settings_2">Indstillinger...</string>

@@ -40,6 +40,7 @@ Ezt bármikor megváltoztathatja a Beállítások &gt; Adatvédelem menüpontban
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automatikus kiválasztás fixálás után. Csak akkor engedélyezze, ha az operációs rendszer várakozása ki van kapcsolva.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Automatikus kiválasztás a tekintet rögzítése után csippentés közben. Csak akkor engedélyezze, ha az operációs rendszer várakozási ideje ki van kapcsolva.</string>
     <string name="back">Vissza</string>
+    <string name="back_to_dasher">Vissza ide: Dasher</string>
     <string name="backspace_label">törlés</string>
     <string name="backspace_tooltip">Törlés (tartsd nyomva a ismétléshez)</string>
     <string name="calibrate_tilt">Dőlésszög kalibrálása</string>
@@ -106,7 +107,15 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="diag_colour_format">Szín: {0}</string>
     <string name="diag_speed_format">Sebesség: {0}</string>
     <string name="diagnostics">Diagnosztika</string>
+    <string name="direct_input_missing">Ha a(z) Dasher Direct Input hiányzik</string>
+    <string name="direct_input_ready_description">A közvetlen mód készen áll. Adja hozzá a következőt: Dasher Direct Input. Így az előrejelzések több alkalmazásban használhatják a kurzor előtti szöveget.</string>
+    <string name="direct_input_restart">Indítsa újra a Mac-et, majd ellenőrizze újra a listát.</string>
+    <string name="direct_input_setup_button">Szövegkörnyezet beállítása</string>
+    <string name="direct_input_setup_steps">A Billentyűzet beállításaiban válassza a Szövegbevitel → Szerkesztés → + lehetőséget. Keresse meg a következőt: Dasher Direct Input, és kattintson a Hozzáadás gombra.</string>
+    <string name="direct_input_setup_title">Javítsa az előrejelzéseket más alkalmazásokban</string>
     <string name="direct_mode">Közvetlen mód</string>
+    <string name="direct_mode_access_resume">A Közvetlen mód azonnal elindul, amint elérhető a hozzáférés.</string>
+    <string name="direct_mode_focus_editor">A kezdéshez helyezze a szövegkurzort egy szövegmezőbe.</string>
     <string name="done">Kész</string>
     <string name="drag_to_move_the_keyboard_window">Húzza a billentyűzet ablakát</string>
     <string name="dwell_duration">Tartózkodási idő</string>
@@ -181,6 +190,7 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="language">Nyelv</string>
     <string name="language_locale">Nyelv / Terület</string>
     <string name="language_locale_2">&lt;b&gt;Nyelv /Terület&lt;/b&gt;</string>
+    <string name="later">Később</string>
     <string name="layout_bottom">Alsó</string>
     <string name="layout_keyboard">Billentyűzet</string>
     <string name="layout_left">Bal oldal</string>
@@ -279,6 +289,7 @@ Ezt bármikor módosíthatja a Beállítások &gt; Adatvédelem menüpontban.</s
     <string name="scan_speed">Szkennelési sebesség</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Kiválasztási módszer</string>
+    <string name="sending_to_app_format">Küldés ide: {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">A szolgáltatás fut? Lásd a beállítási segítséget a Billentyűzet gombnál a telepítési parancsokhoz.</string>
     <string name="settings">Beállítások</string>
     <string name="settings_2">Beállítások...</string>

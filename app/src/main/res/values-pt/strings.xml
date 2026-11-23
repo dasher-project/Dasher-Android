@@ -40,6 +40,7 @@ Você pode mudar isso a qualquer momento em Configurações &gt; Privacidade.</s
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Seleção automática após fixação. Ative somente se o modo de permanência do sistema operacional estiver desativado.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Seleção automática após fixar o olhar durante o gesto de pinça. Ative somente se a permanência do sistema operacional estiver desativada.</string>
     <string name="back">Voltar</string>
+    <string name="back_to_dasher">Voltar para Dasher</string>
     <string name="backspace_label">Del</string>
     <string name="backspace_tooltip">Excluir (segure para repetir)</string>
     <string name="calibrate_tilt">Calibrar Inclinação</string>
@@ -106,7 +107,15 @@ Você pode alterar isso a qualquer momento em Configurações &gt; Privacidade.<
     <string name="diag_colour_format">Cor: {0}</string>
     <string name="diag_speed_format">Velocidade: {0}</string>
     <string name="diagnostics">Diagnóstico</string>
+    <string name="direct_input_missing">Se Dasher Direct Input estiver faltando</string>
+    <string name="direct_input_ready_description">O modo direto está pronto. Adicione Dasher Direct Input para que as previsões usem o texto imediatamente antes do cursor em mais aplicativos.</string>
+    <string name="direct_input_restart">Reinicie o seu Mac e verifique a lista novamente.</string>
+    <string name="direct_input_setup_button">Configurar contexto de texto</string>
+    <string name="direct_input_setup_steps">Nas configurações do teclado, vá para Entrada de texto → Editar → +. Procure por Dasher Direct Input e clique em Adicionar.</string>
+    <string name="direct_input_setup_title">Melhore as previsões em outros aplicativos</string>
     <string name="direct_mode">Modo direto</string>
+    <string name="direct_mode_access_resume">O Modo Direto inicia assim que o acesso estiver disponível.</string>
+    <string name="direct_mode_focus_editor">Coloque o cursor em um campo de texto para começar.</string>
     <string name="done">Feito</string>
     <string name="drag_to_move_the_keyboard_window">Arraste para mover a janela do teclado</string>
     <string name="dwell_duration">Duração da Permanência</string>
@@ -181,6 +190,7 @@ Você pode alterar isso a qualquer momento em Configurações &gt; Privacidade.<
     <string name="language">Idioma</string>
     <string name="language_locale">Idioma / Localidade</string>
     <string name="language_locale_2">&lt;b&gt;Idioma / Localidade&lt;/b&gt;</string>
+    <string name="later">Mais tarde</string>
     <string name="layout_bottom">Fundo</string>
     <string name="layout_keyboard">Teclado</string>
     <string name="layout_left">Lado esquerdo</string>
@@ -279,6 +289,7 @@ Você pode alterar isso a qualquer momento em Configurações &gt; Privacidade.<
     <string name="scan_speed">Velocidade de digitalização</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Método de Seleção</string>
+    <string name="sending_to_app_format">Enviando para {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">serviço em execução? Veja a ajuda de configuração no botão do Teclado para comandos de instalação.</string>
     <string name="settings">Configurações</string>
     <string name="settings_2">Configurações...</string>

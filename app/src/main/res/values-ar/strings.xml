@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">يتم التحديد التلقائي بعد التثبيت. يتم التفعيل فقط في حالة إيقاف تشغيل خاصية "التوقف المؤقت" في نظام التشغيل.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">يتم التحديد التلقائي بعد تثبيت النظر أثناء الضغط بإصبعين. فعّل هذه الخاصية فقط إذا كانت خاصية "التوقف المؤقت" في نظام التشغيل معطلة.</string>
     <string name="back">عودة</string>
+    <string name="back_to_dasher">العودة إلى Dasher</string>
     <string name="backspace_label">حذف</string>
     <string name="backspace_tooltip">حذف (اضغط مطولًا للتكرار)</string>
     <string name="calibrate_tilt">معايرة الميل</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">اللون: {0}</string>
     <string name="diag_speed_format">السرعة: {0}</string>
     <string name="diagnostics">التشخيص</string>
+    <string name="direct_input_missing">إذا كان Dasher Direct Input مفقودًا</string>
+    <string name="direct_input_ready_description">الوضع المباشر جاهز. أضف Dasher Direct Input لتستخدم التوقعات النص الذي يسبق مؤشر الكتابة مباشرةً في مزيد من التطبيقات.</string>
+    <string name="direct_input_restart">أعد تشغيل جهاز Mac الخاص بك، ثم تحقق من القائمة مرة أخرى.</string>
+    <string name="direct_input_setup_button">إعداد سياق النص</string>
+    <string name="direct_input_setup_steps">في إعدادات لوحة المفاتيح، انتقل إلى إدخال النص → تحرير → +. ابحث عن Dasher Direct Input وانقر فوق "إضافة".</string>
+    <string name="direct_input_setup_title">تحسين التوقعات في تطبيقات أخرى</string>
     <string name="direct_mode">الوضع المباشر</string>
+    <string name="direct_mode_access_resume">يبدأ الوضع المباشر بمجرد توفر الوصول.</string>
+    <string name="direct_mode_focus_editor">ضع مؤشر الكتابة في حقل نص للبدء.</string>
     <string name="done">منتهي</string>
     <string name="drag_to_move_the_keyboard_window">اسحب لتحريك نافذة لوحة المفاتيح</string>
     <string name="dwell_duration">مدة الإقامة</string>
@@ -181,6 +190,7 @@
     <string name="language">لغة</string>
     <string name="language_locale">اللغة / الإعدادات المحلية</string>
     <string name="language_locale_2">اللغة المحلية</string>
+    <string name="later">لاحقاً</string>
     <string name="layout_bottom">قاع</string>
     <string name="layout_keyboard">لوحة المفاتيح</string>
     <string name="layout_left">الجانب الأيسر</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">سرعة المسح</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">طريقة الاختيار</string>
+    <string name="sending_to_app_format">إرسال إلى {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">هل الخدمة تعمل؟ انظر مساعدة الإعداد على زر لوحة المفاتيح لأوامر التثبيت.</string>
     <string name="settings">إعدادات</string>
     <string name="settings_2">إعدادات...</string>

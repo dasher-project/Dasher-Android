@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">ഫിക്സേഷൻ കഴിഞ്ഞാൽ ഓട്ടോ-സെലക്ട് ചെയ്യുക. OS dwell ഓഫാണെങ്കിൽ മാത്രം പ്രവർത്തനക്ഷമമാക്കുക.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">പിഞ്ച് ചെയ്യുമ്പോൾ നോട്ടം ഉറപ്പിച്ച ശേഷം സ്വയമേവ തിരഞ്ഞെടുക്കുക. OS ഡ്വെൽ ഓഫാണെങ്കിൽ മാത്രം പ്രവർത്തനക്ഷമമാക്കുക.</string>
     <string name="back">തിരികെ</string>
+    <string name="back_to_dasher">Dasher എന്നതിലേക്ക് മടങ്ങുക</string>
     <string name="backspace_label">Del</string>
     <string name="backspace_tooltip">നീക്കംചെയ്യുക (പുനരാവർത്തിക്കാൻ പിടിക്കുക)</string>
     <string name="calibrate_tilt">ചെറിയൽ താൽപര്യം ക്രമീകരിക്കുക</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">നിറം: {0}</string>
     <string name="diag_speed_format">വേഗത: {0}</string>
     <string name="diagnostics">ഡയഗ്നോസ്റ്റിക്സ്</string>
+    <string name="direct_input_missing">Dasher Direct Input ഇല്ലെങ്കിൽ</string>
+    <string name="direct_input_ready_description">ഡയറക്ട് മോഡ് തയ്യാറാണ്. കൂടുതൽ ആപ്പുകളിൽ കർസറിനു തൊട്ടുമുമ്പുള്ള ടെക്സ്റ്റ് പ്രവചനങ്ങൾക്ക് ഉപയോഗിക്കാൻ Dasher Direct Input ചേർക്കുക.</string>
+    <string name="direct_input_restart">നിങ്ങളുടെ Mac പുനരാരംഭിക്കുക, തുടർന്ന് ലിസ്റ്റ് വീണ്ടും പരിശോധിക്കുക.</string>
+    <string name="direct_input_setup_button">ടെക്സ്റ്റ് സന്ദർഭം സജ്ജീകരിക്കുക</string>
+    <string name="direct_input_setup_steps">കീബോർഡ് ക്രമീകരണങ്ങളിൽ, ടെക്സ്റ്റ് ഇൻപുട്ട് → എഡിറ്റ് → + എന്നതിലേക്ക് പോകുക. Dasher Direct Input എന്നതിനായി തിരയുക, ചേർക്കുക ക്ലിക്ക് ചെയ്യുക.</string>
+    <string name="direct_input_setup_title">മറ്റ് ആപ്പുകളിലെ പ്രവചനങ്ങൾ മെച്ചപ്പെടുത്തുക</string>
     <string name="direct_mode">ഡയറക്ട് മോഡ്</string>
+    <string name="direct_mode_access_resume">ആക്സസ് ലഭ്യമാകുമ്പോൾ തന്നെ ഡയറക്ട് മോഡ് ആരംഭിക്കുന്നു.</string>
+    <string name="direct_mode_focus_editor">തുടങ്ങാൻ ഒരു ടെക്സ്റ്റ് ഫീൽഡിൽ കർസർ വയ്ക്കുക.</string>
     <string name="done">ചെയ്തുകഴിഞ്ഞു</string>
     <string name="drag_to_move_the_keyboard_window">കീബോർഡ് വിൻഡോ നീക്കാൻ വലിച്ചിടുക</string>
     <string name="dwell_duration">നിലവിലെ സമയം</string>
@@ -181,6 +190,7 @@
     <string name="language">ഭാഷ</string>
     <string name="language_locale">ഭാഷ / ലോക്കേൽ</string>
     <string name="language_locale_2">&lt;b&gt;ഭാഷ / ഭാഷ&lt;/b&gt;</string>
+    <string name="later">പിന്നീട്</string>
     <string name="layout_bottom">അടിത്തട്ട്</string>
     <string name="layout_keyboard">കീബോർഡ്</string>
     <string name="layout_left">ഇടതുവശം</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">സ്കാൻ വേഗത</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">തിരഞ്ഞെടുപ്പ് രീതി</string>
+    <string name="sending_to_app_format">{app} എന്നതിലേക്ക് അയയ്ക്കുന്നു</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">സേവനം പ്രവർത്തിക്കുന്നുണ്ടോ? ഇൻസ്റ്റാൾ കമാൻഡുകൾക്കായി കീബോർഡ് ബട്ടണിലുള്ള സജ്ജീകരണ സഹായം കാണുക.</string>
     <string name="settings">ക്രമീകരണങ്ങൾ</string>
     <string name="settings_2">ക്രമീകരണങ്ങൾ...</string>

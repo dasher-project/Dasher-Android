@@ -40,6 +40,7 @@ Puoi modificare questa impostazione in qualsiasi momento in Impostazioni &gt; Pr
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Selezione automatica dopo la fissazione. Abilitalo solo se la permanenza del sistema operativo è disattivata.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Seleziona automaticamente dopo aver fissato lo sguardo mentre pizzichi. Abilitalo solo se la permanenza del sistema operativo è disattivata.</string>
     <string name="back">Indietro</string>
+    <string name="back_to_dasher">Torna a Dasher</string>
     <string name="backspace_label">del</string>
     <string name="backspace_tooltip">Elimina (tieni premuto per ripetere)</string>
     <string name="calibrate_tilt">Calibra inclinazione</string>
@@ -106,7 +107,15 @@ Puoi modificare questa impostazione in qualsiasi momento in Impostazioni &gt; Pr
     <string name="diag_colour_format">Colore: {0}</string>
     <string name="diag_speed_format">Velocità: {0}</string>
     <string name="diagnostics">Diagnostica</string>
+    <string name="direct_input_missing">Se manca Dasher Direct Input</string>
+    <string name="direct_input_ready_description">La modalità diretta è pronta. Aggiungi Dasher Direct Input per usare il testo subito prima del cursore nelle previsioni di più app.</string>
+    <string name="direct_input_restart">Riavvia il Mac, quindi controlla nuovamente l\'elenco.</string>
+    <string name="direct_input_setup_button">Imposta il contesto del testo</string>
+    <string name="direct_input_setup_steps">In Impostazioni tastiera, vai su Inserimento testo → Modifica → +. Cerca Dasher Direct Input e fai clic su Aggiungi.</string>
+    <string name="direct_input_setup_title">Migliora le previsioni in altre app</string>
     <string name="direct_mode">Modalità diretta</string>
+    <string name="direct_mode_access_resume">La modalità diretta si avvia non appena l\'accesso è disponibile.</string>
+    <string name="direct_mode_focus_editor">Posiziona il cursore in un campo di testo per iniziare.</string>
     <string name="done">Fatto</string>
     <string name="drag_to_move_the_keyboard_window">Trascina per spostare la finestra della tastiera</string>
     <string name="dwell_duration">Durata di permanenza</string>
@@ -181,6 +190,7 @@ Puoi modificare questa impostazione in qualsiasi momento in Impostazioni &gt; Pr
     <string name="language">Lingua</string>
     <string name="language_locale">Lingua / Area geografica</string>
     <string name="language_locale_2">&lt;b&gt;Lingua / Localizzazione&lt;/b&gt;</string>
+    <string name="later">Dopo</string>
     <string name="layout_bottom">Metter il fondo a</string>
     <string name="layout_keyboard">Tastiera</string>
     <string name="layout_left">Lato sinistro</string>
@@ -279,6 +289,7 @@ Puoi modificare questa impostazione in qualsiasi momento in Impostazioni &gt; Pr
     <string name="scan_speed">Velocità di scansione</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Metodo di selezione</string>
+    <string name="sending_to_app_format">Invio a {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Il servizio è in esecuzione? Consulta l\'aiuto alla configurazione sul pulsante Tastiera per i comandi di installazione.</string>
     <string name="settings">Impostazioni</string>
     <string name="settings_2">Impostazioni...</string>

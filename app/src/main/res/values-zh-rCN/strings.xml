@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">固定后自动选择。仅当操作系统停留关闭时才启用。</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">捏合时注视后自动选择。仅当操作系统停留关闭时才启用。</string>
     <string name="back">返回</string>
+    <string name="back_to_dasher">返回Dasher</string>
     <string name="backspace_label">删除</string>
     <string name="backspace_tooltip">删除（长按以重复）</string>
     <string name="calibrate_tilt">校准倾斜</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">颜色：{0}</string>
     <string name="diag_speed_format">速度：{0}</string>
     <string name="diagnostics">诊断</string>
+    <string name="direct_input_missing">如果缺少 Dasher Direct Input</string>
+    <string name="direct_input_ready_description">直接模式已就绪。添加 Dasher Direct Input 后，可在更多应用中根据光标前的文字进行预测。</string>
+    <string name="direct_input_restart">重新启动 Mac，然后再次检查列表。</string>
+    <string name="direct_input_setup_button">设置文本上下文</string>
+    <string name="direct_input_setup_steps">在键盘设置中，转到文本输入→编辑→+。搜索 Dasher Direct Input 并单击“添加”。</string>
+    <string name="direct_input_setup_title">改进其他应用程序中的预测</string>
     <string name="direct_mode">直接模式</string>
+    <string name="direct_mode_access_resume">一旦可以访问，直接模式就会启动。</string>
+    <string name="direct_mode_focus_editor">将光标放在文本输入框中即可开始。</string>
     <string name="done">完毕</string>
     <string name="drag_to_move_the_keyboard_window">拖动以移动键盘窗口</string>
     <string name="dwell_duration">停留时间</string>
@@ -181,6 +190,7 @@
     <string name="language">语言</string>
     <string name="language_locale">语言 / 地区</string>
     <string name="language_locale_2">&lt;b&gt;语言/地区&lt;/b&gt;</string>
+    <string name="later">稍后</string>
     <string name="layout_bottom">底部</string>
     <string name="layout_keyboard">键盘</string>
     <string name="layout_left">左侧</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">扫描速度</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">选择方法</string>
+    <string name="sending_to_app_format">发送至{app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">服务正在运行吗？请在键盘按钮上的设置帮助中查看安装命令。</string>
     <string name="settings">设置</string>
     <string name="settings_2">设置...</string>

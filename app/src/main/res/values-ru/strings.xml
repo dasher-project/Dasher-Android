@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Автоматический выбор после фиксации взгляда. Включается только в том случае, если функция задержки в ОС отключена.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Автоматический выбор после фиксации взгляда при масштабировании. Включается только в том случае, если параметр «Задержка» в ОС отключен.</string>
     <string name="back">Назад</string>
+    <string name="back_to_dasher">Вернуться к Dasher</string>
     <string name="backspace_label">Del</string>
     <string name="backspace_tooltip">Удалить (удерживать для повторения)</string>
     <string name="calibrate_tilt">Калибровать наклон</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">Цвет: {0}</string>
     <string name="diag_speed_format">Скорость: {0}</string>
     <string name="diagnostics">Диагностика</string>
+    <string name="direct_input_missing">Если Dasher Direct Input отсутствует</string>
+    <string name="direct_input_ready_description">Прямой режим готов. Добавьте Dasher Direct Input, чтобы подсказки учитывали текст перед курсором в большем числе приложений.</string>
+    <string name="direct_input_restart">Перезагрузите Mac, затем еще раз проверьте список.</string>
+    <string name="direct_input_setup_button">Настройка текстового контекста</string>
+    <string name="direct_input_setup_steps">В настройках клавиатуры выберите «Ввод текста» → «Правка» → «+». Найдите Dasher Direct Input и нажмите «Добавить».</string>
+    <string name="direct_input_setup_title">Улучшите прогнозы в других приложениях</string>
     <string name="direct_mode">Прямой режим</string>
+    <string name="direct_mode_access_resume">Прямой режим запускается, как только становится доступен доступ.</string>
+    <string name="direct_mode_focus_editor">Чтобы начать, установите курсор в текстовое поле.</string>
     <string name="done">Сделанный</string>
     <string name="drag_to_move_the_keyboard_window">Перетащите, чтобы переместить окно клавиатуры</string>
     <string name="dwell_duration">Длительность пребывания</string>
@@ -181,6 +190,7 @@
     <string name="language">Язык</string>
     <string name="language_locale">Язык / Локаль</string>
     <string name="language_locale_2">&lt;b&gt;Язык / Регион&lt;/b&gt;</string>
+    <string name="later">Позже</string>
     <string name="layout_bottom">Нижний</string>
     <string name="layout_keyboard">Клавиатура</string>
     <string name="layout_left">Левая сторона</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">Скорость сканирования</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Метод выбора</string>
+    <string name="sending_to_app_format">Отправка на {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Служба запущена? Смотрите справку по настройке на кнопке Клавиатура для команд установки.</string>
     <string name="settings">Настройки</string>
     <string name="settings_2">Настройки...</string>

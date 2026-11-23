@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">ફિક્સિંગ પછી ઓટો-સિલેક્ટ કરો. જો OS dwell બંધ હોય તો જ સક્ષમ કરો.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">પિંચ કરતી વખતે તમારી નજર સ્થિર કર્યા પછી સ્વતઃ-પસંદ કરો. જો OS dway બંધ હોય તો જ સક્ષમ કરો.</string>
     <string name="back">પાછળ</string>
+    <string name="back_to_dasher">Dasher પર પાછા</string>
     <string name="backspace_label">દિલ</string>
     <string name="backspace_tooltip">હટાવો (પુનરાવર્તન માટે દબાવો)</string>
     <string name="calibrate_tilt">ઝુકાણ કૅલિબ્રેટ કરો</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">રંગ: {0}</string>
     <string name="diag_speed_format">ઝડપ: {0}</string>
     <string name="diagnostics">ડાયગ્નોસ્ટિક્સ</string>
+    <string name="direct_input_missing">જો Dasher Direct Input ખૂટે છે</string>
+    <string name="direct_input_ready_description">ડાયરેક્ટ મોડ તૈયાર છે. વધુ એપમાં અનુમાનો કર્સરની બરાબર પહેલાંનું લખાણ વાપરી શકે તે માટે Dasher Direct Input ઉમેરો.</string>
+    <string name="direct_input_restart">તમારા Mac ને પુનઃપ્રારંભ કરો, પછી ફરીથી સૂચિ તપાસો.</string>
+    <string name="direct_input_setup_button">ટેક્સ્ટ સંદર્ભ સેટ કરો</string>
+    <string name="direct_input_setup_steps">કીબોર્ડ સેટિંગ્સમાં, ટેક્સ્ટ ઇનપુટ → એડિટ → + પર જાઓ. Dasher Direct Input માટે શોધો અને ઉમેરો પર ક્લિક કરો.</string>
+    <string name="direct_input_setup_title">અન્ય ઍપમાં અનુમાનો બહેતર બનાવો</string>
     <string name="direct_mode">ડાયરેક્ટ મોડ</string>
+    <string name="direct_mode_access_resume">એક્સેસ ઉપલબ્ધ થતાંની સાથે જ ડાયરેક્ટ મોડ શરૂ થાય છે.</string>
+    <string name="direct_mode_focus_editor">શરૂ કરવા માટે લખાણના ક્ષેત્રમાં કર્સર મૂકો.</string>
     <string name="done">થઈ ગયું</string>
     <string name="drag_to_move_the_keyboard_window">કીબોર્ડ વિન્ડોને ખસેડવા માટે ખેંચો</string>
     <string name="dwell_duration">રમતગણ સમયગાળો</string>
@@ -181,6 +190,7 @@
     <string name="language">ભાષા</string>
     <string name="language_locale">ભાષા / સ્થાનિકતા</string>
     <string name="language_locale_2">&lt;b&gt;ભાષા / લોકેલ&lt;/b&gt;</string>
+    <string name="later">બાદમાં</string>
     <string name="layout_bottom">નીચે</string>
     <string name="layout_keyboard">કીબોર્ડ</string>
     <string name="layout_left">ડાબી બાજુ</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">સ્કેન સ્પીડ</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">પસંદગિરી પદ્ધતિ</string>
+    <string name="sending_to_app_format">{app} ને મોકલી રહ્યું છે</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">સર્વિસ ચાલી રહી છે? ઇન્સ્ટોલ કમાન્ડ્સ માટે કીબોર્ડ બટન પર સેટઅપ મદદ જુઓ.</string>
     <string name="settings">સેટિંગ્સ</string>
     <string name="settings_2">સેટિંગ્સ...</string>

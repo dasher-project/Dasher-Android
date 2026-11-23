@@ -40,6 +40,7 @@ Możesz to zmienić w dowolnym momencie w Ustawieniach &gt; Prywatność.</strin
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automatyczny wybór po utrwaleniu. Włącz tylko wtedy, gdy opcja OS Hold jest wyłączona.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Automatyczny wybór po skupieniu wzroku podczas szczypania. Włącz tylko wtedy, gdy funkcja OS Hold jest wyłączona.</string>
     <string name="back">Wstecz</string>
+    <string name="back_to_dasher">Powrót do Dasher</string>
     <string name="backspace_label">Del</string>
     <string name="backspace_tooltip">Usuń (przytrzymaj, aby powtarzać)</string>
     <string name="calibrate_tilt">Kalibruj nachylenie</string>
@@ -106,7 +107,15 @@ Możesz to zmienić w dowolnym momencie w Ustawieniach &gt; Prywatność.</strin
     <string name="diag_colour_format">Kolor: {0}</string>
     <string name="diag_speed_format">Prędkość: {0}</string>
     <string name="diagnostics">Diagnostyka</string>
+    <string name="direct_input_missing">Jeśli brakuje Dasher Direct Input</string>
+    <string name="direct_input_ready_description">Tryb bezpośredni jest gotowy. Dodaj Dasher Direct Input, aby przewidywanie tekstu w większej liczbie aplikacji uwzględniało tekst tuż przed kursorem.</string>
+    <string name="direct_input_restart">Uruchom ponownie komputer Mac, a następnie ponownie sprawdź listę.</string>
+    <string name="direct_input_setup_button">Skonfiguruj kontekst tekstowy</string>
+    <string name="direct_input_setup_steps">W Ustawieniach klawiatury przejdź do Wprowadzanie tekstu → Edytuj → +. Wyszukaj Dasher Direct Input i kliknij Dodaj.</string>
+    <string name="direct_input_setup_title">Popraw przewidywania w innych aplikacjach</string>
     <string name="direct_mode">Tryb bezpośredni</string>
+    <string name="direct_mode_access_resume">Tryb bezpośredni uruchamia się natychmiast po uzyskaniu dostępu.</string>
+    <string name="direct_mode_focus_editor">Aby rozpocząć, ustaw kursor w polu tekstowym.</string>
     <string name="done">Zrobione</string>
     <string name="drag_to_move_the_keyboard_window">Przeciągnij, aby przesunąć okno klawiatury</string>
     <string name="dwell_duration">Czas przebywania</string>
@@ -181,6 +190,7 @@ Możesz to zmienić w dowolnym momencie w Ustawieniach &gt; Prywatność.</strin
     <string name="language">Język</string>
     <string name="language_locale">Język / Lokalizacja</string>
     <string name="language_locale_2">&lt;b&gt;Język / Ustawienia regionalne&lt;/b&gt;</string>
+    <string name="later">Później</string>
     <string name="layout_bottom">Spód</string>
     <string name="layout_keyboard">Klawiatura</string>
     <string name="layout_left">Lewa strona</string>
@@ -279,6 +289,7 @@ Możesz to zmienić w dowolnym momencie w Ustawieniach &gt; Prywatność.</strin
     <string name="scan_speed">Prędkość skanowania</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Metoda wyboru</string>
+    <string name="sending_to_app_format">Wysyłam do {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Usługa działa? Zobacz pomoc dotyczącą instalacji, klikając przycisk Klawiatura.</string>
     <string name="settings">Ustawienia</string>
     <string name="settings_2">Ustawienia...</string>

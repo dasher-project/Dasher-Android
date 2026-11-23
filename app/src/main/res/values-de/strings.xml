@@ -40,6 +40,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">Automatische Auswahl nach dem Fixieren. Nur aktivieren, wenn die Betriebssystem-Verweildauer ausgeschaltet ist.</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">Automatische Auswahl, nachdem Sie Ihren Blick beim Kneifen fixiert haben. Nur aktivieren, wenn die Betriebssystem-Verweildauer ausgeschaltet ist.</string>
     <string name="back">Zurück</string>
+    <string name="back_to_dasher">Zurück zu Dasher</string>
     <string name="backspace_label">löschen</string>
     <string name="backspace_tooltip">Löschen (gedrückt halten zum Wiederholen)</string>
     <string name="calibrate_tilt">Neigung kalibrieren</string>
@@ -106,7 +107,15 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="diag_colour_format">Farbe: {0}</string>
     <string name="diag_speed_format">Geschwindigkeit: {0}</string>
     <string name="diagnostics">Diagnose</string>
+    <string name="direct_input_missing">Wenn Dasher Direct Input fehlt</string>
+    <string name="direct_input_ready_description">Der Direktmodus ist bereit. Fügen Sie Dasher Direct Input hinzu, damit die Vorhersagen in mehr Apps den Text direkt vor dem Cursor berücksichtigen.</string>
+    <string name="direct_input_restart">Starten Sie Ihren Mac neu und überprüfen Sie die Liste erneut.</string>
+    <string name="direct_input_setup_button">Textkontext einrichten</string>
+    <string name="direct_input_setup_steps">Gehen Sie in den Tastatureinstellungen zu Texteingabe → Bearbeiten → +. Suchen Sie nach Dasher Direct Input und klicken Sie auf Hinzufügen.</string>
+    <string name="direct_input_setup_title">Verbessern Sie Vorhersagen in anderen Apps</string>
     <string name="direct_mode">Direktmodus</string>
+    <string name="direct_mode_access_resume">Der Direktmodus startet, sobald der Zugriff verfügbar ist.</string>
+    <string name="direct_mode_focus_editor">Setzen Sie zum Starten den Textcursor in ein Textfeld.</string>
     <string name="done">Erledigt</string>
     <string name="drag_to_move_the_keyboard_window">Ziehen Sie, um das Tastaturfenster zu verschieben</string>
     <string name="dwell_duration">Aufenthaltsdauer</string>
@@ -181,6 +190,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="language">Sprache</string>
     <string name="language_locale">Sprache / Gebietsschema</string>
     <string name="language_locale_2">Sprache lokal</string>
+    <string name="later">Später</string>
     <string name="layout_bottom">Unten</string>
     <string name="layout_keyboard">Tastatur</string>
     <string name="layout_left">Linke Seite</string>
@@ -279,6 +289,7 @@ Sie können dies jederzeit unter Einstellungen &gt; Datenschutz ändern.</string
     <string name="scan_speed">Scangeschwindigkeit</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">Auswahlverfahren</string>
+    <string name="sending_to_app_format">Senden an {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">Läuft der Dienst? Siehe die Einrichtungshilfe auf der Tastaturtaste für Installationsbefehle.</string>
     <string name="settings">Einstellungen</string>
     <string name="settings_2">Einstellungen...</string>

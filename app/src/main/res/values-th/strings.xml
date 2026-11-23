@@ -40,6 +40,7 @@
     <string name="auto_select_after_fixating_only_enable_if_os_dwell_is_off">เลือกอัตโนมัติหลังจากตรึงภาพแล้ว เปิดใช้งานเฉพาะเมื่อปิดโหมดพักหน้าจอของระบบปฏิบัติการเท่านั้น</string>
     <string name="auto_select_after_fixating_your_gaze_while_pinching_only_ena">เลือกอัตโนมัติหลังจากจ้องมองโดยใช้การบีบนิ้ว เปิดใช้งานเฉพาะเมื่อปิดการตั้งค่าการพักหน้าจอของระบบปฏิบัติการเท่านั้น</string>
     <string name="back">กลับ</string>
+    <string name="back_to_dasher">กลับไปที่ Dasher</string>
     <string name="backspace_label">ลบ</string>
     <string name="backspace_tooltip">ลบ (กดค้างเพื่อทำซ้ำ)</string>
     <string name="calibrate_tilt">ปรับเทียง</string>
@@ -106,7 +107,15 @@
     <string name="diag_colour_format">สี: {0}</string>
     <string name="diag_speed_format">ความเร็ว: {0}</string>
     <string name="diagnostics">การวินิจฉัยโรค</string>
+    <string name="direct_input_missing">หาก Dasher Direct Input หายไป</string>
+    <string name="direct_input_ready_description">โหมดโดยตรงพร้อมใช้งานแล้ว เพิ่ม Dasher Direct Input เพื่อใช้ข้อความก่อนเคอร์เซอร์ในการคาดเดาคำในแอปต่าง ๆ ได้มากขึ้น</string>
+    <string name="direct_input_restart">รีสตาร์ท Mac ของคุณ จากนั้นตรวจสอบรายการอีกครั้ง</string>
+    <string name="direct_input_setup_button">ตั้งค่าบริบทข้อความ</string>
+    <string name="direct_input_setup_steps">ในการตั้งค่าคีย์บอร์ด ให้ไปที่การป้อนข้อความ → แก้ไข → + ค้นหา Dasher Direct Input และคลิกเพิ่ม</string>
+    <string name="direct_input_setup_title">ปรับปรุงการคาดการณ์ในแอปอื่นๆ</string>
     <string name="direct_mode">โหมดโดยตรง</string>
+    <string name="direct_mode_access_resume">โหมดตรงจะเริ่มทันทีที่สามารถเข้าถึงได้</string>
+    <string name="direct_mode_focus_editor">วางเคอร์เซอร์ในช่องข้อความเพื่อเริ่มต้น</string>
     <string name="done">เสร็จแล้ว</string>
     <string name="drag_to_move_the_keyboard_window">ลากเพื่อย้ายหน้าต่างแป้นพิมพ์</string>
     <string name="dwell_duration">ระยะเวลาอยู่อาศัย</string>
@@ -181,6 +190,7 @@
     <string name="language">ภาษา</string>
     <string name="language_locale">ภาษา / ภูมิภาค</string>
     <string name="language_locale_2">&lt;b&gt;ภาษา / สถานที่ตั้ง&lt;/b&gt;</string>
+    <string name="later">ภายหลัง</string>
     <string name="layout_bottom">ด้านล่าง</string>
     <string name="layout_keyboard">แป้นพิมพ์</string>
     <string name="layout_left">ด้านซ้าย</string>
@@ -279,6 +289,7 @@
     <string name="scan_speed">ความเร็วในการสแกน</string>
     <string name="select_all">Select All</string>
     <string name="selection_method">วิธีการเลือก</string>
+    <string name="sending_to_app_format">กำลังส่งไปที่ {app}</string>
     <string name="service_running_see_the_setup_help_on_the_keyboard_button_fo">บริการกำลังทำงานอยู่หรือไม่? ดูความช่วยเหลือการตั้งค่าที่ปุ่มแป้นพิมพ์สำหรับคำสั่งติดตั้ง</string>
     <string name="settings">การตั้งค่า</string>
     <string name="settings_2">การตั้งค่า...</string>
